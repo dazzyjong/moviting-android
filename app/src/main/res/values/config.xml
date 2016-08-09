@@ -1,0 +1,4 @@
+<resources>
+    <!-- facebook app id -->
+    <string name="facebook_app_id" translatable="false">1063051283750387</string>
+</resources>

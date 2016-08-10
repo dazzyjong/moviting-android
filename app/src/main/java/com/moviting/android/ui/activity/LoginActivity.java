@@ -330,6 +330,8 @@ public class LoginActivity extends BaseActivity {
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
+        showProgressDialog();
+
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -346,7 +348,7 @@ public class LoginActivity extends BaseActivity {
                                     Toast.LENGTH_SHORT).show();
                         }
 
-                        // ...
+                        hideProgressDialog();
                     }
                 });
     }

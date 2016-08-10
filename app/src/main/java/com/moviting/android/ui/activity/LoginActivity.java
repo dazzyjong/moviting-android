@@ -204,10 +204,8 @@ public class LoginActivity extends BaseActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.auth_failed,
+                            Toast.makeText(LoginActivity.this, R.string.create_account_failed,
                                     Toast.LENGTH_SHORT).show();
-
-                            mEmail.setError("Already Used");
                         }
 
                         hideProgressDialog();
@@ -215,7 +213,7 @@ public class LoginActivity extends BaseActivity {
                 }).addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, e.toString());
+                        mEmail.setError(e.getMessage());
                     }
         });
     }
@@ -235,7 +233,7 @@ public class LoginActivity extends BaseActivity {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.auth_failed,
+                            Toast.makeText(LoginActivity.this, R.string.sign_in_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -245,7 +243,11 @@ public class LoginActivity extends BaseActivity {
                 }).addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, e.toString());
+                        if(e.getMessage().contains("password")){
+                            mPassword.setError(e.getMessage());
+                        } else {
+                            mEmail.setError(e.getMessage());
+                        }
                     }
         });
     }

@@ -2,6 +2,7 @@ package com.moviting.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,21 +13,32 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+
 import com.moviting.android.R;
 
 public class MainActivity extends BaseActivity {
 
+    private static final String TAG = "MainActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -38,7 +50,8 @@ public class MainActivity extends BaseActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mAuth;
-
+    private GoogleApiClient mGoogleApiClient;
+    
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -75,11 +88,26 @@ public class MainActivity extends BaseActivity {
         });
 
         Bundle params = new Bundle();
-        params.putString("name", "test_name");
-        params.putString("value", "test_value");
+        params.putString("name", "MainActivity");
+        params.putString("value", "onCreate");
         mFirebaseAnalytics.logEvent("log", params);
-    }
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+                        Toast.makeText(MainActivity.this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,7 +129,32 @@ public class MainActivity extends BaseActivity {
         }
 
         if (id == R.id.action_signout) {
-            mAuth.signOut();
+            FirebaseUser user = mAuth.getCurrentUser();
+
+            if (user != null) {
+                for (UserInfo profile : user.getProviderData()) {
+                    // Id of the provider (ex: google.com)
+                    String providerId = profile.getProviderId();
+                    switch (providerId) {
+                        case "facebook.com":
+                            LoginManager.getInstance().logOut();
+                            break;
+                        case "google.com":
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                                    new ResultCallback<Status>() {
+                                        @Override
+                                        public void onResult(@NonNull Status status) {
+
+                                        }
+                                    });
+                            break;
+                    }
+                }
+
+                mAuth.signOut();
+            }
+
+
 
             startActivity(LoginActivity.createIntent(MainActivity.this));
             finish();
@@ -159,13 +212,24 @@ public class MainActivity extends BaseActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    return PlaceholderFragment.newInstance(position + 1);
+                case 1:
+                    return PlaceholderFragment.newInstance(position + 1);
+                case 2:
+                    return PlaceholderFragment.newInstance(position + 1);
+                case 3:
+                    return PlaceholderFragment.newInstance(position + 1);
+                default:
+                    return null;
+            }
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         @Override
@@ -177,6 +241,8 @@ public class MainActivity extends BaseActivity {
                     return "SECTION 2";
                 case 2:
                     return "SECTION 3";
+                case 3:
+                    return "SECTION 4";
             }
             return null;
         }

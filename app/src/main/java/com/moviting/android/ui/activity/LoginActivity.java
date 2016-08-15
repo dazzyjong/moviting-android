@@ -16,14 +16,18 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +37,14 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.moviting.android.R;
+import com.moviting.android.model.User;
+import com.moviting.android.util.MyGoogleSignInOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends BaseActivity {
 
@@ -53,6 +64,8 @@ public class LoginActivity extends BaseActivity {
     private Button mSigninGoogle;
     private Button mSigninFaceBook;
 
+    private User mUser;
+
     public static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -68,6 +81,8 @@ public class LoginActivity extends BaseActivity {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
         setContentView(R.layout.activity_login);
 
         mEmail = (EditText)findViewById(R.id.email);
@@ -77,12 +92,6 @@ public class LoginActivity extends BaseActivity {
         mSigninGoogle = (Button)findViewById(R.id.signin_google);
         mSigninFaceBook = (Button)findViewById(R.id.signin_facebook);
 
-        // Initialize Google login
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
@@ -91,7 +100,7 @@ public class LoginActivity extends BaseActivity {
                         Toast.makeText(LoginActivity.this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, MyGoogleSignInOptions.getGSO())
                 .build();
 
         // Initialize Facebook Login button
@@ -108,13 +117,11 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                // ...
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                // ...
             }
         });
 
@@ -128,6 +135,13 @@ public class LoginActivity extends BaseActivity {
                     startActivity(MainActivity.createIntent(LoginActivity.this));
                     finish();
                     mIsAuthed = true;
+
+                    mUser = createUserPropertyFromFireBase(user);
+                    
+                    DatabaseReference ref = database.getReference("users");
+                    ref.child(user.getUid()).setValue(mUser);
+
+
                 } else if(user != null) {
                     // A user is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
@@ -186,6 +200,12 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mUser = null;
+    }
+
     public void createAccount(final String email, final String password) {
         Log.d(TAG, "createAccount:" + email);
         if (!validateForm()) {
@@ -200,9 +220,6 @@ public class LoginActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, R.string.create_account_failed,
                                     Toast.LENGTH_SHORT).show();
@@ -289,6 +306,7 @@ public class LoginActivity extends BaseActivity {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+
             if (result.isSuccess()) {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
@@ -317,8 +335,15 @@ public class LoginActivity extends BaseActivity {
 
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                                    new ResultCallback<Status>() {
+                                        @Override
+                                        public void onResult(@NonNull Status status) {
+
+                                        }
+                                    });
                         }
 
                         hideProgressDialog();
@@ -327,7 +352,7 @@ public class LoginActivity extends BaseActivity {
                 });
     }
 
-    private void handleFacebookAccessToken(AccessToken token) {
+    private void handleFacebookAccessToken(final AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         showProgressDialog();
@@ -339,18 +364,61 @@ public class LoginActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                            LoginManager.getInstance().logOut();
+                        } else {
+                            GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                    Log.d(TAG, "facebook user: " + object + " / " + response.getError());
+
+                                    try {
+                                        setUserPropertyFromFaceBook(object);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            Bundle parameters = new Bundle();
+                            parameters.putString("fields", "birthday,gender");
+                            request.setParameters(parameters);
+
+                            request.executeAsync();
                         }
 
                         hideProgressDialog();
                     }
                 });
+    }
+
+    public void setUserPropertyFromFaceBook(JSONObject obj) throws JSONException{
+        if(obj.has("birthday")) {
+            mUser.setBirthday(obj.getString("birthday"));
+        }
+        if(obj.has("gender")) {
+            mUser.setGender(obj.getString("gender"));
+        }
+    }
+
+    public User createUserPropertyFromFireBase(FirebaseUser fbUser) {
+        String name = "";
+        String email = "";
+        String photoUrl = "";
+
+        if(fbUser.getDisplayName() != null) {
+            name = fbUser.getDisplayName();
+        }
+        if(fbUser.getEmail() != null) {
+            email = fbUser.getEmail();
+        }
+        if(fbUser.getPhotoUrl() != null) {
+            photoUrl = fbUser.getPhotoUrl().toString();
+        }
+        return new User(name, email, photoUrl);
     }
 
     public static Intent createIntent(Context context) {

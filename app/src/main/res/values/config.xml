@@ -1,4 +1,5 @@
 <resources>
     <!-- facebook app id -->
     <string name="facebook_app_id" translatable="false">1063051283750387</string>
+    <string name="web_client_id" translatable="false">38252217712-3al861onigtdf6ghmqups6i1o5f588e0.apps.googleusercontent.com</string>
 </resources>

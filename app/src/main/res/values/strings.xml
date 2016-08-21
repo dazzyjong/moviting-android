@@ -17,7 +17,13 @@
     <string name="FAQ">자주묻는질문</string>
     <string name="logout">로그아웃</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_first_setting">@string/app_name</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_school">School</string>
+    <string name="prompt_work">Work</string>
+    <string name="prompt_height">Height</string>
+    <string name="action_account_profile_submit">Submit</string>
+    <string name="action_submit_short">Submit</string>
 
 </resources>

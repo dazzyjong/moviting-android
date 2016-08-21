@@ -6,9 +6,12 @@ import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -37,8 +40,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
 import com.moviting.android.util.MyGoogleSignInOptions;
@@ -46,13 +52,15 @@ import com.moviting.android.util.MyGoogleSignInOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends BaseActivity {
 
     private FirebaseAuth.AuthStateListener mAuthListener;
     // Due to Firebase onAuthStateChanged bug which invoked multiple time,
     // need to set flag when user sign in.
     private boolean mIsAuthed;
-    private FirebaseAuth mAuth;
 
     private GoogleApiClient mGoogleApiClient;
     private CallbackManager mCallbackManager;
@@ -64,8 +72,6 @@ public class LoginActivity extends BaseActivity {
     private Button mSigninGoogle;
     private Button mSigninFaceBook;
 
-    private User mUser;
-
     public static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -73,15 +79,11 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
-            startActivity(MainActivity.createIntent(this));
-            finish();
+        if (getFirebaseAuth().getCurrentUser() != null) {
+            showProgressDialog();
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         setContentView(R.layout.activity_login);
 
@@ -106,7 +108,11 @@ public class LoginActivity extends BaseActivity {
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
         final LoginButton loginButton = (LoginButton) findViewById(R.id.facebook_login_button);
-        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.setReadPermissions("email",
+                "public_profile",
+                "user_work_history",
+                "user_education_history",
+                "user_birthday");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -128,23 +134,17 @@ public class LoginActivity extends BaseActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null && user == mAuth.getCurrentUser() && !mIsAuthed) {
-                    // Me is signed in myself
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    startActivity(MainActivity.createIntent(LoginActivity.this));
-                    finish();
+                FirebaseUser onAuthedUser = firebaseAuth.getCurrentUser();
+                if (onAuthedUser != null && onAuthedUser == getFirebaseAuth().getCurrentUser() && !mIsAuthed) {
+                    // Myself
+                    Log.d(TAG, "onAuthStateChanged:signed_in:myself" + onAuthedUser.getUid());
                     mIsAuthed = true;
 
-                    mUser = createUserPropertyFromFireBase(user);
-                    
-                    DatabaseReference ref = database.getReference("users");
-                    ref.child(user.getUid()).setValue(mUser);
+                    createOrUpdateUserAndDatabase();
 
-
-                } else if(user != null) {
+                } else if(onAuthedUser != null) {
                     // A user is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + onAuthedUser.getUid());
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -183,12 +183,24 @@ public class LoginActivity extends BaseActivity {
                 loginButton.performClick();
             }
         });
+
+        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == getResources().getInteger(R.integer.submit_action_id) || actionId == EditorInfo.IME_NULL) {
+                    String email = mEmail.getText().toString();
+                    String password = mPassword.getText().toString();
+                    signIn(email, password);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        getFirebaseAuth().addAuthStateListener(mAuthListener);
         mIsAuthed = false;
     }
 
@@ -196,14 +208,13 @@ public class LoginActivity extends BaseActivity {
     public void onStop() {
         super.onStop();
         if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+            getFirebaseAuth().removeAuthStateListener(mAuthListener);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mUser = null;
     }
 
     public void createAccount(final String email, final String password) {
@@ -214,18 +225,17 @@ public class LoginActivity extends BaseActivity {
 
         showProgressDialog();
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        getFirebaseAuth().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.create_account_failed,
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
+                            hideProgressDialog();
                         }
-
-                        hideProgressDialog();
                     }
                 }).addOnFailureListener(this, new OnFailureListener() {
                     @Override
@@ -243,18 +253,17 @@ public class LoginActivity extends BaseActivity {
 
         showProgressDialog();
 
-        mAuth.signInWithEmailAndPassword(email, password)
+        getFirebaseAuth().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.sign_in_failed,
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
+                            hideProgressDialog();
                         }
-
-                        hideProgressDialog();
 
                     }
                 }).addOnFailureListener(this, new OnFailureListener() {
@@ -327,7 +336,7 @@ public class LoginActivity extends BaseActivity {
         showProgressDialog();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        getFirebaseAuth().signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -344,10 +353,8 @@ public class LoginActivity extends BaseActivity {
 
                                         }
                                     });
+                            hideProgressDialog();
                         }
-
-                        hideProgressDialog();
-
                     }
                 });
     }
@@ -358,7 +365,7 @@ public class LoginActivity extends BaseActivity {
         showProgressDialog();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
+        getFirebaseAuth().signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -369,42 +376,130 @@ public class LoginActivity extends BaseActivity {
                             Toast.makeText(LoginActivity.this, task.getException().getMessage(),
                                     Toast.LENGTH_LONG).show();
                             LoginManager.getInstance().logOut();
-                        } else {
-                            GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
-                                @Override
-                                public void onCompleted(JSONObject object, GraphResponse response) {
-                                    Log.d(TAG, "facebook user: " + object + " / " + response.getError());
-
-                                    try {
-                                        setUserPropertyFromFaceBook(object);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-
-                            Bundle parameters = new Bundle();
-                            parameters.putString("fields", "birthday,gender");
-                            request.setParameters(parameters);
-
-                            request.executeAsync();
+                            hideProgressDialog();
                         }
-
-                        hideProgressDialog();
                     }
                 });
     }
 
-    public void setUserPropertyFromFaceBook(JSONObject obj) throws JSONException{
-        if(obj.has("birthday")) {
-            mUser.setBirthday(obj.getString("birthday"));
-        }
-        if(obj.has("gender")) {
-            mUser.setGender(obj.getString("gender"));
-        }
+    public void createOrUpdateUserAndDatabase() {
+        final DatabaseReference ref = getFirebaseDatabase().getReference();
+
+        // Check Database has user account
+        ref.child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+
+                if(user == null) {
+                    // No user, this is first login
+                    // 1. Create User model
+                    createUserFromFirebaseUser(getFirebaseAuth().getCurrentUser());
+                    // 2. check if it is facebook account
+                    if(isFaceBookAccount()) {
+                        try {
+                            setUserPropertyFromFaceBook();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // 3. update user info to data base
+                    updateUserDataBase();
+                    startActivityUnderCondition(true);
+                } else {
+                    // There is user, this is revisit
+                    // 1. read user info from database
+                    User.copyFrom(user);
+                    startActivityUnderCondition(false);
+                }
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+            }
+        });
     }
 
-    public User createUserPropertyFromFireBase(FirebaseUser fbUser) {
+    public boolean isFaceBookAccount() {
+        FirebaseUser user = getFirebaseAuth().getCurrentUser();
+        boolean result = false;
+        if (user != null) {
+            for (UserInfo profile : user.getProviderData()) {
+                String providerId = profile.getProviderId();
+
+                switch (providerId) {
+                    case "facebook.com":
+                        result = true;
+                        break;
+
+                    default:
+                        break;
+
+                }
+            }
+        }
+        return result;
+    }
+
+    public void updateUserDataBase() {
+        User user = User.getUserInstance();
+        Map<String, Object> userValue = user.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/users/" + getUid(), userValue);
+        getFirebaseDatabase().getReference().updateChildren(childUpdates);
+    }
+
+    public void setUserPropertyFromFaceBook() throws JSONException{
+
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                                                            new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject obj, GraphResponse response) {
+                Log.d(TAG, "facebook user: " + obj + " / " + response.getError());
+
+                User user = User.getUserInstance();
+
+                try {
+                    if(obj.has("birthday")) {
+                        user.setBirthday(obj.getString("birthday"));
+                    }
+                    if(obj.has("gender")) {
+                        user.setGender(obj.getString("gender"));
+                    }
+                    if(obj.has("education")) {
+                        for(int i = 0; i < obj.getJSONArray("education").length(); i++){
+                            if(obj.getJSONArray("education").getJSONObject(i).getString("type")
+                                    .equals("College")) {
+                                user.setSchool(obj.getJSONArray("education").getJSONObject(i)
+                                        .getJSONObject("school").getString("name"));
+                            }
+                        }
+                    }
+                    if(obj.has("work")) {
+                        for(int i = 0; i < obj.getJSONArray("work").length(); i++) {
+                            if(!obj.getJSONArray("work").getJSONObject(i).has("end_date")) {
+                                user.setOrg(obj.getJSONArray("work").getJSONObject(i)
+                                        .getJSONObject("employer").getString("name"));
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                updateUserDataBase();
+            }
+        });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "birthday,gender,education,work");
+        request.setParameters(parameters);
+
+        request.executeAsync();
+    }
+
+    public User createUserFromFirebaseUser(FirebaseUser fbUser) {
         String name = "";
         String email = "";
         String photoUrl = "";
@@ -418,12 +513,23 @@ public class LoginActivity extends BaseActivity {
         if(fbUser.getPhotoUrl() != null) {
             photoUrl = fbUser.getPhotoUrl().toString();
         }
-        return new User(name, email, photoUrl);
+
+        return User.constructUserInstance(name, email, photoUrl);
     }
 
     public static Intent createIntent(Context context) {
         Intent in = new Intent();
         in.setClass(context, LoginActivity.class);
         return in;
+    }
+
+    public void startActivityUnderCondition(boolean isFirst) {
+        if(isFirst) {
+            startActivity(FirstSettingActivity.createIntent(LoginActivity.this));
+            finish();
+        } else {
+            startActivity(MainActivity.createIntent(LoginActivity.this));
+            finish();
+        }
     }
 }

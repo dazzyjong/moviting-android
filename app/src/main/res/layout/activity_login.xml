@@ -25,25 +25,38 @@
             android:layout_gravity="center_horizontal"
             android:id="@+id/password_section">
 
-            <EditText
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/email"
-                android:hint="Email"
-                android:paddingTop="20dp"
-                style="@style/FirebaseEditTextTheme"
-                android:theme="@style/FirebaseEditTextTheme"
-                android:inputType="textEmailAddress" />
+                android:layout_height="wrap_content">
 
-            <EditText
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/email"
+                    android:hint="Email"
+                    android:paddingTop="20dp"
+                    style="@style/FirebaseEditTextTheme"
+                    android:theme="@style/FirebaseEditTextTheme"
+                    android:inputType="textEmailAddress" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/password"
-                android:hint="Password"
-                android:paddingTop="16dp"
-                style="@style/FirebaseEditTextTheme"
-                android:theme="@style/FirebaseEditTextTheme"
-                android:inputType="textPassword" />
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/password"
+                    android:hint="Password"
+                    android:paddingTop="16dp"
+                    style="@style/FirebaseEditTextTheme"
+                    android:theme="@style/FirebaseEditTextTheme"
+                    android:inputType="textPassword"
+                    android:imeActionId="@integer/submit_action_id"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"/>
+            </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

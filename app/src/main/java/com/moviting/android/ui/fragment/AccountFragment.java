@@ -24,7 +24,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.moviting.android.R;
+import com.moviting.android.model.User;
 import com.moviting.android.ui.activity.LoginActivity;
+import com.moviting.android.ui.activity.ProfileActivity;
 import com.moviting.android.util.MyGoogleSignInOptions;
 
 public class AccountFragment extends Fragment {
@@ -81,7 +83,7 @@ public class AccountFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        nextFragment(ProfileFragment.newInstance());
+                        openProfileActivity();
                         break;
                     case 1:
                         break;
@@ -99,13 +101,10 @@ public class AccountFragment extends Fragment {
         return view;
     }
 
-    public void nextFragment(Fragment fragment) {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.container, fragment, fragment.getClass().getSimpleName());
-        ft.addToBackStack(this.getClass().getSimpleName());
-        ft.commit();
+    private void openProfileActivity() {
+        startActivity(ProfileActivity.createIntent(getActivity()));
     }
+
 
     public void signOut() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -129,7 +128,7 @@ public class AccountFragment extends Fragment {
                         break;
                 }
             }
-
+            User.destructUserInstance();
             mAuth.signOut();
         }
 

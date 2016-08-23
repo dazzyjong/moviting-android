@@ -12,76 +12,34 @@
     tools:context="com.moviting.android.ui.activity.FirstSettingActivity">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.3"
-        android:layout_marginBottom="1dp">
-
-        <RelativeLayout
-            android:id="@+id/image_layout"
+        android:id="@+id/image_layout"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_marginBottom="10dp"
-            android:layout_centerHorizontal="true">
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:src="@drawable/profile_placeholder"
-                app:civ_border_width="2dp"
-                app:civ_border_color="#FFFFFFFF"/>
-            <ImageButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                app:srcCompat="@drawable/ic_camera_enhance_black_24dp"
-                android:scaleType="centerCrop"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:background="@android:color/transparent"/>
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_below="@id/image_layout"
-            android:layout_centerHorizontal="true">
-        <EditText
-            android:id="@+id/account_profile_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:textColor="#ff000000"
-            android:text="Name"
-            android:textSize="15sp"/>
-            <ImageButton
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_centerVertical="true"
-                app:srcCompat="@drawable/edit_pencil"
-                android:id="@+id/account_name_edit_button"
-                android:scaleType="centerCrop"
-                android:layout_toRightOf="@id/account_profile_name"
-                android:background="@android:color/transparent"/>
-        </RelativeLayout>
-
+            android:src="@drawable/profile_placeholder"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FFFFFFFF"/>
+        <ImageButton
+            android:id="@+id/photo_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:srcCompat="@drawable/ic_camera_enhance_black_24dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
     </RelativeLayout>
-
-    <!-- Setting progress -->
-    <ProgressBar
-        android:id="@+id/account_setting_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/account_setting_form"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.7">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -89,11 +47,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/account_profile_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_name"
+                    android:inputType="text"
+                    android:maxLines="1"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:text="@string/gender_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp" />
+
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/gender"
+                android:id="@+id/gender_spinner"
                 android:layout_weight="1" />
+
+            <TextView
+                android:text="@string/birthday_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp" />
 
             <DatePicker
                 android:layout_width="wrap_content"
@@ -102,6 +90,20 @@
                 android:datePickerMode="spinner"
                 android:calendarViewShown="false"
                 android:layout_gravity="center"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/favorite_movie"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_fav_movie"
+                    android:inputType="text"
+                    android:maxLines="1"/>
+
+            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -126,7 +128,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_work"
-                    android:inputType="textPassword"
+                    android:inputType="text"
                     android:maxLines="1"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -140,11 +142,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_height"
-                    android:imeActionId="@integer/submit_action_id"
-                    android:imeActionLabel="@string/action_submit_short"
-                    android:imeOptions="actionUnspecified"
                     android:inputType="text"
                     android:maxLines="1"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/introduce"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_introduce"
+                    android:inputType="textMultiLine"
+                    android:lines="3"
+                    android:minLines="1"
+                    android:maxLines="3"
+                    android:scrollbars="vertical"
+                    android:imeActionId="@integer/submit_action_id"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"/>
 
             </android.support.design.widget.TextInputLayout>
 

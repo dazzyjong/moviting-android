@@ -392,9 +392,11 @@ public class LoginActivity extends BaseActivity {
                 User user = dataSnapshot.getValue(User.class);
 
                 if(user == null) {
+                    Log.d(TAG, "onDataChange user null");
                     // No user, this is first login
                     // 1. Create User model
                     createUserFromFirebaseUser(getFirebaseAuth().getCurrentUser());
+                    getSharedPreferences().edit().putBoolean(getString(R.string.filled_account_info), false).apply();
                     // 2. check if it is facebook account
                     if(isFaceBookAccount()) {
                         try {
@@ -402,13 +404,19 @@ public class LoginActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    } else {
+                        // 3. update user info to data base
+                        updateUserDataBase();
+                        startActivityUnderCondition(true);
                     }
-                    // 3. update user info to data base
-                    updateUserDataBase();
+                } else if(!getSharedPreferences().getBoolean(getString(R.string.filled_account_info), false)) {
+                    Log.d(TAG, "onDataChange filled_account_info false");
+                    User.copyFrom(user);
                     startActivityUnderCondition(true);
                 } else {
                     // There is user, this is revisit
                     // 1. read user info from database
+                    Log.d(TAG, "onDataChange success");
                     User.copyFrom(user);
                     startActivityUnderCondition(false);
                 }
@@ -480,7 +488,7 @@ public class LoginActivity extends BaseActivity {
                     if(obj.has("work")) {
                         for(int i = 0; i < obj.getJSONArray("work").length(); i++) {
                             if(!obj.getJSONArray("work").getJSONObject(i).has("end_date")) {
-                                user.setOrg(obj.getJSONArray("work").getJSONObject(i)
+                                user.setWork(obj.getJSONArray("work").getJSONObject(i)
                                         .getJSONObject("employer").getString("name"));
                             }
                         }
@@ -489,6 +497,7 @@ public class LoginActivity extends BaseActivity {
                     e.printStackTrace();
                 }
                 updateUserDataBase();
+                startActivityUnderCondition(true);
             }
         });
 

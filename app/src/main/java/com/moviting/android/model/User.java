@@ -20,17 +20,15 @@ public class User {
     public String name;
     public String email;
     public String photoUrl;
+    private UserStatus userStatus;
 
     public String gender;
     public String birthday;
-    private UserStatus userStatus;
-
-    // to verify user more(optional)
+    public String favoriteMovie;
     public String school;
-    public String org;
-
-    // optional
+    public String work;
     public String height;
+    public String introduce;
 
     private User(){
 
@@ -43,21 +41,32 @@ public class User {
         this.userStatus = UserStatus.valueOf("Joined");
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
     public void setGender(String gender) {
         this.gender = gender;
     }
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
-    // TODO: need to be updated from ProfileFragment
-    public void setHeight(String height) {
-        this.height = height;
+    public void setFavoriteMovie(String favoriteMovie) {
+        this.favoriteMovie = favoriteMovie;
     }
     public void setSchool(String school) {
         this.school = school;
     }
-    public void setOrg(String org) {
-        this.org = org;
+    public void setWork(String work) {
+        this.work = work;
+    }
+    public void setHeight(String height) {
+        this.height = height;
+    }
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
     }
 
     @Exclude
@@ -90,11 +99,12 @@ public class User {
             userInstance.name = user.name != null ? user.name : null;
             userInstance.email = user.email != null ? user.email : null;
             userInstance.photoUrl = user.photoUrl != null ? user.photoUrl : null;
+            userInstance.userStatus = user.userStatus != null ? user.userStatus : null;
             userInstance.gender = user.gender != null ? user.gender : null;
             userInstance.birthday = user.birthday != null ? user.birthday : null;
-            userInstance.userStatus = user.userStatus != null ? user.userStatus : null;
+            userInstance.favoriteMovie = user.favoriteMovie != null ? user.favoriteMovie : null;
             userInstance.school = user.school != null ? user.school : null;
-            userInstance.org = user.org != null ? user.org : null;
+            userInstance.work = user.work != null ? user.work : null;
             userInstance.height = user.height != null ? user.height : null;
         }
         return userInstance;
@@ -134,20 +144,30 @@ public class User {
         } else {
             result.put("birthday", "");
         }
+        if(favoriteMovie != null) {
+            result.put("favoriteMovie", favoriteMovie);
+        } else {
+            result.put("favoriteMovie", "");
+        }
         if(school != null) {
             result.put("school", school);
         } else {
             result.put("school", "");
         }
-        if(org != null) {
-            result.put("org", org);
+        if(work != null) {
+            result.put("work", work);
         } else {
-            result.put("org", "");
+            result.put("work", "");
         }
         if(height != null) {
             result.put("height", height);
         } else {
             result.put("height", "");
+        }
+        if(introduce != null) {
+            result.put("introduce", introduce);
+        } else {
+            result.put("introduce", "");
         }
 
         return result;

@@ -98,7 +98,7 @@ public class FirstSettingActivity extends BaseActivity {
         });
 
         if (User.getUserInstance().gender != null && !User.getUserInstance().gender.equals("")) {
-            if (User.getUserInstance().gender.equals("남")) {
+            if (User.getUserInstance().gender.equals("male")) {
                 genderSpinner.setSelection(1);
             } else {
                 genderSpinner.setSelection(2);
@@ -236,7 +236,11 @@ public class FirstSettingActivity extends BaseActivity {
 
         user.setName(nameText.getText().toString());
         user.setPhotoUrl(photoUrl);
-        user.setGender((String) genderSpinner.getSelectedItem());
+        if( genderSpinner.getSelectedItem().equals(getResources().getStringArray(R.array.gender)[1]) ) {
+            user.setGender("male");
+        } else {
+            user.setGender("female");
+        }
         user.setBirthday(formattedBirthday);
         user.setFavoriteMovie(favoriteMovieText.getText().toString());
         user.setSchool(schoolText.getText().toString());

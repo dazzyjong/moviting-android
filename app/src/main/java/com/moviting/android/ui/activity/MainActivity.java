@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -23,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
 import com.moviting.android.ui.fragment.AccountFragment;
+import com.moviting.android.ui.fragment.SelectSessionFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -129,16 +129,6 @@ public class MainActivity extends BaseActivity {
 
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            if(getArguments().getInt(ARG_SECTION_NUMBER) == 0) {
-                Button button = (Button) rootView.findViewById(R.id.apply_button);
-
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((MainActivity)getActivity()).getUid();
-                    }
-                });
-            }
 
             return rootView;
         }
@@ -160,7 +150,7 @@ public class MainActivity extends BaseActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return SelectSessionFragment.newInstance();
                 case 1:
                     return PlaceholderFragment.newInstance(position + 1);
                 case 2:

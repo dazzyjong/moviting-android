@@ -10,14 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moviting.android.R;
+import com.moviting.android.model.User;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ProfileFragment extends Fragment {
 
-    private String[] key = new String[]{"key1", "key2", "key3"};
-    private String[] value = new String[]{"value1", "value2", "value3"};
+    private ArrayList<String> keyArray = new ArrayList<>();
+    private ArrayList<String> valArray = new ArrayList<>();
 
     private RecyclerView rvProfile;
 
@@ -31,6 +35,12 @@ public class ProfileFragment extends Fragment {
         rvProfile = (RecyclerView)view.findViewById(R.id.profile_recycler_view);
         rvProfile.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvProfile.setAdapter(new ProfileAdapter());
+
+        Map<String, Object> userValue = User.getUserInstance().toMap();
+        for(String key: userValue.keySet()) {
+            keyArray.add(key);
+            valArray.add((String)userValue.get(key));
+        }
 
         return view;
     }
@@ -59,13 +69,13 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
-            profileViewHolder.key.setText(key[position]);
-            profileViewHolder.value.setText(value[position]);
+            profileViewHolder.key.setText(keyArray.get(position));
+            profileViewHolder.value.setText(valArray.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return key.length;
+            return keyArray.size();
         }
     }
 }

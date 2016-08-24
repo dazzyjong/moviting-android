@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.moviting.android.R;
 import com.moviting.android.ui.fragment.ProfileFragment;
@@ -26,6 +27,17 @@ public class ProfileActivity extends BaseActivity {
 
         mFragment = new ProfileFragment();
         nextFragment(mFragment, true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                ProfileActivity.this.onBackPressed();
+                break;
+        }
+        return true;
     }
 
     public void nextFragment(Fragment fragment, boolean isFirst) {

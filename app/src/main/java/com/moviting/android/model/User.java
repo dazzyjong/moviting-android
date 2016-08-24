@@ -14,7 +14,7 @@ public class User {
     private static User userInstance;
 
     public enum UserStatus {
-        Joined, Applied, Proposed, Matched
+        Joined, Applied,  Matched
     }
 
     public String name;
@@ -29,6 +29,8 @@ public class User {
     public String work;
     public String height;
     public String introduce;
+    public int minPrefAge;
+    public int maxPrefAge;
 
     private User(){
 
@@ -68,6 +70,12 @@ public class User {
     public void setIntroduce(String introduce) {
         this.introduce = introduce;
     }
+    public void setMinPrefAge(int age) {
+        this.minPrefAge = age;
+    }
+    public void setMaxPrefAge(int age) {
+        this.maxPrefAge = age;
+    }
 
     @Exclude
     public static User constructUserInstance(String name, String email, String photoUrl) throws IllegalStateException{
@@ -96,17 +104,20 @@ public class User {
     public static User copyFrom(User user) {
         if(userInstance == null) {
             userInstance = new User();
-            userInstance.name = user.name != null ? user.name : null;
-            userInstance.email = user.email != null ? user.email : null;
-            userInstance.photoUrl = user.photoUrl != null ? user.photoUrl : null;
-            userInstance.userStatus = user.userStatus != null ? user.userStatus : null;
-            userInstance.gender = user.gender != null ? user.gender : null;
-            userInstance.birthday = user.birthday != null ? user.birthday : null;
-            userInstance.favoriteMovie = user.favoriteMovie != null ? user.favoriteMovie : null;
-            userInstance.school = user.school != null ? user.school : null;
-            userInstance.work = user.work != null ? user.work : null;
-            userInstance.height = user.height != null ? user.height : null;
         }
+        userInstance.name = user.name != null ? user.name : null;
+        userInstance.email = user.email != null ? user.email : null;
+        userInstance.photoUrl = user.photoUrl != null ? user.photoUrl : null;
+        userInstance.userStatus = user.userStatus != null ? user.userStatus : null;
+        userInstance.gender = user.gender != null ? user.gender : null;
+        userInstance.birthday = user.birthday != null ? user.birthday : null;
+        userInstance.favoriteMovie = user.favoriteMovie != null ? user.favoriteMovie : null;
+        userInstance.school = user.school != null ? user.school : null;
+        userInstance.work = user.work != null ? user.work : null;
+        userInstance.height = user.height != null ? user.height : null;
+        userInstance.minPrefAge = user.minPrefAge != 0 ? user.minPrefAge : 0;
+        userInstance.maxPrefAge = user.maxPrefAge != 0 ? user.maxPrefAge : 0;
+
         return userInstance;
     }
 
@@ -168,6 +179,38 @@ public class User {
             result.put("introduce", introduce);
         } else {
             result.put("introduce", "");
+        }
+
+        return result;
+    }
+
+    public boolean isUserFormFilled() {
+        boolean result = true;
+
+
+        if(name.equals("")) {
+            return false;
+        }
+        if(photoUrl.equals("")) {
+            return false;
+        }
+        if(gender.equals("")) {
+            return false;
+        }
+        if(birthday.equals("")) {
+            return false;
+        }
+        if(favoriteMovie.equals("")) {
+            return false;
+        }
+        if(school.equals("")) {
+            return false;
+        }
+        if(work.equals("")) {
+            return false;
+        }
+        if(height.equals("")) {
+            return false;
         }
 
         return result;

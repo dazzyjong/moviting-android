@@ -396,7 +396,7 @@ public class LoginActivity extends BaseActivity {
                     // No user, this is first login
                     // 1. Create User model
                     createUserFromFirebaseUser(getFirebaseAuth().getCurrentUser());
-                    getSharedPreferences().edit().putBoolean(getString(R.string.filled_account_info), false).apply();
+
                     // 2. check if it is facebook account
                     if(isFaceBookAccount()) {
                         try {
@@ -409,7 +409,7 @@ public class LoginActivity extends BaseActivity {
                         updateUserDataBase();
                         startActivityUnderCondition(true);
                     }
-                } else if(!getSharedPreferences().getBoolean(getString(R.string.filled_account_info), false)) {
+                } else if(!user.isUserFormFilled()) {
                     Log.d(TAG, "onDataChange filled_account_info false");
                     User.copyFrom(user);
                     startActivityUnderCondition(true);

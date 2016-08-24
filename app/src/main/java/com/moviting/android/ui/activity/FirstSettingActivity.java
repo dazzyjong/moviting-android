@@ -255,7 +255,6 @@ public class FirstSettingActivity extends BaseActivity {
         getFirebaseDatabase().getReference().updateChildren(childUpdates).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                getSharedPreferences().edit().putBoolean(getString(R.string.filled_account_info), true).apply();
                 startActivity(MainActivity.createIntent(FirstSettingActivity.this));
                 finish();
             }

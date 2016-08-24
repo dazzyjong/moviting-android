@@ -40,10 +40,6 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
-    public SharedPreferences getSharedPreferences() {
-        return getApplicationContext().getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-    }
-
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }

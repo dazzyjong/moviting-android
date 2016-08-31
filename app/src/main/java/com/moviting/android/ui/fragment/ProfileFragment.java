@@ -39,7 +39,11 @@ public class ProfileFragment extends Fragment {
         Map<String, Object> userValue = User.getUserInstance().toMap();
         for(String key: userValue.keySet()) {
             keyArray.add(key);
-            valArray.add((String)userValue.get(key));
+            if(userValue.get(key) instanceof Integer){
+                valArray.add( String.valueOf(userValue.get(key)));
+            } else {
+                valArray.add((String)userValue.get(key));
+            }
         }
 
         return view;

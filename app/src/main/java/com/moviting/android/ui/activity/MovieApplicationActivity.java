@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.appyvet.rangebar.RangeBar;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,15 +53,25 @@ public class MovieApplicationActivity extends BaseActivity {
                 ref.child("minPrefAge").setValue(minAge).addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        User.getUserInstance().setMinPrefAge(minAge);
-                        listener.setAgeFlagAndUpdateUserStatus();
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(MovieApplicationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            hideProgressDialog();
+                        } else {
+                            User.getUserInstance().setMinPrefAge(minAge);
+                            listener.setAgeFlagAndUpdateUserStatus();
+                        }
                     }
                 });
                 ref.child("maxPrefAge").setValue(maxAge).addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        User.getUserInstance().setMaxPrefAge(maxAge);
-                        listener.setAgeFlagAndUpdateUserStatus();
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(MovieApplicationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            hideProgressDialog();
+                        } else {
+                            User.getUserInstance().setMaxPrefAge(maxAge);
+                            listener.setAgeFlagAndUpdateUserStatus();
+                        }
                     }
                 });
             }
@@ -74,11 +85,17 @@ public class MovieApplicationActivity extends BaseActivity {
 
                 if(flag == 2){
                     DatabaseReference ref = getFirebaseDatabase().getReference().child("users").child(getUid());
-                    ref.child("userStatus").setValue("Applied").addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
+                    ref.child("userStatus").setValue("Enrolled").addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            User.getUserInstance().setUserStatus("Applied");
-                            hideProgressDialog();
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(MovieApplicationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                hideProgressDialog();
+                            } else {
+                                User.getUserInstance().setUserStatus("Enrolled");
+                                hideProgressDialog();
+                                Toast.makeText(MovieApplicationActivity.this, R.string.apply_success_text, Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
                 }

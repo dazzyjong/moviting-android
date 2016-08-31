@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class User {
     private static User userInstance;
 
     public enum UserStatus {
-        Joined, Applied,  Matched
+        Joined, Enrolled,  Matched
     }
 
     public String name;
@@ -29,6 +30,7 @@ public class User {
     public String work;
     public String height;
     public String introduce;
+    public int myAge;
     public int minPrefAge;
     public int maxPrefAge;
 
@@ -43,6 +45,11 @@ public class User {
         this.userStatus = UserStatus.valueOf("Joined");
     }
 
+    public void setMyAge(int birthYear) {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        this.myAge = currentYear - birthYear + 1;
+    }
     public void setName(String name) {
         this.name = name;
     }
@@ -115,6 +122,8 @@ public class User {
         userInstance.school = user.school != null ? user.school : null;
         userInstance.work = user.work != null ? user.work : null;
         userInstance.height = user.height != null ? user.height : null;
+        userInstance.introduce = user.introduce != null ? user.introduce : null;
+        userInstance.myAge = user.myAge != 0 ? user.myAge : 0;
         userInstance.minPrefAge = user.minPrefAge != 0 ? user.minPrefAge : 0;
         userInstance.maxPrefAge = user.maxPrefAge != 0 ? user.maxPrefAge : 0;
 
@@ -179,6 +188,11 @@ public class User {
             result.put("introduce", introduce);
         } else {
             result.put("introduce", "");
+        }
+        if(myAge != 0) {
+            result.put("myAge", myAge);
+        } else {
+            result.put("myAge", 0);
         }
 
         return result;

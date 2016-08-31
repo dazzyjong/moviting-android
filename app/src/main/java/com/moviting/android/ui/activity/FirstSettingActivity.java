@@ -123,7 +123,8 @@ public class FirstSettingActivity extends BaseActivity {
                 }
 
                 formattedBirthday =   formattedMonth + "/" + formattedDayOfMonth + "/" + year;
-                Log.d(TAG, "mylog" + formattedDayOfMonth);
+                User.getUserInstance().setMyAge(year);
+                Log.d(TAG, "mylog" + formattedBirthday);
             }
         });
 
@@ -141,6 +142,7 @@ public class FirstSettingActivity extends BaseActivity {
             int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
 
             birthdayPicker.updateDate(year, month, dayOfMonth);
+            User.getUserInstance().setMyAge(year);
         }
 
         favoriteMovieText = (EditText) findViewById(R.id.favorite_movie);
@@ -168,8 +170,11 @@ public class FirstSettingActivity extends BaseActivity {
         submitButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                showProgressDialog();
                 if (validateForm()) {
                     updateUser();
+                } else {
+                    hideProgressDialog();
                 }
             }
         });
@@ -259,8 +264,13 @@ public class FirstSettingActivity extends BaseActivity {
         getFirebaseDatabase().getReference().updateChildren(childUpdates).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                startActivity(MainActivity.createIntent(FirstSettingActivity.this));
-                finish();
+                if (!task.isSuccessful()) {
+                    Toast.makeText(FirstSettingActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    startActivity(MainActivity.createIntent(FirstSettingActivity.this));
+                    finish();
+                }
+                hideProgressDialog();
             }
         });
     }

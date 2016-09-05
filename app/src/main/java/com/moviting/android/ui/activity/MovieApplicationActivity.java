@@ -40,7 +40,7 @@ public class MovieApplicationActivity extends BaseActivity {
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
                 Log.d(TAG, "onRangeChangeListener: " + leftPinValue + " / " + rightPinValue);
                 minAge = Integer.valueOf(leftPinValue);
-                maxAge = Integer.valueOf(rightPinValue);;
+                maxAge = Integer.valueOf(rightPinValue);
             }
         });
 
@@ -84,7 +84,7 @@ public class MovieApplicationActivity extends BaseActivity {
                 flag++;
 
                 if(flag == 2){
-                    DatabaseReference ref = getFirebaseDatabase().getReference().child("users").child(getUid());
+                    final DatabaseReference ref = getFirebaseDatabase().getReference().child("users").child(getUid());
                     ref.child("userStatus").setValue("Enrolled").addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -92,9 +92,19 @@ public class MovieApplicationActivity extends BaseActivity {
                                 Toast.makeText(MovieApplicationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                 hideProgressDialog();
                             } else {
-                                User.getUserInstance().setUserStatus("Enrolled");
-                                hideProgressDialog();
-                                Toast.makeText(MovieApplicationActivity.this, R.string.apply_success_text, Toast.LENGTH_LONG).show();
+                                ref.child("token").setValue(getToken()).addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(MovieApplicationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                            hideProgressDialog();
+                                        } else {
+                                            User.getUserInstance().setUserStatus("Enrolled");
+                                            hideProgressDialog();
+                                            Toast.makeText(MovieApplicationActivity.this, R.string.apply_success_text, Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
                             }
                         }
                     });

@@ -1,7 +1,6 @@
 package com.moviting.android.ui.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.moviting.android.R;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -38,6 +39,10 @@ public class BaseActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         hideProgressDialog();
+    }
+
+    public String getToken() {
+        return FirebaseInstanceId.getInstance().getToken();
     }
 
     public String getUid() {

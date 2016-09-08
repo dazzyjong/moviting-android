@@ -2,27 +2,33 @@ package com.moviting.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import com.moviting.android.R;
 import com.moviting.android.model.User;
 import com.moviting.android.ui.fragment.AccountFragment;
+import com.moviting.android.ui.fragment.ProposeFragment;
 import com.moviting.android.ui.fragment.SelectSessionFragment;
+import com.moviting.android.util.MyViewPager;
 
 public class MainActivity extends BaseActivity {
 
@@ -37,11 +43,8 @@ public class MainActivity extends BaseActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
-    
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+
+    private MyViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +60,9 @@ public class MainActivity extends BaseActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (MyViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setPagingEnabled(false);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -67,6 +71,19 @@ public class MainActivity extends BaseActivity {
         params.putString("name", "MainActivity");
         params.putString("value", "onCreate");
         mFirebaseAnalytics.logEvent("log", params);
+
+        // TODO: getPreference
+        getFirebaseDatabase().getReference().child("users").child(getUid())
+                .child("token").setValue(getToken()).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    Log.d(TAG, task.getException().getMessage());
+                    Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -152,7 +169,7 @@ public class MainActivity extends BaseActivity {
                 case 0:
                     return SelectSessionFragment.newInstance();
                 case 1:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return ProposeFragment.newInstance();
                 case 2:
                     return PlaceholderFragment.newInstance(position + 1);
                 case 3:

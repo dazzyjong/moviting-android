@@ -383,10 +383,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void createOrUpdateUserAndDatabase() {
-        final DatabaseReference ref = getFirebaseDatabase().getReference();
-
         // Check Database has user account
-        ref.child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -456,7 +454,7 @@ public class LoginActivity extends BaseActivity {
         Map<String, Object> userValue = user.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/users/" + getUid(), userValue);
-        getFirebaseDatabase().getReference().updateChildren(childUpdates);
+        getFirebaseDatabaseReference().updateChildren(childUpdates);
     }
 
     public void setUserPropertyFromFaceBook() throws JSONException{

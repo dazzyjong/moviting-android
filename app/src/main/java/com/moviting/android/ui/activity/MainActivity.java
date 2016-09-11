@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity {
         mFirebaseAnalytics.logEvent("log", params);
 
         // TODO: getPreference
-        getFirebaseDatabase().getReference().child("users").child(getUid())
+        getFirebaseDatabaseReference().child("users").child(getUid())
                 .child("token").setValue(getToken()).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

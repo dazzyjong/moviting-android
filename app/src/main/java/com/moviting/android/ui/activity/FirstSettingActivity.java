@@ -261,7 +261,7 @@ public class FirstSettingActivity extends BaseActivity {
         Map<String, Object> userValue = user.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/users/" + getUid(), userValue);
-        getFirebaseDatabase().getReference().updateChildren(childUpdates).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+        getFirebaseDatabaseReference().updateChildren(childUpdates).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (!task.isSuccessful()) {

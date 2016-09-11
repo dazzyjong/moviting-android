@@ -49,7 +49,7 @@ public class MovieApplicationActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 showProgressDialog();
-                DatabaseReference ref = getFirebaseDatabase().getReference().child("users").child(getUid());
+                DatabaseReference ref = getFirebaseDatabaseReference().child("users").child(getUid());
                 ref.child("minPrefAge").setValue(minAge).addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -84,7 +84,7 @@ public class MovieApplicationActivity extends BaseActivity {
                 flag++;
 
                 if(flag == 2){
-                    DatabaseReference ref = getFirebaseDatabase().getReference().child("users").child(getUid());
+                    DatabaseReference ref = getFirebaseDatabaseReference().child("users").child(getUid());
                     ref.child("userStatus").setValue("Enrolled").addOnCompleteListener(MovieApplicationActivity.this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

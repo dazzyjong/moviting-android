@@ -35,6 +35,6 @@ public class Propose {
     }
 
     public enum ProposeStatus {
-        Proposed, Like,  Dislike
+        Proposed, Like,  Dislike, Matched
     }
 }

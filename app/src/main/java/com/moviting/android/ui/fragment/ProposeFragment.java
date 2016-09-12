@@ -56,7 +56,7 @@ public class ProposeFragment extends BaseFragment {
         return rootView;
     }
 
-    public void getProposeList(){
+    private void getProposeList(){
         DatabaseReference ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -82,6 +82,17 @@ public class ProposeFragment extends BaseFragment {
         });
     }
 
+    public void updateProposeStatus(String proposeStatus, int index) {
+        Propose propose = mProposeList.get(index);
+        propose.setStatus(proposeStatus);
+        mPagerAdapter.notifyDataSetChanged();
+    }
+
+    public void deleteProposeFromList(int index){
+        mProposeList.remove(index);
+        mPagerAdapter.notifyDataSetChanged();
+    }
+
     private class ProposePageAdapter extends FragmentStatePagerAdapter {
         public ProposePageAdapter(FragmentManager fm) {
             super(fm);
@@ -89,7 +100,6 @@ public class ProposeFragment extends BaseFragment {
 
         @Override
         public Fragment getItem(int position) {
-            Log.d(TAG, "getItem / " + position);
             ProposePageFragment proposePageFragment = ProposePageFragment.newInstance(mProposeList.get(position).getUid(), mProposeList.get(position).getStatus());
             proposePageFragment.page = position;
 
@@ -98,19 +108,12 @@ public class ProposeFragment extends BaseFragment {
 
         @Override
         public int getCount() {
-            Log.d(TAG, "getCount / " + mProposeList.size());
             return mProposeList.size();
         }
 
         @Override
-        public int getItemPosition(Object item) {
-            ProposePageFragment fragment = (ProposePageFragment)item;
-            Log.d(TAG, "getItemPosition / " + fragment.page);
-            if (fragment.page >= 0) {
-                return fragment.page;
-            } else {
-                return POSITION_NONE;
-            }
+        public int getItemPosition(Object object){
+            return PagerAdapter.POSITION_NONE;
         }
     }
 }

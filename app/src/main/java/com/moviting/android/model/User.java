@@ -13,9 +13,10 @@ import java.util.Map;
 public class User {
 
     private static User userInstance;
+    private String uid;
 
     public enum UserStatus {
-        Joined, Enrolled,  Matched
+        Joined, Enrolled
     }
 
     public String name;
@@ -33,6 +34,8 @@ public class User {
     public int myAge;
     public int minPrefAge;
     public int maxPrefAge;
+    public String prefGender;
+    public String chatRoomUid;
 
     private User(){
 
@@ -83,6 +86,12 @@ public class User {
     public void setMaxPrefAge(int age) {
         this.maxPrefAge = age;
     }
+    public void setPrefGender(String gender) {
+        this.prefGender = gender;
+    }
+    public void setChatRoomUid(String uid) {
+        this.chatRoomUid = uid;
+    }
 
     @Exclude
     public static User constructUserInstance(String name, String email, String photoUrl) throws IllegalStateException{
@@ -126,6 +135,7 @@ public class User {
         userInstance.myAge = user.myAge != 0 ? user.myAge : 0;
         userInstance.minPrefAge = user.minPrefAge != 0 ? user.minPrefAge : 0;
         userInstance.maxPrefAge = user.maxPrefAge != 0 ? user.maxPrefAge : 0;
+        userInstance.prefGender = user.prefGender != null ? user.prefGender : null;
 
         return userInstance;
     }

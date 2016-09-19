@@ -63,7 +63,7 @@ public class ProposeFragment extends BaseFragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot child : dataSnapshot.getChildren()) {
                     String proposeStatus = ((HashMap<String, String>) child.getValue()).get("status");
-                    if(!proposeStatus.equals("Dislike")) {
+                    if(!proposeStatus.equals("Dislike") && !proposeStatus.equals("Matched")) {
                         Propose propose = new Propose();
                         propose.setUid(child.getKey());
                         propose.setStatus(proposeStatus);

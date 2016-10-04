@@ -18,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.Propose;
 import com.moviting.android.model.User;
-import com.moviting.android.ui.activity.FirstSettingActivity;
 
 public class ProposePageFragment extends BaseFragment {
 

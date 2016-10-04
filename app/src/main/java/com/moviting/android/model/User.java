@@ -1,9 +1,16 @@
 package com.moviting.android.model;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.moviting.android.util.DatabaseHelper;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -13,9 +20,8 @@ import java.util.Map;
 public class User {
 
     private static User userInstance;
-    private String uid;
 
-    public enum UserStatus {
+    private enum UserStatus {
         Joined, Enrolled
     }
 
@@ -34,18 +40,55 @@ public class User {
     public int myAge;
     public int minPrefAge;
     public int maxPrefAge;
-    public String prefGender;
-    public String chatRoomUid;
+    public String preferredGender;
+
+    private static DatabaseReference mRef;
+    private static ChildEventListener mChildEventListener;
 
     private User(){
-
     }
 
-    private User(String name, String email, String photoUrl) {
+    private User(String uid, String name, String email, String photoUrl) {
         this.name = name;
         this.email = email;
         this.photoUrl = photoUrl;
         this.userStatus = UserStatus.valueOf("Joined");
+        databaseListener(uid);
+    }
+
+    @Exclude
+    private void databaseListener(final String uid) {
+        Log.d("User", "databaseListner");
+        mRef = DatabaseHelper.getInstance().getReference();
+        mChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("User", "onChildAdded:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                Log.d("User", "onChildChanged:" + dataSnapshot.getKey());
+                updateMember(dataSnapshot.getKey(), dataSnapshot.getValue());
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d("User", "onChildRemoved:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d("User", "onChildMoved:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("User", "postComments:onCancelled", databaseError.toException());
+            }
+        };
+        mRef.child("users").child(uid).addChildEventListener(mChildEventListener);
     }
 
     public void setMyAge(int birthYear) {
@@ -87,18 +130,15 @@ public class User {
         this.maxPrefAge = age;
     }
     public void setPrefGender(String gender) {
-        this.prefGender = gender;
-    }
-    public void setChatRoomUid(String uid) {
-        this.chatRoomUid = uid;
+        this.preferredGender = gender;
     }
 
     @Exclude
-    public static User constructUserInstance(String name, String email, String photoUrl) throws IllegalStateException{
+    public static User constructUserInstance(String uid, String name, String email, String photoUrl) throws IllegalStateException{
         if(userInstance != null) {
             return userInstance;
         } else {
-            userInstance = new User(name, email, photoUrl);
+            userInstance = new User(uid, name, email, photoUrl);
         }
         return userInstance;
     }
@@ -114,13 +154,15 @@ public class User {
     @Exclude
     public static void destructUserInstance() {
         userInstance = null;
+        mRef.removeEventListener(mChildEventListener);
     }
 
     @Exclude
-    public static User copyFrom(User user) {
+    public User copyFrom(User user, String uid) {
         if(userInstance == null) {
             userInstance = new User();
         }
+
         userInstance.name = user.name != null ? user.name : null;
         userInstance.email = user.email != null ? user.email : null;
         userInstance.photoUrl = user.photoUrl != null ? user.photoUrl : null;
@@ -135,7 +177,9 @@ public class User {
         userInstance.myAge = user.myAge != 0 ? user.myAge : 0;
         userInstance.minPrefAge = user.minPrefAge != 0 ? user.minPrefAge : 0;
         userInstance.maxPrefAge = user.maxPrefAge != 0 ? user.maxPrefAge : 0;
-        userInstance.prefGender = user.prefGender != null ? user.prefGender : null;
+        userInstance.preferredGender = user.preferredGender != null ? user.preferredGender : null;
+
+        databaseListener(uid);
 
         return userInstance;
     }
@@ -208,9 +252,8 @@ public class User {
         return result;
     }
 
+    @Exclude
     public boolean isUserFormFilled() {
-        boolean result = true;
-
 
         if(name.equals("")) {
             return false;
@@ -237,6 +280,55 @@ public class User {
             return false;
         }
 
-        return result;
+        return true;
+    }
+
+    @Exclude
+    private void updateMember(String key, Object value) {
+        if(key.equals("birthday")) {
+            this.birthday = (String)value;
+        }
+        if(key.equals("email")) {
+            this.email = (String)value;
+        }
+        if(key.equals("favoriteMovie")) {
+            this.favoriteMovie = (String)value;
+        }
+        if(key.equals("gender")) {
+            this.gender = (String)value;
+        }
+        if(key.equals("height")) {
+            this.height = (String)value;
+        }
+        if(key.equals("introduce")) {
+            this.introduce = (String)value;
+        }
+        if(key.equals("maxPrefAge")) {
+            this.maxPrefAge = ((Long)value).intValue();
+        }
+        if(key.equals("minPrefAge")) {
+            this.minPrefAge = ((Long)value).intValue();
+        }
+        if(key.equals("myAge")) {
+            this.minPrefAge = ((Long)value).intValue();
+        }
+        if(key.equals("name")) {
+            this.name = (String)value;
+        }
+        if(key.equals("photoUrl")) {
+            this.photoUrl = (String)value;
+        }
+        if(key.equals("preferredGender")) {
+            this.preferredGender = (String)value;
+        }
+        if(key.equals("school")) {
+            this.school = (String)value;
+        }
+        if(key.equals("userStatus")) {
+            this.userStatus = UserStatus.valueOf((String)value);
+        }
+        if(key.equals("work")) {
+            this.work = (String)value;
+        }
     }
 }

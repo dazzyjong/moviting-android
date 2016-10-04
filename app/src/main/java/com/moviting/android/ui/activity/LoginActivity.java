@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
@@ -71,7 +72,6 @@ public class LoginActivity extends BaseActivity {
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-
         setContentView(R.layout.activity_login);
 
         mEmail = (EditText)findViewById(R.id.email);
@@ -329,13 +329,13 @@ public class LoginActivity extends BaseActivity {
                     }
                 } else if(!user.isUserFormFilled()) {
                     Log.d(TAG, "onDataChange filled_account_info false");
-                    User.copyFrom(user);
+                    user.copyFrom(user, getUid());
                     startActivityUnderCondition(true);
                 } else {
                     // There is user, this is revisit
                     // 1. read user info from database
                     Log.d(TAG, "onDataChange success");
-                    User.copyFrom(user);
+                    user.copyFrom(user, getUid());
                     startActivityUnderCondition(false);
                 }
                 hideProgressDialog();
@@ -441,7 +441,7 @@ public class LoginActivity extends BaseActivity {
             photoUrl = fbUser.getPhotoUrl().toString();
         }
 
-        return User.constructUserInstance(name, email, photoUrl);
+        return User.constructUserInstance(getUid(), name, email, photoUrl);
     }
 
     public static Intent createIntent(Context context) {

@@ -60,7 +60,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null) {
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+            DatabaseReference ref = DatabaseHelper.getInstance().getReference().child("users").child(user.getUid());
             ref.child("token").setValue(token);
         }
     }

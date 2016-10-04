@@ -12,6 +12,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.moviting.android.R;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.moviting.android.util.DatabaseHelper;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -55,7 +56,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public DatabaseReference getFirebaseDatabaseReference() {
-        return FirebaseDatabase.getInstance().getReference();
+        return DatabaseHelper.getInstance().getReference();
     }
 
     public FirebaseStorage getFirebaseStorage() {

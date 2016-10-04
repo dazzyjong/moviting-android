@@ -50,10 +50,26 @@
         <item>갤러리에서 선택</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="application_button_text">참가신청하기</string>
+    <string name="enroll_button_text">참가하기</string>
+    <string name="enrolled_button_text">참가 진행 중</string>
     <string name="preference_age_range_text">선호 연령대</string>
     <string name="apply_success_text">신청 되었습니다. 하루에 세분의 이성을 소개시켜 드립니다.</string>
+    <string name="release_success_text">신청 해제 되었습니다.</string>
+    <string name="search_mate_condition">연인 찾기 설정</string>
+
+    <string name="pref_date">일자</string>
+    <string name="pref_movie">영화</string>
+
+    <string-array name="day_of_week">
+        <item></item>
+        <item>(일)</item>
+        <item>(월)</item>
+        <item>(화)</item>
+        <item>(수)</item>
+        <item>(목)</item>
+        <item>(금)</item>
+        <item>(토)</item>
+    </string-array>
 
 </resources>

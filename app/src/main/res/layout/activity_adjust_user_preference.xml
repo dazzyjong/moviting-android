@@ -3,10 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_movie_application"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.moviting.android.ui.activity.ProfileActivity">
+    tools:context="com.moviting.android.ui.activity.AdjustUserPreferenceActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -22,26 +23,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <ListView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:id="@+id/user_pref_tab_list"
+        android:divider="#000000"
+        android:dividerHeight="0.67dp"
+        android:layout_marginBottom="?attr/actionBarSize">
+    </ListView>
 
-        <RelativeLayout
-            android:id="@+id/content_profile"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/profile_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:clickable="true">
-
-            </android.support.v7.widget.RecyclerView>
-
-
-        </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -41,6 +42,55 @@ public class MatchFragment extends BaseFragment {
 
     private LinearLayoutManager mMatchCompleteLM;
     private RecyclerView rvMatchComplete;
+
+    private ArrayList<String> matchUids;
+
+    private ChildEventListener mListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            String matchuid = dataSnapshot.getRef().getParent().getKey();
+            MatchInfo info = popMatchUid(matchuid);
+
+            if(info != null) {
+                if (dataSnapshot.getKey().equals(getBaseActivity().getUid())) {
+                    info.myPayment = (boolean) dataSnapshot.getValue();
+                } else {
+                    info.opponentPayment = (boolean) dataSnapshot.getValue();
+                }
+
+                if (info.opponentPayment && info.myPayment) {
+                    ((OpponentImageAdapter) rvMatchComplete.getAdapter()).addItem(info);
+                    rvMatchComplete.getAdapter().notifyDataSetChanged();
+                } else if (info.myPayment) {
+                    ((OpponentImageAdapter) rvMatchProgress.getAdapter()).addItem(info);
+                    rvMatchProgress.getAdapter().notifyDataSetChanged();
+                } else if (!info.myPayment) {
+                    ((OpponentImageAdapter) rvLikeEachOther.getAdapter()).addItem(info);
+                    rvLikeEachOther.getAdapter().notifyDataSetChanged();
+                }
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     public MatchFragment() {
         // Required empty public constructor
@@ -91,16 +141,55 @@ public class MatchFragment extends BaseFragment {
         return view;
     }
 
+    private MatchInfo popMatchUid(String uid) {
+        MatchInfo info = null;
+        int index = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).findItem(uid);
+        if(index != -1) {
+            info = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).getItem(index);
+            ((OpponentImageAdapter)rvMatchComplete.getAdapter()).removeItem(index);
+            rvMatchComplete.getAdapter().notifyDataSetChanged();
+
+            return info;
+        }
+
+        index = ((OpponentImageAdapter)rvMatchProgress.getAdapter()).findItem(uid);
+        if(index != -1) {
+            info = ((OpponentImageAdapter)rvMatchProgress.getAdapter()).getItem(index);
+            ((OpponentImageAdapter)rvMatchProgress.getAdapter()).removeItem(index);
+            rvMatchProgress.getAdapter().notifyDataSetChanged();
+            return info;
+        }
+
+        index = ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).findItem(uid);
+        if(index != -1) {
+            info = ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).getItem(index);
+            ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).removeItem(index);
+            rvLikeEachOther.getAdapter().notifyDataSetChanged();
+            return info;
+        }
+
+        return info;
+    }
+
+    private void addListenerMatchList(final ArrayList<String> matchIdList) {
+        for(final String matchUid: matchIdList) {
+            getBaseActivity().getFirebaseDatabaseReference()
+                    .child("match_member_payment").child(matchUid).addChildEventListener(mListener);
+        }
+    }
+
     private void getMatchList() {
         getBaseActivity().getFirebaseDatabaseReference()
                 .child("user_match").child(getBaseActivity().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<String> mMatchList = new ArrayList<>();
+                ArrayList<String> matchList = new ArrayList<>();
                 for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    mMatchList.add(child.getKey());
+                    matchList.add(child.getKey());
                 }
-                getMatchMember(mMatchList);
+                getMatchMember(matchList);
+                addListenerMatchList(matchList);
+                matchUids = matchList;
             }
 
             @Override
@@ -172,14 +261,22 @@ public class MatchFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode ==  REQUEST_PAYMENT) {
-            ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).initItem();
-            ((OpponentImageAdapter)rvMatchProgress.getAdapter()).initItem();
-            ((OpponentImageAdapter)rvMatchComplete.getAdapter()).initItem();
-
-            getMatchList();
+//            ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).initItem();
+//            ((OpponentImageAdapter)rvMatchProgress.getAdapter()).initItem();
+//            ((OpponentImageAdapter)rvMatchComplete.getAdapter()).initItem();
+//
+//            getMatchList();
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        for(String matchUid:matchUids) {
+            getBaseActivity().getFirebaseDatabaseReference()
+                    .child("match_member_payment").child(matchUid).removeEventListener(mListener);
+        }
+    }
 
     private class OpponentImageAdapter extends RecyclerView.Adapter<OpponentImageAdapter.ViewHolder> {
         private ArrayList<MatchInfo> mList;
@@ -244,6 +341,24 @@ public class MatchFragment extends BaseFragment {
 
         void addItem(MatchInfo matchInfo) {
             mList.add(matchInfo);
+        }
+
+        void removeItem(int i) {
+            mList.remove(i);
+        }
+
+        MatchInfo getItem(int i){
+            return mList.get(i);
+        }
+
+        int findItem(String matchUid) {
+            for(int i = 0; i < mList.size(); i++) {
+                if(matchUid.equals(mList.get(i).matchUid)) {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         void initItem() {

@@ -21,11 +21,12 @@ import com.moviting.android.model.User;
 
 public class ProposePageFragment extends BaseFragment {
 
-    public int page = -1;
+    private int page = -1;
 
     private static final String TAG = "ProposePageFragment";
     private static final String ARG_PROPOSE_UID = "propose_uid";
     private static final String ARG_PROPOSE_STATUS = "propose_status";
+    private static final String ARG_PROPOSE_PAGE = "propose_page";
 
     private String mProposeUid;
     private String mProposeStatus;
@@ -41,11 +42,12 @@ public class ProposePageFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    public static ProposePageFragment newInstance(String proposeUid, String proposeStatus) {
+    public static ProposePageFragment newInstance(String proposeUid, String proposeStatus, int page) {
         ProposePageFragment fragment = new ProposePageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PROPOSE_UID, proposeUid);
         args.putString(ARG_PROPOSE_STATUS, proposeStatus);
+        args.putInt(ARG_PROPOSE_PAGE, page);
         fragment.setArguments(args);
         Log.d(TAG, "newInstance: " + proposeUid);
         return fragment;
@@ -56,7 +58,8 @@ public class ProposePageFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         mProposeUid = getArguments().getString(ARG_PROPOSE_UID);
         mProposeStatus = getArguments().getString(ARG_PROPOSE_STATUS);
-        Log.d(TAG, "onCreate: " + mProposeUid + " / " + mProposeStatus);
+        page = getArguments().getInt(ARG_PROPOSE_PAGE);
+        Log.d(TAG, "onCreate: " + mProposeUid + " / " + mProposeStatus + " / " + page);
     }
 
     @Override

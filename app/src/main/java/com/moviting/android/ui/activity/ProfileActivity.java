@@ -73,11 +73,11 @@ public class ProfileActivity extends BaseActivity {
             return new ProfileAdapter.ProfileViewHolder(view);
         }
 
-        public class ProfileViewHolder extends RecyclerView.ViewHolder {
+        class ProfileViewHolder extends RecyclerView.ViewHolder {
             TextView key;
             TextView value;
 
-            public ProfileViewHolder(View itemView) {
+            ProfileViewHolder(View itemView) {
                 super(itemView);
 
                 key = (TextView) itemView.findViewById(R.id.profile_key);

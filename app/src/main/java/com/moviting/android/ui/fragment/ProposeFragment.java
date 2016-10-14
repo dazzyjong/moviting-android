@@ -100,8 +100,7 @@ public class ProposeFragment extends BaseFragment {
 
         @Override
         public Fragment getItem(int position) {
-            ProposePageFragment proposePageFragment = ProposePageFragment.newInstance(mProposeList.get(position).getUid(), mProposeList.get(position).getStatus());
-            proposePageFragment.page = position;
+            ProposePageFragment proposePageFragment = ProposePageFragment.newInstance(mProposeList.get(position).getUid(), mProposeList.get(position).getStatus(), position);
 
             return proposePageFragment;
         }

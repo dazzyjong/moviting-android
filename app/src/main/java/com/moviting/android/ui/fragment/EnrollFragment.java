@@ -31,6 +31,7 @@ public class EnrollFragment extends BaseFragment {
 
     private static final String TAG = "EnrollFragment";
     private static final int CONDITION_TYPE_COUNT = 6;
+    private static final int REFRESH_CODE = 1;
 
     private ImageButton adjustUserPreference;
     private Button enrollButton;
@@ -81,7 +82,7 @@ public class EnrollFragment extends BaseFragment {
         adjustUserPreference.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(AdjustUserPreferenceActivity.createIntent(getActivity(), choosedGender, selectedDates, selectedMovies, minPrefAge, maxPrefAge), 1);
+                startActivityForResult(AdjustUserPreferenceActivity.createIntent(getActivity(), choosedGender, selectedDates, selectedMovies, minPrefAge, maxPrefAge), REFRESH_CODE);
             }
         });
 
@@ -130,7 +131,8 @@ public class EnrollFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 ) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REFRESH_CODE ) {
             Log.d(TAG, "onActivityResult");
             initUserDataAndUI();
         }

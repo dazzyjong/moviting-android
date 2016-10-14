@@ -91,10 +91,15 @@ public class User {
         mRef.child("users").child(uid).addChildEventListener(mChildEventListener);
     }
 
-    public void setMyAge(int birthYear) {
+    @Exclude
+    public void transferBirthYearToMyAge(int birthYear) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         this.myAge = currentYear - birthYear + 1;
+    }
+
+    public void setMyAge(int age) {
+        this.myAge = age;
     }
     public void setName(String name) {
         this.name = name;

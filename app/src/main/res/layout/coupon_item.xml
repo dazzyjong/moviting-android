@@ -1,0 +1,11 @@
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:text="1회 영화관람 이용권"
+    android:textSize="23dp"
+    android:id="@+id/coupon_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="20dp"
+    android:drawablePadding="40dp"
+    android:drawableLeft="?android:attr/listChoiceIndicatorSingle"
+    android:textAppearance="?android:attr/textAppearanceMedium"/>

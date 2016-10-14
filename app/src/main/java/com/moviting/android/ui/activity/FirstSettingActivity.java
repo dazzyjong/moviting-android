@@ -123,7 +123,7 @@ public class FirstSettingActivity extends BaseActivity {
                 }
 
                 formattedBirthday =   formattedMonth + "/" + formattedDayOfMonth + "/" + year;
-                User.getUserInstance().setMyAge(year);
+                User.getUserInstance().transferBirthYearToMyAge(year);
                 Log.d(TAG, "mylog" + formattedBirthday);
             }
         });
@@ -142,7 +142,7 @@ public class FirstSettingActivity extends BaseActivity {
             int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
 
             birthdayPicker.updateDate(year, month, dayOfMonth);
-            User.getUserInstance().setMyAge(year);
+            User.getUserInstance().transferBirthYearToMyAge(year);
         }
 
         favoriteMovieText = (EditText) findViewById(R.id.favorite_movie);

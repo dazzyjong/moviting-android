@@ -90,5 +90,6 @@
     <string name="request_check_payment_description">입금확인 요청이 성공적으로 완료되어\n확인 후 크레딧이 충전될 예정입니다</string>
     <string name="won">원</string>
     <string name="title_activity_chat">대화</string>
+    <string name="title_activity_movie_ticket">MovieTicketActivity</string>
 
 </resources>

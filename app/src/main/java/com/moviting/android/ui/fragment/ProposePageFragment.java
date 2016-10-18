@@ -82,6 +82,7 @@ public class ProposePageFragment extends BaseFragment {
         mDislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ProposeFragment)getParentFragment()).getBaseActivity().showProgressDialog();
                 getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
                         .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Dislike.name())
                         .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
@@ -92,6 +93,7 @@ public class ProposePageFragment extends BaseFragment {
                                 } else {
                                     ((ProposeFragment) getParentFragment()).deleteProposeFromList(page);
                                 }
+                                ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
                             }
                 });
             }
@@ -100,20 +102,41 @@ public class ProposePageFragment extends BaseFragment {
         mLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
-                        .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Like.name())
-                        .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (!task.isSuccessful()) {
-                                    Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                } else {
-                                    mProposeStatus = Propose.ProposeStatus.Like.name();
-                                    ((ProposeFragment) getParentFragment()).updateProposeStatus(Propose.ProposeStatus.Like.name(), page);
-                                    mDislikeButton.setVisibility(View.GONE);
+                ((ProposeFragment)getParentFragment()).getBaseActivity().showProgressDialog();
+
+                if(mProposeStatus.equals(Propose.ProposeStatus.Like.name())) {
+                    getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
+                            .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Proposed.name())
+                            .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    } else {
+                                        mProposeStatus = Propose.ProposeStatus.Proposed.name();
+                                        ((ProposeFragment) getParentFragment()).updateProposeStatus(Propose.ProposeStatus.Proposed.name(), page);
+                                        mDislikeButton.setVisibility(View.VISIBLE);
+                                    }
+                                    ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
+                            .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Like.name())
+                            .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    } else {
+                                        mProposeStatus = Propose.ProposeStatus.Like.name();
+                                        ((ProposeFragment) getParentFragment()).updateProposeStatus(Propose.ProposeStatus.Like.name(), page);
+                                        mDislikeButton.setVisibility(View.GONE);
+                                    }
+                                    ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
+                                }
+                            });
+                }
             }
         });
 

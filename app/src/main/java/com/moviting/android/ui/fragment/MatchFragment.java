@@ -361,10 +361,6 @@ public class MatchFragment extends BaseFragment {
             return -1;
         }
 
-        void initItem() {
-            mList.clear();
-        }
-
         @Override
         public int getItemCount() {
             return mList.size();

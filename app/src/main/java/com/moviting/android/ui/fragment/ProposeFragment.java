@@ -1,5 +1,6 @@
 package com.moviting.android.ui.fragment;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,11 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.Propose;
 
@@ -27,6 +29,55 @@ public class ProposeFragment extends BaseFragment {
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private ArrayList<Propose> mProposeList;
+    private TextView tvBlankPage;
+    private HashMap<String, String> prevSnapshot;
+
+    private ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            String proposeStatus = ((HashMap<String, String>) dataSnapshot.getValue()).get("status");
+
+            if(!proposeStatus.equals("Dislike") && !proposeStatus.equals("Matched")) {
+                Propose propose = new Propose();
+                propose.setUid(dataSnapshot.getKey());
+                propose.setStatus(proposeStatus);
+                ((ProposePageAdapter)mPagerAdapter).addItem(propose);
+                mPagerAdapter.notifyDataSetChanged();
+                tvBlankPage.setVisibility(View.GONE);
+                addSnapshotToPrevMap(dataSnapshot.getKey(), proposeStatus);
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            String proposeStatus = ((HashMap<String, String>) dataSnapshot.getValue()).get("status");
+            if(proposeStatus.equals("Proposed") && (getPrevStatus(dataSnapshot.getKey()) == null || !getPrevStatus(dataSnapshot.getKey()).equals("Like"))) {
+                Propose propose = new Propose();
+                propose.setUid(dataSnapshot.getKey());
+                propose.setStatus(proposeStatus);
+                ((ProposePageAdapter)mPagerAdapter).addItem(propose);
+                mPagerAdapter.notifyDataSetChanged();
+                tvBlankPage.setVisibility(View.GONE);
+            }
+            addSnapshotToPrevMap(dataSnapshot.getKey(), proposeStatus);
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     public ProposeFragment() {
         // Required empty public constructor
     }
@@ -41,7 +92,9 @@ public class ProposeFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         mProposeList = new ArrayList<>();
-        getProposeList();
+        prevSnapshot = new HashMap<>();
+        mPagerAdapter = new ProposePageAdapter(getChildFragmentManager());
+        addProposeListner();
     }
 
     @Override
@@ -50,36 +103,44 @@ public class ProposeFragment extends BaseFragment {
         Log.d(TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_propose, container, false);
         mPager = (ViewPager) rootView.findViewById(R.id.pager);
-        mPagerAdapter = new ProposePageAdapter(getChildFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         mPagerAdapter.notifyDataSetChanged();
+        tvBlankPage = (TextView) rootView.findViewById(R.id.blank_page);
+
+        if(mProposeList.size() != 0) {
+            tvBlankPage.setVisibility(View.GONE);
+        }
+
         return rootView;
     }
 
-    private void getProposeList(){
-        DatabaseReference ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    String proposeStatus = ((HashMap<String, String>) child.getValue()).get("status");
-                    if(!proposeStatus.equals("Dislike") && !proposeStatus.equals("Matched")) {
-                        Propose propose = new Propose();
-                        propose.setUid(child.getKey());
-                        propose.setStatus(proposeStatus);
-                        mProposeList.add(propose);
-                    }
-                }
-                if(mPagerAdapter != null ) {
-                    mPagerAdapter.notifyDataSetChanged();
-                }
-            }
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        try {
+            super.onDestroy();
+        } catch (NullPointerException npe) {
+            Log.e(TAG, "NPE: Bug workaround");
+        }
+        getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid()).removeEventListener(childEventListener);
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "getProposeList:onCancelled", databaseError.toException());
-            }
-        });
+    private void addSnapshotToPrevMap(String key, String value) {
+        prevSnapshot.put( key, value );
+    }
+
+    @Nullable
+    private String getPrevStatus(String key) {
+        if(prevSnapshot.size() != 0) {
+            return prevSnapshot.get(key);
+        } else {
+            return null;
+        }
+    }
+
+    private void addProposeListner() {
+        DatabaseReference ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
+        ref.addChildEventListener(childEventListener);
     }
 
     public void updateProposeStatus(String proposeStatus, int index) {
@@ -89,8 +150,11 @@ public class ProposeFragment extends BaseFragment {
     }
 
     public void deleteProposeFromList(int index){
-        mProposeList.remove(index);
+        ((ProposePageAdapter)mPagerAdapter).removeItem(index);
         mPagerAdapter.notifyDataSetChanged();
+        if(mProposeList.size() == 0) {
+            tvBlankPage.setVisibility(View.VISIBLE);
+        }
     }
 
     private class ProposePageAdapter extends FragmentStatePagerAdapter {
@@ -113,6 +177,20 @@ public class ProposeFragment extends BaseFragment {
         @Override
         public int getItemPosition(Object object){
             return PagerAdapter.POSITION_NONE;
+        }
+
+        public void addItem(Propose propose) {
+            mProposeList.add(propose);
+        }
+
+        public void removeItem(int index) {
+            if(mProposeList.size() != 0) {
+                mProposeList.remove(index);
+            }
+
+            if(mProposeList.size() == 0) {
+                tvBlankPage.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

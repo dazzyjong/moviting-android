@@ -94,6 +94,10 @@
         <activity
             android:name=".ui.activity.ChatActivity"
             android:label="@string/title_activity_chat"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.MovieTicketActivity"
+            android:label="@string/title_activity_movie_ticket"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

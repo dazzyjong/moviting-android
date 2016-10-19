@@ -35,17 +35,38 @@
             android:id="@+id/messageRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/fab"/>
+            android:layout_above="@+id/linearLayout1"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_above="@+id/linearLayout"
-            android:layout_alignParentRight="true"
-            app:srcCompat="@drawable/ic_movie" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/linearLayout1"
+            android:layout_above="@+id/linearLayout">
+            <Button
+                android:id="@+id/send_ticket"
+                android:background="@color/colorAccent"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:text="이성에게 내 티켓정보 건네주기"
+                android:layout_gravity="center_vertical"
+                android:visibility="invisible"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_movie" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:orientation="horizontal"
@@ -64,9 +85,10 @@
                 android:layout_weight="1"/>
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
-                android:text="SEND"
+                android:text="전송"
+                android:textSize="15sp"
                 android:enabled="false"
                 android:id="@+id/sendButton"
                 android:layout_gravity="bottom"/>

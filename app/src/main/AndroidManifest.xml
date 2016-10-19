@@ -97,7 +97,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.MovieTicketActivity"
-            android:label="@string/title_activity_movie_ticket"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

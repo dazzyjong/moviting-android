@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +39,8 @@ public class ProposePageFragment extends BaseFragment {
 
     private ImageButton mLikeButton;
     private ImageButton mDislikeButton;
+
+    private ImageView profileImage;
 
     public ProposePageFragment() {
         // Required empty public constructor
@@ -74,6 +78,8 @@ public class ProposePageFragment extends BaseFragment {
 
         mDislikeButton = (ImageButton) view.findViewById(R.id.dislike);
         mLikeButton = (ImageButton) view.findViewById(R.id.like);
+
+        profileImage = (ImageView) view.findViewById(R.id.opponent_profile_image);
 
         if(mProposeStatus.equals(Propose.ProposeStatus.Like.name())) {
             mDislikeButton.setVisibility(View.GONE);
@@ -153,6 +159,7 @@ public class ProposePageFragment extends BaseFragment {
                 mName.setText(user.name);
                 mAgeAndWork.setText(user.myAge + " / " + user.work);
                 mFavoriteMovie.setText(user.favoriteMovie);
+                Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);
             }
 
             @Override

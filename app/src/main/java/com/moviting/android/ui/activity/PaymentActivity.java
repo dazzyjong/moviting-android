@@ -71,6 +71,7 @@ public class PaymentActivity extends BaseActivity {
         couponButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: check same gender
                 startActivityForResult(CouponActivity.createIntent(getBaseContext()), REQUEST_COUPON);
             }
         });

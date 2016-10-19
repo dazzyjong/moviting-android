@@ -31,6 +31,7 @@ public class ProposeFragment extends BaseFragment {
     private ArrayList<Propose> mProposeList;
     private TextView tvBlankPage;
     private HashMap<String, String> prevSnapshot;
+    private DatabaseReference ref;
 
     private ChildEventListener childEventListener = new ChildEventListener() {
         @Override
@@ -122,7 +123,7 @@ public class ProposeFragment extends BaseFragment {
         } catch (NullPointerException npe) {
             Log.e(TAG, "NPE: Bug workaround");
         }
-        getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid()).removeEventListener(childEventListener);
+        ref.removeEventListener(childEventListener);
     }
 
     private void addSnapshotToPrevMap(String key, String value) {
@@ -139,7 +140,7 @@ public class ProposeFragment extends BaseFragment {
     }
 
     private void addProposeListner() {
-        DatabaseReference ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
+        ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
         ref.addChildEventListener(childEventListener);
     }
 

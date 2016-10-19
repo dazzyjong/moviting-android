@@ -22,6 +22,7 @@
                 android:orientation="vertical"
                 android:padding="8dp">
                 <ImageView
+                    android:id="@+id/opponent_profile_image"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="0.9"

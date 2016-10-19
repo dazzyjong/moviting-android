@@ -58,9 +58,13 @@ public class MatchFragment extends BaseFragment {
 
             if(info != null) {
                 if (dataSnapshot.getKey().equals(getBaseActivity().getUid())) {
-                    info.myPayment = (boolean) dataSnapshot.getValue();
+                    HashMap object = (HashMap)dataSnapshot.getValue();
+                    info.myPayment = (Boolean) object.get("payment");
+                    info.myType = (String) object.get("type");
                 } else {
-                    info.opponentPayment = (boolean) dataSnapshot.getValue();
+                    HashMap object = (HashMap)dataSnapshot.getValue();
+                    info.opponentPayment = (Boolean) object.get("payment");
+                    info.opponentType = (String) object.get("type");
                 }
 
                 if (info.opponentPayment && info.myPayment) {
@@ -210,10 +214,14 @@ public class MatchFragment extends BaseFragment {
                     matchInfo.matchUid = matchUid;
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         if (child.getKey().equals(getBaseActivity().getUid())) {
-                            matchInfo.myPayment = (boolean)child.getValue();
+                            HashMap object = (HashMap)child.getValue();
+                            matchInfo.myPayment = (Boolean)object.get("payment");
+                            matchInfo.myType = (String) object.get("type");
                         } else {
                             matchInfo.opponentUid = child.getKey();
-                            matchInfo.opponentPayment = (boolean)child.getValue();
+                            HashMap object = (HashMap)child.getValue();
+                            matchInfo.opponentPayment = (Boolean)object.get("payment");
+                            matchInfo.opponentType = (String) object.get("type");
                         }
                     }
                     getOpponentInfo(matchInfo);
@@ -315,7 +323,6 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), mList.get(getAdapterPosition()).matchUid, Toast.LENGTH_SHORT).show();
                             startActivity(ChatActivity.createIntent(getActivity(), mList.get(getAdapterPosition())));
                         }
                     });
@@ -323,7 +330,6 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), mList.get(getAdapterPosition()).matchUid, Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -331,7 +337,6 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), mList.get(getAdapterPosition()).matchUid, Toast.LENGTH_SHORT).show();
                             startActivityForResult(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition()).matchUid), REQUEST_PAYMENT);
                         }
                     });

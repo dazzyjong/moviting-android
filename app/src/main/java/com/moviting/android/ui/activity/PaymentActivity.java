@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.moviting.android.R;
+import com.moviting.android.model.MatchInfo;
 
 public class PaymentActivity extends BaseActivity {
 
@@ -23,8 +24,9 @@ public class PaymentActivity extends BaseActivity {
     private static final int REQUEST_COUPON = 1;
     private static final int PAYMENT_SUCCESS = 101;
     private static final int PRICE = 20000;
+    private static final int PAYMENT_MODE = 1;
     private String couponUid = "";
-    private String matchUid = "";
+    private MatchInfo matchInfo;
 
     private TextView creditOrCouponAmount;
     private int credit_or_coupon_amount = 0;
@@ -72,7 +74,7 @@ public class PaymentActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 // TODO: check same gender
-                startActivityForResult(CouponActivity.createIntent(getBaseContext()), REQUEST_COUPON);
+                startActivityForResult(CouponActivity.createIntent(getBaseContext(), PAYMENT_MODE), REQUEST_COUPON);
             }
         });
 
@@ -88,13 +90,13 @@ public class PaymentActivity extends BaseActivity {
 
         discountOfCredit = (TextView) findViewById(R.id.discount_of_credit);
         discountOfCoupon = (TextView) findViewById(R.id.discount_of_coupon);
-        matchUid = getIntent().getStringExtra("matchUid");
+        matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
     }
 
-    public static Intent createIntent(Context context, String matchUid) {
+    public static Intent createIntent(Context context, MatchInfo matchInfo) {
         Intent in = new Intent();
         in.setClass(context, PaymentActivity.class);
-        in.putExtra("matchUid", matchUid);
+        in.putExtra("matchInfo", matchInfo);
         return in;
     }
 
@@ -103,21 +105,22 @@ public class PaymentActivity extends BaseActivity {
             getFirebaseDatabaseReference().child("user_point").child(getUid()).setValue(0, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    updateUserPayment();
+                    updateUserPayment("cash");
                 }
             });
         } else {
             getFirebaseDatabaseReference().child("user_coupon").child(getUid()).child(couponUid).child("used").setValue(true, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    updateUserPayment();
+                    updateUserPayment("coupon");
                 }
             });
         }
     }
 
-    private void updateUserPayment() {
-        getFirebaseDatabaseReference().child("match_member_payment").child(matchUid).child(getUid()).setValue(true, new DatabaseReference.CompletionListener() {
+    private void updateUserPayment(String paymentType) {
+        getFirebaseDatabaseReference().child("match_member_payment").child(matchInfo.matchUid).child(getUid()).child("payment").setValue(true);
+        getFirebaseDatabaseReference().child("match_member_payment").child(matchInfo.matchUid).child(getUid()).child("type").setValue(paymentType, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 setResult(PAYMENT_SUCCESS);

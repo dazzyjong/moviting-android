@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.moviting.android.ui.activity.TicketBoxActivity2">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:id="@+id/content_credit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            android:id="@+id/ticket1_layout"
+            android:visibility="gone">
+
+            <TextView
+                android:text="1. 연시영 1인 영화티켓"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <TextView
+                    android:id="@+id/ticket1"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+                <Button
+                    android:id="@+id/ticket1_button"
+                    android:text="매칭완료 후 확인하기"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ticket2_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/ticket1_layout"
+            android:visibility="gone">
+
+            <TextView
+                android:text="2. 연시영 1인 영화티켓"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <TextView
+                    android:id="@+id/ticket2"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+                <Button
+                    android:id="@+id/ticket2_button"
+                    android:text="매칭완료 후 확인하기"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:id="@+id/how_to_use"
+            android:text="사용방법"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:background="@drawable/ripple_button_not_enrolled"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

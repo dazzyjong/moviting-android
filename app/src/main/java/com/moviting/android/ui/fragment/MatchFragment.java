@@ -215,6 +215,7 @@ public class MatchFragment extends BaseFragment {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         if (child.getKey().equals(getBaseActivity().getUid())) {
                             HashMap object = (HashMap)child.getValue();
+
                             matchInfo.myPayment = (Boolean)object.get("payment");
                             matchInfo.myType = (String) object.get("type");
                         } else {
@@ -337,7 +338,7 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivityForResult(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition()).matchUid), REQUEST_PAYMENT);
+                            startActivityForResult(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition())), REQUEST_PAYMENT);
                         }
                     });
                 }

@@ -15,12 +15,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
+import com.moviting.android.ui.activity.CouponActivity;
 import com.moviting.android.ui.activity.LoginActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
+import com.moviting.android.ui.activity.TicketBoxActivity1;
 
 public class AccountFragment extends Fragment {
 
     private static final String TAG = "AccountFragment";
+    private static final int ACCOUNT_MODE = 2;
+
     private ListView accountTabList;
     private FirebaseAuth mAuth;
     
@@ -49,6 +53,7 @@ public class AccountFragment extends Fragment {
         String[] values = new String[] {
                 getResources().getString(R.string.my_profile),
                 getResources().getString(R.string.movie_ticket_box),
+                getResources().getString(R.string.coupon_box),
                 getResources().getString(R.string.FAQ),
                 getResources().getString(R.string.logout)
         };
@@ -60,13 +65,18 @@ public class AccountFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        openProfileActivity();
+                        startActivity(ProfileActivity.createIntent(getActivity()));
                         break;
                     case 1:
+                        startActivity(TicketBoxActivity1.createIntent(getActivity()));
                         break;
                     case 2:
+                        startActivity(CouponActivity.createIntent(getActivity(), ACCOUNT_MODE));
                         break;
                     case 3:
+
+                        break;
+                    case 4:
                         signOut();
                         break;
                     default:
@@ -77,11 +87,6 @@ public class AccountFragment extends Fragment {
 
         return view;
     }
-
-    private void openProfileActivity() {
-        startActivity(ProfileActivity.createIntent(getActivity()));
-    }
-
 
     public void signOut() {
         FirebaseUser user = mAuth.getCurrentUser();

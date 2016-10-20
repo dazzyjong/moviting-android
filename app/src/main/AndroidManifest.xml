@@ -97,8 +97,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.MovieTicketActivity"
-            android:label=""
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_chat"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.TicketBoxActivity1"
+            android:label="@string/title_activity_ticket_box1"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.TicketBoxActivity2"
+            android:label="@string/title_activity_ticket_box1"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

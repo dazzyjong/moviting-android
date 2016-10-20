@@ -25,8 +25,12 @@ import java.util.HashMap;
 public class CouponActivity extends BaseActivity {
 
     private static final String TAG = "CouponActivity";
+    private static final int PAYMENT_MODE = 1;
+    private static final int ACCOUNT_MODE = 2;
+
     private ListView couponList;
     private ArrayList<Coupon> couponArray;
+    private int mode;
 
     private class Coupon {
         String uid;
@@ -48,57 +52,77 @@ public class CouponActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        mode = getIntent().getIntExtra("mode", 1);
         couponList = (ListView) findViewById(R.id.coupon_list);
-        couponList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView checkedTextView = (CheckedTextView) view;
+        if(mode == PAYMENT_MODE) {
+            couponList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    CheckedTextView checkedTextView = (CheckedTextView) view;
 
-                if(checkedTextView.isChecked() && couponArray.get(i).checked){
-                    checkedTextView.setChecked(false);
-                    couponArray.get(i).checked = false;
-                } else if(checkedTextView.isChecked() && !couponArray.get(i).checked) {
-                    for(Coupon coupon:couponArray) {
-                        coupon.checked = false;
+                    if (checkedTextView.isChecked() && couponArray.get(i).checked) {
+                        checkedTextView.setChecked(false);
+                        couponArray.get(i).checked = false;
+                    } else if (checkedTextView.isChecked() && !couponArray.get(i).checked) {
+                        for (Coupon coupon : couponArray) {
+                            coupon.checked = false;
+                        }
+                        couponArray.get(i).checked = true;
                     }
-                    couponArray.get(i).checked = true;
                 }
-            }
-        });
+            });
+        } else if(mode == ACCOUNT_MODE) {
+            couponList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Button button = (Button)view.findViewById(R.id.detail);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(getBaseContext(), "detail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
 
         couponArray = new ArrayList<>();
         getCoupon();
 
-        Button button = (Button) findViewById(R.id.use_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean chose = false;
-                String uid = "";
-                for(Coupon coupon:couponArray) {
-                    if(coupon.checked) {
-                        chose = true;
-                        uid = coupon.uid;
+        if(mode == PAYMENT_MODE) {
+            Button button = (Button) findViewById(R.id.use_button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean chose = false;
+                    String uid = "";
+                    for (Coupon coupon : couponArray) {
+                        if (coupon.checked) {
+                            chose = true;
+                            uid = coupon.uid;
+                        }
                     }
-                }
-                Intent intent = new Intent();
+                    Intent intent = new Intent();
 
-                if(chose) {
-                    intent.putExtra("couponUid", uid);
-                    intent.putExtra("usedCoupon", "20000");
-                } else {
-                    intent.putExtra("usedCoupon", "0");
-                }
+                    if (chose) {
+                        intent.putExtra("couponUid", uid);
+                        intent.putExtra("usedCoupon", "20000");
+                    } else {
+                        intent.putExtra("usedCoupon", "0");
+                    }
 
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        });
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            });
+        } else if(mode == ACCOUNT_MODE) {
+            findViewById(R.id.use_button).setVisibility(View.GONE);
+        }
     }
 
-    public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context, int mode) {
         Intent in = new Intent();
+        in.putExtra("mode", mode);
         in.setClass(context, CouponActivity.class);
         return in;
     }
@@ -113,7 +137,11 @@ public class CouponActivity extends BaseActivity {
                         couponArray.add(new Coupon(snapshot.getKey(), (String)object.get("kind")));
                     }
                 }
-                createAdapterAndAddItems(couponList, couponArray);
+                if(mode == PAYMENT_MODE) {
+                    createAdapterAndAddItemsForPayment(couponList, couponArray);
+                } else if(mode == ACCOUNT_MODE) {
+                    createAdapterAndAddItemsForAccount(couponList, couponArray);
+                }
             }
 
             @Override
@@ -124,7 +152,7 @@ public class CouponActivity extends BaseActivity {
         });
     }
 
-    private void createAdapterAndAddItems(ListView view, ArrayList<Coupon> coupons) {
+    private void createAdapterAndAddItemsForPayment(ListView view, ArrayList<Coupon> coupons) {
 
         String[] values = new String[coupons.size()];
 
@@ -133,6 +161,19 @@ public class CouponActivity extends BaseActivity {
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.coupon_item, R.id.coupon_item, values);
+        view.setAdapter(adapter);
+
+    }
+
+    private void createAdapterAndAddItemsForAccount(ListView view, ArrayList<Coupon> coupons) {
+
+        String[] values = new String[coupons.size()];
+
+        for(int i = 0; i < coupons.size(); i++) {
+            values[i] = coupons.get(i).kind;
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.coupon_item_for_account, R.id.coupon_label, values);
         view.setAdapter(adapter);
 
     }

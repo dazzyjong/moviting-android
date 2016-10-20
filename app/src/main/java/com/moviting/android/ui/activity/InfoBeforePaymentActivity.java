@@ -34,7 +34,7 @@ public class InfoBeforePaymentActivity extends BaseActivity {
         paymentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(PaymentActivity.createIntent(getBaseContext(), getIntent().getStringExtra("matchUid")), REQUEST_PAYMENT);
+                startActivityForResult(PaymentActivity.createIntent(getBaseContext(), (MatchInfo)getIntent().getSerializableExtra("matchInfo")), REQUEST_PAYMENT);
             }
         });
 
@@ -54,10 +54,10 @@ public class InfoBeforePaymentActivity extends BaseActivity {
         });
     }
 
-    public static Intent createIntent(Context context, String matchUid) {
+    public static Intent createIntent(Context context, MatchInfo matchInfo) {
         Intent in = new Intent();
         in.setClass(context, InfoBeforePaymentActivity.class);
-        in.putExtra("matchUid", matchUid);
+        in.putExtra("matchInfo", matchInfo);
         return in;
     }
 

@@ -157,7 +157,7 @@ public class ProfileActivity extends BaseActivity {
 
                 profileViewHolder.key = (TextView) view.findViewById(R.id.tag);
                 profileViewHolder.value = (TextView) view.findViewById(R.id.value);
-                profileViewHolder.arraow = (ImageView) view.findViewById(R.id.arrow);
+                profileViewHolder.arrow = (ImageView) view.findViewById(R.id.arrow);
 
                 view.setTag(profileViewHolder);
             } else {
@@ -167,7 +167,7 @@ public class ProfileActivity extends BaseActivity {
             profileViewHolder.key.setText(profileList[i]);
             profileViewHolder.value.setText(getValue(profileList[i]));
             if(opponentUid != null){
-                profileViewHolder.arraow.setVisibility(View.GONE);
+                profileViewHolder.arrow.setVisibility(View.GONE);
             }
 
             return view;
@@ -177,7 +177,7 @@ public class ProfileActivity extends BaseActivity {
         class ProfileViewHolder {
             TextView key;
             TextView value;
-            ImageView arraow;
+            ImageView arrow;
         }
     }
 

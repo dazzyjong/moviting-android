@@ -33,11 +33,18 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.moviting.android.ui.activity.InfoBeforePaymentActivity"
         tools:showIn="@layout/activity_info_before_payment">
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/imageView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/profile_placeholder"/>
+            android:src="@drawable/profile_placeholder"
+            android:scaleType="fitCenter"/>
+        </RelativeLayout>
         <com.synnapps.carouselview.CarouselView
             android:id="@+id/carouselView"
             android:layout_width="match_parent"

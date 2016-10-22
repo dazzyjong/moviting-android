@@ -5,11 +5,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
 import com.synnapps.carouselview.CarouselView;
@@ -21,6 +28,9 @@ public class InfoBeforePaymentActivity extends BaseActivity {
     private static final int REQUEST_PAYMENT = 100;
     private static final int PAYMENT_SUCCESS = 101;
 
+    ImageView opponentImage;
+    public static final String TAG = "InfoBeforePayment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,11 +40,13 @@ public class InfoBeforePaymentActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        final MatchInfo matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
+
         Button paymentButton = (Button) findViewById(R.id.payment_button);
         paymentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(PaymentActivity.createIntent(getBaseContext(), (MatchInfo)getIntent().getSerializableExtra("matchInfo")), REQUEST_PAYMENT);
+                startActivityForResult(PaymentActivity.createIntent(getBaseContext(), matchInfo), REQUEST_PAYMENT);
             }
         });
 
@@ -52,6 +64,21 @@ public class InfoBeforePaymentActivity extends BaseActivity {
                 return customView;
             }
         });
+
+        opponentImage = (ImageView) findViewById(R.id.imageView);
+        getFirebaseDatabaseReference().child("users").child(matchInfo.opponentUid).child("photoUrl").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Glide.with(getBaseContext()).load((String)dataSnapshot.getValue()).into(opponentImage);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.w(TAG, databaseError.getDetails());
+            }
+        });
+
     }
 
     public static Intent createIntent(Context context, MatchInfo matchInfo) {

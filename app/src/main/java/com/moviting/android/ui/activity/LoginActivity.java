@@ -35,7 +35,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
@@ -313,31 +312,30 @@ public class LoginActivity extends BaseActivity {
                     Log.d(TAG, "onDataChange user null");
                     // No user, this is first login
                     // 1. Create User model
-                    createUserFromFirebaseUser(getFirebaseAuth().getCurrentUser());
+                    user = createUserFromFirebaseUser(getFirebaseAuth().getCurrentUser());
 
                     // 2. check if it is facebook account
                     if(isFaceBookAccount()) {
                         try {
-                            setUserPropertyFromFaceBook();
+                            setUserPropertyFromFaceBook(user);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     } else {
                         // 3. update user info to data base
-                        updateUserDataBase();
-                        startActivityUnderCondition(true);
+                        updateUserDataBase(user);
+                        startActivityUnderCondition(true, user);
                     }
                 } else if(!user.isUserFormFilled()) {
                     Log.d(TAG, "onDataChange filled_account_info false");
-                    user.copyFrom(user, getUid());
-                    startActivityUnderCondition(true);
+                    startActivityUnderCondition(true, user);
                 } else {
                     // There is user, this is revisit
                     // 1. read user info from database
                     Log.d(TAG, "onDataChange success");
-                    user.copyFrom(user, getUid());
-                    startActivityUnderCondition(false);
+                    startActivityUnderCondition(false, user);
                 }
+
                 hideProgressDialog();
             }
 
@@ -369,15 +367,14 @@ public class LoginActivity extends BaseActivity {
         return result;
     }
 
-    public void updateUserDataBase() {
-        User user = User.getUserInstance();
+    public void updateUserDataBase(User user) {
         Map<String, Object> userValue = user.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/users/" + getUid(), userValue);
         getFirebaseDatabaseReference().updateChildren(childUpdates);
     }
 
-    public void setUserPropertyFromFaceBook() throws JSONException{
+    public void setUserPropertyFromFaceBook(final User user) throws JSONException{
 
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                                                             new GraphRequest.GraphJSONObjectCallback() {
@@ -385,7 +382,6 @@ public class LoginActivity extends BaseActivity {
             public void onCompleted(JSONObject obj, GraphResponse response) {
                 Log.d(TAG, "facebook user: " + obj + " / " + response.getError());
 
-                User user = User.getUserInstance();
 
                 try {
                     if(obj.has("birthday")) {
@@ -414,8 +410,8 @@ public class LoginActivity extends BaseActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                updateUserDataBase();
-                startActivityUnderCondition(true);
+                updateUserDataBase(user);
+                startActivityUnderCondition(true, user);
             }
         });
 
@@ -441,7 +437,7 @@ public class LoginActivity extends BaseActivity {
             photoUrl = fbUser.getPhotoUrl().toString();
         }
 
-        return User.constructUserInstance(getUid(), name, email, photoUrl);
+        return new User(name, email, photoUrl);
     }
 
     public static Intent createIntent(Context context) {
@@ -450,9 +446,9 @@ public class LoginActivity extends BaseActivity {
         return in;
     }
 
-    public void startActivityUnderCondition(boolean isFirst) {
+    public void startActivityUnderCondition(boolean isFirst, User user) {
         if(isFirst) {
-            startActivity(FirstSettingActivity.createIntent(LoginActivity.this));
+            startActivity(FirstSettingActivity.createIntent(LoginActivity.this, user));
             finish();
         } else {
             startActivity(MainActivity.createIntent(LoginActivity.this));

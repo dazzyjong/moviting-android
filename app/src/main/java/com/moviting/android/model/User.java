@@ -1,34 +1,22 @@
 package com.moviting.android.model;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
-import com.moviting.android.util.DatabaseHelper;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class User {
+public class User implements Parcelable {
 
-    private static User userInstance;
-
-    private enum UserStatus {
-        Joined, Enrolled
-    }
-
+    public String userStatus;
     public String name;
     public String email;
     public String photoUrl;
-    private UserStatus userStatus;
 
     public String gender;
     public String birthday;
@@ -36,59 +24,23 @@ public class User {
     public String school;
     public String work;
     public String height;
-    public String introduce;
     public int myAge;
     public int minPrefAge;
     public int maxPrefAge;
     public String preferredGender;
 
-    private static DatabaseReference mRef;
-    private static ChildEventListener mChildEventListener;
-
-    private User(){
+    public User(){
     }
 
-    private User(String uid, String name, String email, String photoUrl) {
+    public User(String name, String email, String photoUrl) {
         this.name = name;
         this.email = email;
         this.photoUrl = photoUrl;
-        this.userStatus = UserStatus.valueOf("Joined");
-        databaseListener(uid);
+        this.userStatus = "Joined";
     }
 
-    @Exclude
-    private void databaseListener(final String uid) {
-        Log.d("User", "databaseListner");
-        mRef = DatabaseHelper.getInstance().getReference();
-        mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("User", "onChildAdded:" + dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d("User", "onChildChanged:" + dataSnapshot.getKey());
-                updateMember(dataSnapshot.getKey(), dataSnapshot.getValue());
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("User", "onChildRemoved:" + dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                Log.d("User", "onChildMoved:" + dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w("User", "postComments:onCancelled", databaseError.toException());
-            }
-        };
-        mRef.child("users").child(uid).addChildEventListener(mChildEventListener);
+    private User(Parcel in) {
+        readFromParcel(in);
     }
 
     @Exclude
@@ -125,9 +77,6 @@ public class User {
     public void setHeight(String height) {
         this.height = height;
     }
-    public void setIntroduce(String introduce) {
-        this.introduce = introduce;
-    }
     public void setMinPrefAge(int age) {
         this.minPrefAge = age;
     }
@@ -137,73 +86,8 @@ public class User {
     public void setPrefGender(String gender) {
         this.preferredGender = gender;
     }
-
-    @Exclude
-    public static User constructUserInstance(String uid, String name, String email, String photoUrl) throws IllegalStateException{
-        if(userInstance != null) {
-            return userInstance;
-        } else {
-            userInstance = new User(uid, name, email, photoUrl);
-        }
-        return userInstance;
-    }
-
-    @Exclude
-    public static User getUserInstance() throws IllegalStateException{
-        if(userInstance == null) {
-            throw new IllegalStateException("Before getUserInstance, please call constructUserInstance first");
-        }
-        return userInstance;
-    }
-
-    @Exclude
-    public static void destructUserInstance() {
-        userInstance = null;
-        mRef.removeEventListener(mChildEventListener);
-    }
-
-    @Exclude
-    public User copyFrom(User user, String uid) {
-        if(userInstance == null) {
-            userInstance = new User();
-        }
-
-        userInstance.name = user.name != null ? user.name : null;
-        userInstance.email = user.email != null ? user.email : null;
-        userInstance.photoUrl = user.photoUrl != null ? user.photoUrl : null;
-        userInstance.userStatus = user.userStatus != null ? user.userStatus : null;
-        userInstance.gender = user.gender != null ? user.gender : null;
-        userInstance.birthday = user.birthday != null ? user.birthday : null;
-        userInstance.favoriteMovie = user.favoriteMovie != null ? user.favoriteMovie : null;
-        userInstance.school = user.school != null ? user.school : null;
-        userInstance.work = user.work != null ? user.work : null;
-        userInstance.height = user.height != null ? user.height : null;
-        userInstance.introduce = user.introduce != null ? user.introduce : null;
-        userInstance.myAge = user.myAge != 0 ? user.myAge : 0;
-        userInstance.minPrefAge = user.minPrefAge != 0 ? user.minPrefAge : 0;
-        userInstance.maxPrefAge = user.maxPrefAge != 0 ? user.maxPrefAge : 0;
-        userInstance.preferredGender = user.preferredGender != null ? user.preferredGender : null;
-
-        databaseListener(uid);
-
-        return userInstance;
-    }
-
-    @Exclude
-    public UserStatus getUserStatusAsEnum() {
-        return userStatus;
-    }
-
-    public String getUserStatus() {
-        if(userStatus == null) {
-            return null;
-        } else {
-            return userStatus.name();
-        }
-    }
-
-    public void setUserStatus(@NonNull String userStatusString) {
-        this.userStatus = UserStatus.valueOf(userStatusString);
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
     }
 
     @Exclude
@@ -212,7 +96,7 @@ public class User {
         result.put("name", name);
         result.put("email", email);
         result.put("photoUrl", photoUrl);
-        result.put("userStatus", userStatus.name());
+        result.put("userStatus", userStatus);
         if(gender != null) {
             result.put("gender", gender);
         } else {
@@ -242,11 +126,6 @@ public class User {
             result.put("height", height);
         } else {
             result.put("height", "");
-        }
-        if(introduce != null) {
-            result.put("introduce", introduce);
-        } else {
-            result.put("introduce", "");
         }
         if(myAge != 0) {
             result.put("myAge", myAge);
@@ -288,52 +167,58 @@ public class User {
         return true;
     }
 
-    @Exclude
-    private void updateMember(String key, Object value) {
-        if(key.equals("birthday")) {
-            this.birthday = (String)value;
-        }
-        if(key.equals("email")) {
-            this.email = (String)value;
-        }
-        if(key.equals("favoriteMovie")) {
-            this.favoriteMovie = (String)value;
-        }
-        if(key.equals("gender")) {
-            this.gender = (String)value;
-        }
-        if(key.equals("height")) {
-            this.height = (String)value;
-        }
-        if(key.equals("introduce")) {
-            this.introduce = (String)value;
-        }
-        if(key.equals("maxPrefAge")) {
-            this.maxPrefAge = ((Long)value).intValue();
-        }
-        if(key.equals("minPrefAge")) {
-            this.minPrefAge = ((Long)value).intValue();
-        }
-        if(key.equals("myAge")) {
-            this.minPrefAge = ((Long)value).intValue();
-        }
-        if(key.equals("name")) {
-            this.name = (String)value;
-        }
-        if(key.equals("photoUrl")) {
-            this.photoUrl = (String)value;
-        }
-        if(key.equals("preferredGender")) {
-            this.preferredGender = (String)value;
-        }
-        if(key.equals("school")) {
-            this.school = (String)value;
-        }
-        if(key.equals("userStatus")) {
-            this.userStatus = UserStatus.valueOf((String)value);
-        }
-        if(key.equals("work")) {
-            this.work = (String)value;
-        }
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(userStatus);
+        parcel.writeString(name);
+        parcel.writeString(email);
+        parcel.writeString(photoUrl);
+        parcel.writeString(gender);
+        parcel.writeString(birthday);
+        parcel.writeString(favoriteMovie);
+        parcel.writeString(school);
+        parcel.writeString(work);
+        parcel.writeString(height);
+        parcel.writeInt(myAge);
+        parcel.writeInt(minPrefAge);
+        parcel.writeInt(maxPrefAge);
+        parcel.writeString(preferredGender);
+
+    }
+
+    @Exclude
+    private void readFromParcel(Parcel in){
+        userStatus      = in.readString();
+        name            = in.readString();
+        email           = in.readString();
+        photoUrl        = in.readString();
+        gender          = in.readString();
+        birthday        = in.readString();
+        favoriteMovie   = in.readString();
+        school          = in.readString();
+        work            = in.readString();
+        height          = in.readString();
+        myAge           = in.readInt();
+        minPrefAge      = in.readInt();
+        maxPrefAge      = in.readInt();
+        preferredGender = in.readString();
+    }
+
+    @Exclude
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

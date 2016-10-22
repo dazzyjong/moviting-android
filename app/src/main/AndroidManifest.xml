@@ -107,6 +107,10 @@
             android:name=".ui.activity.TicketBoxActivity2"
             android:label="@string/title_activity_ticket_box1"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.ProfilePropEditActivity"
+            android:label="@string/title_activity_profile_prop_edit"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.moviting.android.ui.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +13,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.moviting.android.R;
-import com.moviting.android.model.User;
 import com.moviting.android.ui.activity.CouponActivity;
 import com.moviting.android.ui.activity.LoginActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
 import com.moviting.android.ui.activity.TicketBoxActivity1;
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends BaseFragment {
 
     private static final String TAG = "AccountFragment";
     private static final int ACCOUNT_MODE = 2;
 
     private ListView accountTabList;
     private FirebaseAuth mAuth;
-    
+
     public AccountFragment() {
         // Required empty public constructor
     }
@@ -40,7 +38,6 @@ public class AccountFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -65,7 +62,7 @@ public class AccountFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        startActivity(ProfileActivity.createIntent(getActivity()));
+                        startActivity(ProfileActivity.createIntent(getActivity(), null));
                         break;
                     case 1:
                         startActivity(TicketBoxActivity1.createIntent(getActivity()));
@@ -99,7 +96,7 @@ public class AccountFragment extends Fragment {
                     LoginManager.getInstance().logOut();
                 }
             }
-            User.destructUserInstance();
+
             mAuth.signOut();
         }
 
@@ -108,7 +105,7 @@ public class AccountFragment extends Fragment {
     }
 
     public void createAccountTabList(ListView view, String[] values) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, values);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, R.id.text1, values);
         view.setAdapter(adapter);
     }
 }

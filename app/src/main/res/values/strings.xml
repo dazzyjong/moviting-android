@@ -85,6 +85,15 @@
             6시간 후 결제 금액은 포인트로 환불됩니다</item>
     </string-array>
 
+    <string-array name="profile_list">
+        <item>이름</item>
+        <item>나이</item>
+        <item>키</item>
+        <item>학교</item>
+        <item>직업</item>
+        <item>인생 영화</item>
+    </string-array>
+
     <string name="info_before_payment">결제 전 정보</string>
     <string name="payment_title">비용 결제하기</string>
     <string name="request_check_payment">입금확인요청</string>
@@ -93,5 +102,6 @@
     <string name="title_activity_chat">대화</string>
     <string name="title_activity_ticket_box1">영화티켓함</string>
     <string name="movie_ticket_peel">- 꼭 서로간 매칭완료 후 영화 예매시 사용해야해요 \n - 확인한다면 재매칭 및 환불은 불가합니다</string>
+    <string name="title_activity_profile_prop_edit">ProfilePropEditActivity</string>
 
 </resources>

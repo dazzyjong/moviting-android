@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
+import com.moviting.android.model.User;
 
 public class PaymentActivity extends BaseActivity {
 
@@ -73,8 +75,11 @@ public class PaymentActivity extends BaseActivity {
         couponButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: check same gender
-                startActivityForResult(CouponActivity.createIntent(getBaseContext(), PAYMENT_MODE), REQUEST_COUPON);
+                if( !matchInfo.myGender.equals(matchInfo.opponentGender) ) {
+                    startActivityForResult(CouponActivity.createIntent(getBaseContext(), PAYMENT_MODE), REQUEST_COUPON);
+                } else {
+                    Toast.makeText(getBaseContext(), "쿠폰은 이성과의 만남에서만 사용할 수 있습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

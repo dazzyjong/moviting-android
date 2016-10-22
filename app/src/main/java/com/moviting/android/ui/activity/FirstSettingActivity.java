@@ -53,12 +53,13 @@ public class FirstSettingActivity extends BaseActivity {
     private EditText schoolText;
     private EditText workText;
     private EditText heightText;
-    private EditText introduceText;
 
     private AlertDialog alertDialog;
 
     private String formattedBirthday;
     private String photoUrl;
+
+    private User user;
 
     private static final String TAG = "FirstSettingActivity";
     public static int REQUEST_CAMERA = 0, SELECT_FILE = 1;
@@ -68,16 +69,18 @@ public class FirstSettingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_setting);
 
+        user = getIntent().getExtras().getParcelable("user");
+
         profileImage = (ImageView) findViewById(R.id.profile_image);
 
-        if (User.getUserInstance().photoUrl != null && !User.getUserInstance().photoUrl.equals("")) {
-            Glide.with(this).load(User.getUserInstance().photoUrl).into(profileImage);
-            photoUrl = User.getUserInstance().photoUrl;
+        if (user.photoUrl != null && !user.photoUrl.equals("")) {
+            Glide.with(this).load(user.photoUrl).into(profileImage);
+            photoUrl = user.photoUrl;
         }
 
         nameText = (EditText) findViewById(R.id.account_profile_name);
-        if (User.getUserInstance().name != null && !User.getUserInstance().name.equals("")) {
-            nameText.setText(User.getUserInstance().name);
+        if (user.name != null && !user.name.equals("")) {
+            nameText.setText(user.name);
         }
 
         genderSpinner = (Spinner) findViewById(R.id.gender_spinner);
@@ -97,8 +100,8 @@ public class FirstSettingActivity extends BaseActivity {
             }
         });
 
-        if (User.getUserInstance().gender != null && !User.getUserInstance().gender.equals("")) {
-            if (User.getUserInstance().gender.equals("male")) {
+        if (user.gender != null && !user.gender.equals("")) {
+            if (user.gender.equals("male")) {
                 genderSpinner.setSelection(1);
             } else {
                 genderSpinner.setSelection(2);
@@ -123,16 +126,16 @@ public class FirstSettingActivity extends BaseActivity {
                 }
 
                 formattedBirthday =   formattedMonth + "/" + formattedDayOfMonth + "/" + year;
-                User.getUserInstance().transferBirthYearToMyAge(year);
+                user.transferBirthYearToMyAge(year);
                 Log.d(TAG, "mylog" + formattedBirthday);
             }
         });
 
-        if (User.getUserInstance().birthday != null && !User.getUserInstance().birthday.equals("")) {
+        if (user.birthday != null && !user.birthday.equals("")) {
             Calendar c = Calendar.getInstance();
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy"); // here set the pattern as you date in string was containing like date/month/year
-                c.setTime(sdf.parse(User.getUserInstance().birthday));
+                c.setTime(sdf.parse(user.birthday));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -142,20 +145,19 @@ public class FirstSettingActivity extends BaseActivity {
             int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
 
             birthdayPicker.updateDate(year, month, dayOfMonth);
-            User.getUserInstance().transferBirthYearToMyAge(year);
+            user.transferBirthYearToMyAge(year);
         }
 
         favoriteMovieText = (EditText) findViewById(R.id.favorite_movie);
         schoolText = (EditText) findViewById(R.id.school);
-        if (User.getUserInstance().school != null && !User.getUserInstance().school.equals("")) {
-            schoolText.setText(User.getUserInstance().school);
+        if (user.school != null && !user.school.equals("")) {
+            schoolText.setText(user.school);
         }
         workText = (EditText) findViewById(R.id.work);
-        if (User.getUserInstance().work != null && !User.getUserInstance().name.equals("")) {
-            workText.setText(User.getUserInstance().work);
+        if (user.work != null && !user.name.equals("")) {
+            workText.setText(user.work);
         }
         heightText = (EditText) findViewById(R.id.height);
-        introduceText = (EditText) findViewById(R.id.introduce);
 
         ImageButton photoButton = (ImageButton) findViewById(R.id.photo_button);
         photoButton.setOnClickListener(new OnClickListener() {
@@ -237,8 +239,6 @@ public class FirstSettingActivity extends BaseActivity {
     }
 
     public void updateUser() {
-        User user = User.getUserInstance();
-
         user.setName(nameText.getText().toString());
         user.setPhotoUrl(photoUrl);
         if( genderSpinner.getSelectedItem().equals(getResources().getStringArray(R.array.gender)[1]) ) {
@@ -251,13 +251,12 @@ public class FirstSettingActivity extends BaseActivity {
         user.setSchool(schoolText.getText().toString());
         user.setWork(workText.getText().toString());
         user.setHeight(heightText.getText().toString());
-        user.setIntroduce(introduceText.getText().toString());
 
         updateUserDataBase();
     }
 
     public void updateUserDataBase() {
-        User user = User.getUserInstance();
+
         Map<String, Object> userValue = user.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/users/" + getUid(), userValue);
@@ -381,8 +380,9 @@ public class FirstSettingActivity extends BaseActivity {
 
     }
 
-    public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context, User user) {
         Intent in = new Intent();
+        in.putExtra("user", user);
         in.setClass(context, FirstSettingActivity.class);
         return in;
     }

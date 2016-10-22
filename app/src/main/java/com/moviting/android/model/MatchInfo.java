@@ -12,7 +12,9 @@ public class MatchInfo implements Serializable {
     public String opponentName;
     public String opponentPhotoPath;
     public String opponentType;
+    public String opponentGender;
     public String myType;
+    public String myGender;
     public boolean opponentPayment;
     public boolean myPayment;
 
@@ -22,7 +24,9 @@ public class MatchInfo implements Serializable {
         opponentName = "";
         opponentPhotoPath = "";
         opponentType = "";
+        opponentGender = "";
         myType = "";
+        myGender = "";
         opponentPayment = false;
         myPayment = false;
     }

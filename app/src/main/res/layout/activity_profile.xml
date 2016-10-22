@@ -22,26 +22,35 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <RelativeLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize">
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:srcCompat="@drawable/profile_placeholder"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:id="@+id/imageView" />
 
-        <RelativeLayout
-            android:id="@+id/content_profile"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0.67dp"
+            android:background="@android:color/black"
+            android:layout_below="@id/imageView"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/profile_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:clickable="true">
+        <ListView
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/profile_property_list"
+            android:divider="#000000"
+            android:dividerHeight="0.67dp"
+            android:layout_below="@+id/imageView">
+        </ListView>
 
-            </android.support.v7.widget.RecyclerView>
-
-
-        </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

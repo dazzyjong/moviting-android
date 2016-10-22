@@ -2,6 +2,7 @@ package com.moviting.android.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.Propose;
 import com.moviting.android.model.User;
+import com.moviting.android.ui.activity.ProfileActivity;
 
 public class ProposePageFragment extends BaseFragment {
 
@@ -73,6 +75,12 @@ public class ProposePageFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_propose_page, container, false);
 
         mName = (TextView) view.findViewById(R.id.name);
+        mName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(ProfileActivity.createIntent(getActivity(), mProposeUid));
+            }
+        });
         mAgeAndWork = (TextView) view.findViewById(R.id.age_and_work);
         mFavoriteMovie = ((TextView) view.findViewById(R.id.favorite_movie));
 
@@ -80,6 +88,12 @@ public class ProposePageFragment extends BaseFragment {
         mLikeButton = (ImageButton) view.findViewById(R.id.like);
 
         profileImage = (ImageView) view.findViewById(R.id.opponent_profile_image);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(ProfileActivity.createIntent(getActivity(), mProposeUid));
+            }
+        });
 
         if(mProposeStatus.equals(Propose.ProposeStatus.Like.name())) {
             mDislikeButton.setVisibility(View.GONE);
@@ -155,8 +169,7 @@ public class ProposePageFragment extends BaseFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-
-                mName.setText(user.name);
+                mName.setText(Html.fromHtml("<u>" + user.name + "</u>"));
                 mAgeAndWork.setText(user.myAge + " / " + user.work);
                 mFavoriteMovie.setText(user.favoriteMovie);
                 Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);

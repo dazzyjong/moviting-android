@@ -20,7 +20,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import com.moviting.android.R;
-import com.moviting.android.model.User;
 import com.moviting.android.ui.fragment.AccountFragment;
 import com.moviting.android.ui.fragment.MatchFragment;
 import com.moviting.android.ui.fragment.ProposeFragment;
@@ -103,12 +102,6 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        User.destructUserInstance();
     }
 
     /**

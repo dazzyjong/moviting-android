@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.moviting.android.ui.activity.MainActivity">
+    tools:context="com.moviting.android.ui.activity.ChatActivity">
     <item
-        android:id="@+id/action_complete"
-        android:icon="@drawable/ic_done_black_24dp"
+        android:id="@+id/send_movie_ticket"
+        android:icon="@drawable/ic_movie"
         app:showAsAction="always"
         android:title="complete" />
 </menu>

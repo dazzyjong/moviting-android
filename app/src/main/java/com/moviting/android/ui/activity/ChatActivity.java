@@ -3,7 +3,6 @@ package com.moviting.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,10 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -68,7 +66,6 @@ public class ChatActivity extends BaseActivity {
     }
 
     private Button mSendButton;
-    private Button mTicketSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private FirebaseRecyclerAdapter<Message, MessageViewHolder> mFirebaseAdapter;
@@ -80,8 +77,6 @@ public class ChatActivity extends BaseActivity {
     private String opponentImageUrl = null;
 
     private MatchInfo matchInfo;
-    private Animation animation;
-    private boolean fabClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,36 +118,7 @@ public class ChatActivity extends BaseActivity {
             }
         });
 
-        mTicketSendButton = (Button) findViewById(R.id.send_ticket);
-        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
-        mTicketSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!matchInfo.opponentType.equals("coupon")) {
-                    startActivityForResult(MovieTicketActivity.createIntent(getBaseContext(), matchInfo), REQUEST_SEND_TICKET);
-                } else {
-                    Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
         getUserNameAndPhoto();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!fabClicked) {
-                    mTicketSendButton.setVisibility(View.VISIBLE);
-                    mTicketSendButton.startAnimation(animation);
-                    fabClicked = true;
-                } else {
-                    mTicketSendButton.setVisibility(View.INVISIBLE);
-                    fabClicked = false;
-                }
-            }
-        });
-        fabClicked = false;
     }
 
     private void getUserNameAndPhoto() {
@@ -287,14 +253,26 @@ public class ChatActivity extends BaseActivity {
             case android.R.id.home:
                 ChatActivity.this.onBackPressed();
                 break;
+
+            case R.id.send_movie_ticket:
+                if(!matchInfo.opponentType.equals("coupon")) {
+                    startActivityForResult(MovieTicketActivity.createIntent(getBaseContext(), matchInfo), REQUEST_SEND_TICKET);
+                } else {
+                    Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
         return true;
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mTicketSendButton.setVisibility(View.INVISIBLE);
-        fabClicked = false;
         if(requestCode == REQUEST_SEND_TICKET) {
             if (resultCode == SEND_SUCCESS) {
                 getFirebaseDatabaseReference().child("match_chat").child(matchInfo.matchUid).push().setValue(new Message(getUid(), "영화표를 전달했습니다. 영화티켓함을 확인해주세요."));

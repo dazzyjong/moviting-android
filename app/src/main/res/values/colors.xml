@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="enrolledButton">#C0392B</color>
-    <color name="enrollButton">#2980B9</color>
+    <color name="colorPrimary">#EFEFF4</color>
+    <color name="colorPrimaryDark">#EFEFF4</color>
+    <color name="colorAccent">#E94B6C</color>
 </resources>

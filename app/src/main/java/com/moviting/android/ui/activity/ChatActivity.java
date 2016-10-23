@@ -3,16 +3,17 @@ package com.moviting.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,38 +39,48 @@ public class ChatActivity extends BaseActivity {
     private static final String TAG = "ChatActivity";
     private static final int REQUEST_SEND_TICKET = 1;
     private static final int SEND_SUCCESS = 100;
+    private static final int MY_MESSAGE = 1;
+    private static final int OPPONENT_MESSAGE = 2;
+    private RequestManager mGlideRequestManager;
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        public TextView opponentMessage;
-        public TextView opponentNameText;
-        public CircleImageView opponentImage;
+    public static class MyMessageViewHolder extends RecyclerView.ViewHolder {
+        View mView;
 
-        public TextView myMessage;
-        public TextView myNameText;
-        public CircleImageView myImage;
-
-        public LinearLayout myLayout;
-        public LinearLayout opponentLayout;
-
-        public MessageViewHolder(View v) {
+        public MyMessageViewHolder(View v) {
             super(v);
-            opponentLayout = (LinearLayout) itemView.findViewById(R.id.opponent_message_layout);
-            myLayout = (LinearLayout) itemView.findViewById(R.id.my_message_layout);
+            mView = v;
+        }
 
-            opponentMessage = (TextView) itemView.findViewById(R.id.opponent_message);
-            opponentNameText = (TextView) itemView.findViewById(R.id.opponent_name_text);
-            opponentImage = (CircleImageView) itemView.findViewById(R.id.opponent_img);
+        void setMyView(String message) {
+            TextView myMessage = (TextView) mView.findViewById(R.id.my_message);
+            myMessage.setText(message);
+        }
+    }
 
-            myMessage = (TextView) itemView.findViewById(R.id.my_message);
-            myNameText = (TextView) itemView.findViewById(R.id.my_name_text);
-            myImage = (CircleImageView) itemView.findViewById(R.id.my_img);
+    public static class OpponentMessageViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+
+        public OpponentMessageViewHolder(View v) {
+            super(v);
+            mView = v;
+        }
+
+        void setOpponentView(String name, String message, String photoUrl, RequestManager requestManager) {
+            TextView opponentMessage = (TextView) mView.findViewById(R.id.opponent_message);
+            opponentMessage.setText(message);
+
+            TextView opponentNameText = (TextView) mView.findViewById(R.id.opponent_name_text);
+            opponentNameText.setText(name);
+
+            CircleImageView opponentImage = (CircleImageView) mView.findViewById(R.id.opponent_img);
+            requestManager.load(photoUrl).into(opponentImage);
         }
     }
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private FirebaseRecyclerAdapter<Message, MessageViewHolder> mFirebaseAdapter;
+    private FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder> mFirebaseAdapter;
     private EditText mMessageEditText;
 
     private String myName = null;
@@ -87,6 +99,8 @@ public class ChatActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
+
+        mGlideRequestManager = Glide.with(ChatActivity.this);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -182,41 +196,47 @@ public class ChatActivity extends BaseActivity {
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Message, MessageViewHolder>(
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder>(
                 Message.class,
-                R.layout.message_item,
-                MessageViewHolder.class,
+                R.layout.opponent_message_item,
+                RecyclerView.ViewHolder.class,
                 getFirebaseDatabaseReference().child("match_chat").child(matchInfo.matchUid)) {
 
             @Override
-            protected void populateViewHolder(MessageViewHolder viewHolder, Message message, int position) {
+            protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Message message, int position) {
                 if(message.getUid().equals(getUid())){
-                    viewHolder.opponentLayout.setVisibility(View.GONE);
-                    viewHolder.myMessage.setText(message.getMessage());
-                    viewHolder.myNameText.setText(myName);
+                    ((MyMessageViewHolder)viewHolder).setMyView(message.getMessage());
                 } else {
-                    viewHolder.myLayout.setVisibility(View.GONE);
-                    viewHolder.opponentMessage.setText(message.getMessage());
-                    viewHolder.opponentNameText.setText(opponentName);
+                    ((OpponentMessageViewHolder)viewHolder).setOpponentView(opponentName, message.getMessage(), opponentImageUrl, mGlideRequestManager);
                 }
+            }
 
-                if (myImageUrl == null ) {
-                viewHolder.myImage.setImageDrawable(ContextCompat.getDrawable(ChatActivity.this,
-                        R.drawable.profile_placeholder));
-                } else {
-                    Glide.with(ChatActivity.this)
-                            .load(myImageUrl)
-                            .into(viewHolder.myImage);
+            @Override
+            public int getItemViewType(int position) {
+                Message message = getItem(position);
+                if(message.getUid().equals(getUid())){
+                    // Layout for an item with an image
+                    return MY_MESSAGE;
+                } else if(!message.getUid().equals(getUid())){
+                    // Layout for an item without an image
+                    return OPPONENT_MESSAGE;
                 }
+                return super.getItemViewType(position);
+            }
 
-                if (opponentImageUrl == null ) {
-                    viewHolder.opponentImage.setImageDrawable(ContextCompat.getDrawable(ChatActivity.this,
-                            R.drawable.profile_placeholder));
-                } else {
-                    Glide.with(ChatActivity.this)
-                            .load(opponentImageUrl)
-                            .into(viewHolder.opponentImage);
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                switch (viewType) {
+                    case MY_MESSAGE:
+                        View userType1 = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.my_message_item, parent, false);
+                        return new MyMessageViewHolder(userType1);
+                    case OPPONENT_MESSAGE:
+                        View userType2 = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.opponent_message_item, parent, false);
+                        return new OpponentMessageViewHolder(userType2);
                 }
+                return super.onCreateViewHolder(parent, viewType);
             }
         };
 
@@ -227,10 +247,9 @@ public class ChatActivity extends BaseActivity {
                 int friendlyMessageCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
 
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) && lastVisiblePosition == (positionStart - 1))) {
-                    mMessageRecyclerView.scrollToPosition(positionStart);
-                }
+                Log.d(TAG, friendlyMessageCount + " " + lastVisiblePosition + " " + positionStart);
+
+                mLinearLayoutManager.smoothScrollToPosition(mMessageRecyclerView, null, mFirebaseAdapter.getItemCount());
             }
         });
 

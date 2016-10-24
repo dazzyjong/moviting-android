@@ -43,7 +43,7 @@
             android:layout_height="200dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/profile_placeholder"
-            android:scaleType="fitCenter"/>
+            android:scaleType="centerCrop"/>
         </RelativeLayout>
         <com.synnapps.carouselview.CarouselView
             android:id="@+id/carouselView"

@@ -21,6 +21,7 @@ import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
 import com.moviting.android.ui.activity.ChatActivity;
 import com.moviting.android.ui.activity.InfoBeforePaymentActivity;
+import com.moviting.android.util.MyHashMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,16 +44,73 @@ public class MatchFragment extends BaseFragment {
     private LinearLayoutManager mMatchCompleteLM;
     private RecyclerView rvMatchComplete;
 
-    private ArrayList<String> matchUids;
+    private MyHashMap<String, MatchInfo> matchUids;
+    private String gender;
 
-    private ChildEventListener mListener = new ChildEventListener() {
+    private ChildEventListener listEventListener = new ChildEventListener() {
+
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
+            Log.d(TAG, "user_match added: " + dataSnapshot.getKey());
+            Boolean b = (Boolean)dataSnapshot.getValue();
+            if(b) {
+                matchUids.put(dataSnapshot.getKey(), new MatchInfo(dataSnapshot.getKey()));
+                addListenerMatchList(dataSnapshot.getKey());
+            }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d(TAG, "user_match changed: " + dataSnapshot.getKey());
+            Boolean b = (Boolean)dataSnapshot.getValue();
+            if(!b) {
+                popMatchUid(dataSnapshot.getKey());
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.w(TAG, databaseError.getDetails());
+        }
+    };
+
+    private ChildEventListener mListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if( !hasMatchUid(dataSnapshot.getRef().getParent().getKey())) {
+
+                Log.d(TAG, "match_user_payment added: " + dataSnapshot.getRef().getParent().getKey() + " " + dataSnapshot.getKey());
+                MatchInfo matchInfo = matchUids.get(dataSnapshot.getRef().getParent().getKey());
+
+                if (dataSnapshot.getKey().equals(getBaseActivity().getUid())) {
+                    HashMap object = (HashMap) dataSnapshot.getValue();
+                    matchInfo.myGender = gender;
+                    matchInfo.myPayment = (Boolean) object.get("payment");
+                    matchInfo.myType = (String) object.get("type");
+                } else {
+                    matchInfo.opponentUid = dataSnapshot.getKey();
+                    HashMap object = (HashMap) dataSnapshot.getValue();
+                    matchInfo.opponentPayment = (Boolean) object.get("payment");
+                    matchInfo.opponentType = (String) object.get("type");
+                    getOpponentInfo(matchInfo);
+                }
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d(TAG, "match_user_payment changed: " + dataSnapshot.getRef().getParent().getKey() +" " + dataSnapshot.getKey());
             String matchuid = dataSnapshot.getRef().getParent().getKey();
             MatchInfo info = popMatchUid(matchuid);
 
@@ -92,7 +150,8 @@ public class MatchFragment extends BaseFragment {
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-
+            Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.w(TAG, databaseError.getDetails());
         }
     };
 
@@ -108,6 +167,7 @@ public class MatchFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        matchUids = new MyHashMap<>();
     }
 
     @Override
@@ -143,7 +203,8 @@ public class MatchFragment extends BaseFragment {
         getBaseActivity().getFirebaseDatabaseReference().child("users").child(getBaseActivity().getUid()).child("gender").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                getMatchList((String)dataSnapshot.getValue());
+                gender = ((String)dataSnapshot.getValue());
+                addMatchListListener();
             }
 
             @Override
@@ -154,6 +215,16 @@ public class MatchFragment extends BaseFragment {
         });
 
         return view;
+    }
+
+    private boolean hasMatchUid(String uid) {
+        if ( ((OpponentImageAdapter)rvMatchComplete.getAdapter()).findItem(uid) != -1
+                || ((OpponentImageAdapter)rvMatchProgress.getAdapter()).findItem(uid) != -1
+                || ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).findItem(uid) != -1) {
+            return true;
+        }
+
+        return false;
     }
 
     private MatchInfo popMatchUid(String uid) {
@@ -186,66 +257,14 @@ public class MatchFragment extends BaseFragment {
         return info;
     }
 
-    private void addListenerMatchList(final ArrayList<String> matchIdList) {
-        for(final String matchUid: matchIdList) {
-            getBaseActivity().getFirebaseDatabaseReference()
-                    .child("match_member_payment").child(matchUid).addChildEventListener(mListener);
-        }
-    }
-
-    private void getMatchList(final String gender) {
+    private void addListenerMatchList(String matchUid) {
         getBaseActivity().getFirebaseDatabaseReference()
-                .child("user_match").child(getBaseActivity().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<String> matchList = new ArrayList<>();
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    matchList.add(child.getKey());
-                }
-                getMatchMember(matchList, gender);
-                addListenerMatchList(matchList);
-                matchUids = matchList;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.w(TAG, databaseError.getDetails());
-            }
-        });
+                .child("match_member_payment").child(matchUid).addChildEventListener(mListener);
     }
 
-    private void getMatchMember(final ArrayList<String> matchIdList, final String gender){
-        for(final String matchUid: matchIdList) {
+    private void addMatchListListener() {
             getBaseActivity().getFirebaseDatabaseReference()
-                    .child("match_member_payment").child(matchUid).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    MatchInfo matchInfo = new MatchInfo();
-                    matchInfo.matchUid = matchUid;
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        if (child.getKey().equals(getBaseActivity().getUid())) {
-                            HashMap object = (HashMap)child.getValue();
-                            matchInfo.myGender = gender;
-                            matchInfo.myPayment = (Boolean)object.get("payment");
-                            matchInfo.myType = (String) object.get("type");
-                        } else {
-                            matchInfo.opponentUid = child.getKey();
-                            HashMap object = (HashMap)child.getValue();
-                            matchInfo.opponentPayment = (Boolean)object.get("payment");
-                            matchInfo.opponentType = (String) object.get("type");
-                        }
-                    }
-                    getOpponentInfo(matchInfo);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.w(TAG, databaseError.getDetails());
-                }
-            });
-        }
+                    .child("user_match").child(getBaseActivity().getUid()).addChildEventListener(listEventListener);
     }
 
     private void getOpponentInfo(final MatchInfo matchInfo) {
@@ -253,7 +272,6 @@ public class MatchFragment extends BaseFragment {
                 .child("users").child(matchInfo.opponentUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //matchInfo.opponentName = dataSnapshot.getValue()
                 HashMap<String, Object> object = (HashMap)dataSnapshot.getValue();
                 matchInfo.opponentName = (String)object.get("name");
                 matchInfo.opponentPhotoPath = (String)object.get("photoUrl");
@@ -282,11 +300,7 @@ public class MatchFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode ==  REQUEST_PAYMENT) {
-//            ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).initItem();
-//            ((OpponentImageAdapter)rvMatchProgress.getAdapter()).initItem();
-//            ((OpponentImageAdapter)rvMatchComplete.getAdapter()).initItem();
-//
-//            getMatchList();
+
         }
     }
 
@@ -294,10 +308,12 @@ public class MatchFragment extends BaseFragment {
     public void onDestroy() {
         try {
             super.onDestroy();
-            for(String matchUid:matchUids) {
+            for(String matchUid:matchUids.keySet()) {
                 getBaseActivity().getFirebaseDatabaseReference()
                         .child("match_member_payment").child(matchUid).removeEventListener(mListener);
             }
+            getBaseActivity().getFirebaseDatabaseReference()
+                    .child("user_match").child(getBaseActivity().getUid()).removeEventListener(listEventListener);
         } catch (NullPointerException npe) {
             Log.e(TAG, "NPE: Bug workaround");
         }

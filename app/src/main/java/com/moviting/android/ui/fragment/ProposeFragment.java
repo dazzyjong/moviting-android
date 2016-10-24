@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -59,6 +60,8 @@ public class ProposeFragment extends BaseFragment {
                 ((ProposePageAdapter)mPagerAdapter).addItem(propose);
                 mPagerAdapter.notifyDataSetChanged();
                 tvBlankPage.setVisibility(View.GONE);
+            } else if(proposeStatus.equals("Matched")) {
+                deleteProposeFromList(dataSnapshot.getKey());
             }
             addSnapshotToPrevMap(dataSnapshot.getKey(), proposeStatus);
         }
@@ -75,7 +78,8 @@ public class ProposeFragment extends BaseFragment {
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-
+            Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.w(TAG, databaseError.getDetails());
         }
     };
 
@@ -153,6 +157,20 @@ public class ProposeFragment extends BaseFragment {
     public void deleteProposeFromList(int index){
         ((ProposePageAdapter)mPagerAdapter).removeItem(index);
         mPagerAdapter.notifyDataSetChanged();
+        if(mProposeList.size() == 0) {
+            tvBlankPage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void deleteProposeFromList(String uid){
+        for(Propose item :mProposeList ){
+            if(item.getUid().equals(uid)) {
+                int index = mProposeList.indexOf(item);
+                ((ProposePageAdapter)mPagerAdapter).removeItem(index);
+                mPagerAdapter.notifyDataSetChanged();
+            }
+        }
+
         if(mProposeList.size() == 0) {
             tvBlankPage.setVisibility(View.VISIBLE);
         }

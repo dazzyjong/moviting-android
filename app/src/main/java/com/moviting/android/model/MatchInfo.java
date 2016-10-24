@@ -18,8 +18,8 @@ public class MatchInfo implements Serializable {
     public boolean opponentPayment;
     public boolean myPayment;
 
-    public MatchInfo() {
-        matchUid = "";
+    public MatchInfo(String matchUid) {
+        this.matchUid = matchUid;
         opponentName = "";
         opponentName = "";
         opponentPhotoPath = "";

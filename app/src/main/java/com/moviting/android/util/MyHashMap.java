@@ -4,11 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by jongseonglee on 10/21/16.
- */
-
 public class MyHashMap<K,V> extends LinkedHashMap<K,V> {
+    public MyHashMap() {
+        super();
+    }
+
     public MyHashMap(Map<K,V> map) {
         super(map);
     }

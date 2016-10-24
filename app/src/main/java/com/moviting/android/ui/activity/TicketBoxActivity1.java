@@ -75,8 +75,7 @@ public class TicketBoxActivity1 extends BaseActivity {
                     .child("match_member_payment").child(matchUid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    MatchInfo matchInfo = new MatchInfo();
-                    matchInfo.matchUid = matchUid;
+                    MatchInfo matchInfo = new MatchInfo(matchUid);
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         if (child.getKey().equals(getUid())) {
                             HashMap object = (HashMap)child.getValue();

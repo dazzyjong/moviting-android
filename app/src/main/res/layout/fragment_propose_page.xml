@@ -28,12 +28,12 @@
 
                     <ImageView
                         android:id="@+id/opponent_profile_image"
-                        android:layout_width="250dp"
+                        android:layout_width="300dp"
                         android:layout_height="2500dp"
                         android:src="@drawable/profile_placeholder"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
-                        android:scaleType="fitCenter"
+                        android:scaleType="centerCrop"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true" />
                 </RelativeLayout>

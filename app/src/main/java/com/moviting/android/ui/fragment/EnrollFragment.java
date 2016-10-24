@@ -30,7 +30,6 @@ import java.util.Date;
 public class EnrollFragment extends BaseFragment {
 
     private static final String TAG = "EnrollFragment";
-    private static final int CONDITION_TYPE_COUNT = 6;
     private static final int REFRESH_CODE = 1;
 
     private ImageButton adjustUserPreference;
@@ -43,22 +42,8 @@ public class EnrollFragment extends BaseFragment {
     private String choosedGender;
     private boolean isEnrolled;
 
-    private int count;
-
     private Long minPrefAge;
     private Long maxPrefAge;
-
-    private UserInfoLoadListner userInfoLoadListner = new UserInfoLoadListner() {
-        @Override
-        public void OnUserInfoLoaded() {
-            count++;
-            Log.d(TAG, " count:" + count );
-            if(count == CONDITION_TYPE_COUNT) {
-                Log.d(TAG, "OnUserInfoLoaded complete" );
-                getBaseActivity().hideProgressDialog();
-            }
-        }
-    };
 
     public EnrollFragment() {
     }
@@ -142,12 +127,10 @@ public class EnrollFragment extends BaseFragment {
         selectedDates = new ArrayList<>();
         selectedMovies = new ArrayList<>();
         choosedGender = "";
-        count = 0;
         isEnrolled = false;
         minPrefAge = Long.valueOf(0);
         maxPrefAge = Long.valueOf(0);
 
-        getBaseActivity().showProgressDialog();
         getUserEnrollStatus();
         getUserPrefDate();
         getUserPrefGender();
@@ -181,14 +164,12 @@ public class EnrollFragment extends BaseFragment {
                     Log.d(TAG, "No isEnrolled");
                 }
                 updateApplicationButton();
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
     }
@@ -246,14 +227,12 @@ public class EnrollFragment extends BaseFragment {
                 } else {
                     Log.d(TAG, "No selectedDates");
                 }
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
     }
@@ -270,14 +249,12 @@ public class EnrollFragment extends BaseFragment {
                 } else {
                     Log.d(TAG, "No selectedGender");
                 }
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
     }
@@ -303,14 +280,12 @@ public class EnrollFragment extends BaseFragment {
                 } else {
                     Log.d(TAG, "No selectedMovie");
                 }
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
     }
@@ -327,14 +302,12 @@ public class EnrollFragment extends BaseFragment {
                 } else {
                     Log.d(TAG, "No selectedAge");
                 }
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
     }
@@ -351,20 +324,14 @@ public class EnrollFragment extends BaseFragment {
                 } else {
                     Log.d(TAG, "No selectedAge");
                 }
-                userInfoLoadListner.OnUserInfoLoaded();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.w(TAG, databaseError.getDetails());
-                getBaseActivity().hideProgressDialog();
             }
         });
-    }
-
-    private interface UserInfoLoadListner {
-        void OnUserInfoLoaded();
     }
 
     @Override

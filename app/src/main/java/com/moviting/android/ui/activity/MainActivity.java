@@ -2,7 +2,7 @@ package com.moviting.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
@@ -10,13 +10,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import com.moviting.android.R;
@@ -41,13 +38,17 @@ public class MainActivity extends BaseActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private MyViewPager mViewPager;
-
+    private SharedPreferences prefs;
+    private TabLayout tabLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        prefs = getSharedPreferences("tab_number", MODE_PRIVATE);
+        int tabNum = prefs.getInt("tab", 0);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,13 +61,23 @@ public class MainActivity extends BaseActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPagingEnabled(false);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        TabLayout.Tab tab = tabLayout.getTabAt(tabNum);
+        tab.select();
 
         Bundle params = new Bundle();
         params.putString("name", "MainActivity");
         params.putString("value", "onCreate");
         mFirebaseAnalytics.logEvent("log", params);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putInt("tab", tabLayout.getSelectedTabPosition());
+        ed.apply();
     }
 
     @Override

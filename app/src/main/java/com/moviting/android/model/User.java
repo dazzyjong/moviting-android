@@ -28,6 +28,7 @@ public class User implements Parcelable {
     public int minPrefAge;
     public int maxPrefAge;
     public String preferredGender;
+    public String token;
 
     public User(){
     }
@@ -89,6 +90,9 @@ public class User implements Parcelable {
     public void setUserStatus(String userStatus) {
         this.userStatus = userStatus;
     }
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     @Exclude
     public Map<String, Object> toMap() {
@@ -132,7 +136,11 @@ public class User implements Parcelable {
         } else {
             result.put("myAge", 0);
         }
-
+        if(token != null) {
+            result.put("token", token);
+        } else {
+            result.put("token", "");
+        }
         return result;
     }
 

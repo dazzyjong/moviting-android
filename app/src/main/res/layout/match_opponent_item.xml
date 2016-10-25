@@ -19,7 +19,8 @@
         app:civ_border_width="2dp"
         app:civ_border_color="#FFFFFFFF"
         android:clickable="true"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        android:scaleType="centerCrop"/>
 
     <ImageView
         android:id="@+id/like_noti"

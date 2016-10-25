@@ -30,6 +30,7 @@ public class CreditActivity extends BaseActivity {
     private EditText userUseAmount;
     private Long userAmount = 0L;
     private Button useButton;
+    private TextView usedCredit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +41,20 @@ public class CreditActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        usedCredit = (TextView) findViewById(R.id.used_credit);
         availableCredit = (TextView) findViewById(R.id.available_credit);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    userUseAmount.setText(availableCredit.getText());
+                    userUseAmount.setText(String.valueOf(credit));
                     userAmount = credit;
+                    usedCredit.setText(availableCredit.getText());
                 } else {
                     userUseAmount.setText("0");
                     userAmount = 0L;
+                    usedCredit.setText("0");
                 }
             }
         });
@@ -70,6 +74,7 @@ public class CreditActivity extends BaseActivity {
                     if( Long.parseLong(charSequence.toString()) > credit || charSequence.toString().trim().length() > availableCredit.length()) {
                         userUseAmount.setText(availableCredit.getText());
                         userAmount = credit;
+                        usedCredit.setText(availableCredit.getText());
                     } else {
                         userAmount = Long.parseLong(charSequence.toString());
                     }
@@ -117,15 +122,19 @@ public class CreditActivity extends BaseActivity {
         getFirebaseDatabaseReference().child("user_point").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                availableCredit.setText(String.valueOf(dataSnapshot.getValue()));
-                if((Long)dataSnapshot.getValue() >= 0) {
-                    credit = (Long)dataSnapshot.getValue();
+                if(dataSnapshot.getValue() != null) {
+                    availableCredit.setText(String.format("%,d", dataSnapshot.getValue() ));
+                    if ((Long) dataSnapshot.getValue() >= 0) {
+                        credit = (Long) dataSnapshot.getValue();
+                    }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });

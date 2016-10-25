@@ -18,6 +18,7 @@
         android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true">
         <de.hdodenhof.circleimageview.CircleImageView
+            android:scaleType="centerCrop"
             android:id="@+id/profile_image"
             android:layout_width="96dp"
             android:layout_height="96dp"

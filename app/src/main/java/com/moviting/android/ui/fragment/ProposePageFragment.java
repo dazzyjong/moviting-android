@@ -177,7 +177,9 @@ public class ProposePageFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, "getOppositeUserInfo:onCancelled", databaseError.toException());
             }
         });

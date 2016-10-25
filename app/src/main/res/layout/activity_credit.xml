@@ -62,18 +62,17 @@
                 android:paddingRight="10dp"/>
 
             <TextView
+                android:text="0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:id="@+id/available_credit"
-                android:textColor="@color/colorPrimary"/>
+                android:id="@+id/available_credit" />
 
             <TextView
                 android:text=" C"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary"/>
+                android:textStyle="bold" />
 
 
         </LinearLayout>
@@ -110,22 +109,29 @@
             android:orientation="horizontal"
             android:layout_above="@+id/use_button"
             android:layout_marginBottom="30dp">
+
             <TextView
                 android:text="적용 크레딧 : "
-                android:textSize="30dp"
+                android:textSize="26dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:id="@+id/textView3" />
+
             <TextView
-                android:textColor="@color/colorPrimary"
                 android:textAlignment="textEnd"
-                android:textSize="30dp"
-                android:text="20,000 원"
+                android:textSize="26dp"
+                android:text="0"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:id="@+id/used_credit" />
+                android:id="@+id/used_credit"
+                android:layout_marginRight="10dp"/>
+            <TextView
+                android:textSize="26dp"
+                android:text="원"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <Button

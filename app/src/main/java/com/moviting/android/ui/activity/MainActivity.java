@@ -67,19 +67,6 @@ public class MainActivity extends BaseActivity {
         params.putString("name", "MainActivity");
         params.putString("value", "onCreate");
         mFirebaseAnalytics.logEvent("log", params);
-
-        // TODO: getPreference
-        getFirebaseDatabaseReference().child("users").child(getUid())
-                .child("token").setValue(getToken()).addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                    Log.d(TAG, task.getException().getMessage());
-                    Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
     }
 
     @Override

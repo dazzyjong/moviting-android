@@ -251,6 +251,7 @@ public class FirstSettingActivity extends BaseActivity {
         user.setSchool(schoolText.getText().toString());
         user.setWork(workText.getText().toString());
         user.setHeight(heightText.getText().toString());
+        user.setToken(getToken());
 
         updateUserDataBase();
     }
@@ -367,7 +368,9 @@ public class FirstSettingActivity extends BaseActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(getBaseContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override

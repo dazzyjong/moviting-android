@@ -59,7 +59,9 @@ public class ChoosePrefMovieActivity extends ChoosePrefActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });

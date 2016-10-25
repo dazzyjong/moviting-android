@@ -80,7 +80,7 @@ public class EnrollFragment extends BaseFragment {
                     if(isEnrolled) {
                         getBaseActivity().getFirebaseDatabaseReference()
                                 .child("users").child(getBaseActivity().getUid())
-                                .child("userStatus").setValue("Joined", new DatabaseReference.CompletionListener() {
+                                .child("userStatus").setValue("Disenrolled", new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 Toast.makeText(getActivity(), R.string.release_success_text, Toast.LENGTH_SHORT).show();
@@ -154,7 +154,7 @@ public class EnrollFragment extends BaseFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    if(dataSnapshot.getValue().equals("Joined")) {
+                    if(dataSnapshot.getValue().equals("Disenrolled")) {
                         isEnrolled = false;
                     } else if (dataSnapshot.getValue().equals("Enrolled")){
                         isEnrolled = true;
@@ -168,7 +168,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });
@@ -231,7 +233,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });
@@ -253,7 +257,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });
@@ -284,7 +290,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });
@@ -306,7 +314,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });
@@ -328,7 +338,9 @@ public class EnrollFragment extends BaseFragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 Log.w(TAG, databaseError.getDetails());
             }
         });

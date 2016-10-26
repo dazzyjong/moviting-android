@@ -40,6 +40,8 @@ public class MainActivity extends BaseActivity {
     private MyViewPager mViewPager;
     private SharedPreferences prefs;
     private TabLayout tabLayout;
+    private int res[];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -60,9 +63,17 @@ public class MainActivity extends BaseActivity {
         mViewPager = (MyViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPagingEnabled(false);
-
+        res = new int[]{R.drawable.ic_av_movie_grey,
+                R.drawable.ic_action_favorite_grey,
+                R.drawable.ic_chat_bubble_grey_24dp,
+                R.drawable.ic_navigation_more_horiz_grey};
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(res[i]);
+        }
+
         TabLayout.Tab tab = tabLayout.getTabAt(tabNum);
         tab.select();
 
@@ -135,20 +146,20 @@ public class MainActivity extends BaseActivity {
             return 4;
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-                case 3:
-                    return "SECTION 4";
-            }
-            return null;
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return "SECTION 1";
+//                case 1:
+//                    return "SECTION 2";
+//                case 2:
+//                    return "SECTION 3";
+//                case 3:
+//                    return "SECTION 4";
+//            }
+//            return null;
+//        }
     }
 
     public static Intent createIntent(Context context) {

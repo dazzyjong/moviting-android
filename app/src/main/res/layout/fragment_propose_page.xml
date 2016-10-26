@@ -78,7 +78,7 @@
                     <ImageButton
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_clear_black_24dp"
+                        android:src="@drawable/ic_clear_grey_24dp"
                         android:id="@+id/dislike"
                         android:layout_weight="1"
                         android:background="?attr/selectableItemBackgroundBorderless"
@@ -88,7 +88,7 @@
                     <ImageButton
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_favorite_black_24dp"
+                        android:src="@drawable/ic_action_favorite_pink"
                         android:id="@+id/like"
                         android:layout_weight="1"
                         android:background="?attr/selectableItemBackgroundBorderless"

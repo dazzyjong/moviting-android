@@ -10,7 +10,7 @@
     <string name="loading">Loading…</string>
 
     <!-- Account fragment list -->
-    <string name="my_profile">내 프로필</string>
+    <string name="my_profile">프로필</string>
     <string name="movie_ticket_box">영화티켓</string>
     <string name="coupon_box">쿠폰함</string>
     <string name="FAQ">자주묻는질문</string>

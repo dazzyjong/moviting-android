@@ -4,7 +4,7 @@
     tools:context="com.moviting.android.ui.activity.ChatActivity">
     <item
         android:id="@+id/send_movie_ticket"
-        android:icon="@drawable/ic_movie"
+        android:icon="@drawable/ic_arrow_drop_down_circle_white_24dp"
         app:showAsAction="always"
         android:title="complete" />
 </menu>

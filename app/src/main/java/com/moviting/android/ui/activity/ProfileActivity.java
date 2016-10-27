@@ -58,7 +58,7 @@ public class ProfileActivity extends BaseActivity {
                 profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String selected = getResources().getStringArray(R.array.profile_list)[i];
+                        String selected = getResources().getStringArray(R.array.opponent_profile_list)[i];
                         startActivityForResult(
                                 ProfilePropEditActivity.createIntent(getBaseContext(), selected, getValue(selected)),
                                 REQUEST_EDIT);
@@ -104,7 +104,7 @@ public class ProfileActivity extends BaseActivity {
         String[] profileList;
 
         ProfileAdapter() {
-            profileList = getResources().getStringArray(R.array.profile_list);
+            profileList = getResources().getStringArray(R.array.my_profile_list);
         }
         @Override
         public int getCount() {

@@ -144,7 +144,7 @@ public class OpponentProfileActivity extends BaseActivity {
 
         ProfileAdapter(Map map) {
             userProfile = new MyHashMap<>(map);
-            profileList = getResources().getStringArray(R.array.profile_list);
+            profileList = getResources().getStringArray(R.array.opponent_profile_list);
             intersection = new UserPreference();
         }
 

@@ -85,7 +85,16 @@
             6시간 후 결제 금액은 포인트로 환불됩니다</item>
     </string-array>
 
-    <string-array name="profile_list">
+    <string-array name="my_profile_list">
+        <item>이름</item>
+        <item>나이</item>
+        <item>키</item>
+        <item>학교</item>
+        <item>직업</item>
+        <item>인생 영화</item>
+    </string-array>
+
+    <string-array name="opponent_profile_list">
         <item>영화 정보</item>
         <item>영화</item>
         <item>일자</item>

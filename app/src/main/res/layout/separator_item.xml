@@ -3,8 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="#E6E6E6"
-    android:gravity="center_vertical"
-    android:clickable="false">
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/textSeparator"
@@ -16,7 +15,6 @@
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#757575"
-        android:textStyle="bold"
-        android:visibility="visible" />
+        android:textStyle="bold" />
 
 </LinearLayout>

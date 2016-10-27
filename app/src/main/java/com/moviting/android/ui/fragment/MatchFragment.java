@@ -371,7 +371,7 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else if(kind == LIKE_EACH_OTHER) {

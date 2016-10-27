@@ -1,7 +1,9 @@
 package com.moviting.android.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,15 +14,19 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
+import com.moviting.android.model.MovieTicket;
 import com.moviting.android.model.User;
 import com.moviting.android.model.UserPreference;
 import com.moviting.android.util.ArraySetOperator;
@@ -31,7 +37,6 @@ import java.util.Map;
 
 public class OpponentProfileActivity extends BaseActivity {
 
-    private static final int REQUEST_EDIT = 1;
     private static final String TAG = "OppoProfileActivity";
 
     private RecyclerView rvProfileMenu;
@@ -136,6 +141,7 @@ public class OpponentProfileActivity extends BaseActivity {
     public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private static final int TYPE_ITEM = 0;
         private static final int TYPE_SEPARATOR = 1;
+
         String[] profileList;
         private MyHashMap<String, Object> userProfile;
         private UserPreference intersection;
@@ -171,7 +177,7 @@ public class OpponentProfileActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if(position == 0 || position == 3 || position == 10) {
                 SeparatorViewHolder separatorViewHolder = (SeparatorViewHolder)holder;
                 separatorViewHolder.separatorText.setText(profileList[position]);
@@ -179,6 +185,18 @@ public class OpponentProfileActivity extends BaseActivity {
                 ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
                 profileViewHolder.key.setText(profileList[position]);
                 profileViewHolder.value.setText(getValue(profileList[position]));
+            }
+
+            if (position == 1 || position == 2) {
+
+                holder.itemView.setClickable(true);
+                holder.itemView.setFocusable(true);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        createDialog(position);
+                    }
+                });
             }
         }
 
@@ -221,11 +239,6 @@ public class OpponentProfileActivity extends BaseActivity {
             }
         }
 
-        private void updateItem(String key, String value){
-            userProfile.put(key, value);
-            notifyDataSetChanged();
-        }
-
         private void addIntersectionArray(ArrayList<String> movie, ArrayList<String> date) {
             intersection.preferredDate = date;
             intersection.preferredMovie = movie;
@@ -259,38 +272,40 @@ public class OpponentProfileActivity extends BaseActivity {
             }
             return "";
         }
+
+        public UserPreference getIntersection() {
+            return intersection;
+        }
     }
 
-    private String getPropertyName(String key) {
-        if(key.equals("이름")) {
-            return "name";
-        }
-        if(key.equals("나이")) {
-            return "myAge";
-        }
-        if(key.equals("키")) {
-            return "height";
-        }
-        if(key.equals("학교")) {
-            return "school";
-        }
-        if(key.equals("직업")) {
-            return "work";
-        }
-        if(key.equals("인생 영화")) {
-            return "favoriteMovie";
-        }
-        return "";
-    }
+    private void createDialog(int position) {
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_EDIT) {
-            if (resultCode == Activity.RESULT_OK) {
-                String key = data.getStringExtra("key");
-                String value = data.getStringExtra("value");
-                ((ProfileAdapter) rvProfileMenu.getAdapter()).updateItem(getPropertyName(key), value);
-            }
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(OpponentProfileActivity.this);
+
+        ArrayAdapter<String> adapter;
+        if(position == 1) {
+            adapter = new ArrayAdapter<>(this, R.layout.simple_list_item,
+                    ((ProfileAdapter) rvProfileMenu.getAdapter()).getIntersection().preferredMovie.toArray(new String[0]) );
+
+        } else {
+            adapter = new ArrayAdapter<>(this, R.layout.simple_list_item, R.id.text1,
+                    ((ProfileAdapter) rvProfileMenu.getAdapter()).getIntersection().preferredDate.toArray(new String[0]));
         }
+
+        // AlertDialog 셋팅
+        alertDialogBuilder
+                .setAdapter(adapter, null)
+                .setCancelable(false)
+                .setPositiveButton("확인",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+
+        // 다이얼로그 생성
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // 다이얼로그 보여주기
+        alertDialog.show();
     }
 }

@@ -3,7 +3,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:layout_gravity="center_vertical"
-    android:clickable="false">
+    android:focusable="false"
+    android:clickable="false"
+    android:background="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/tag"
@@ -30,9 +32,7 @@
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
             android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
             android:paddingRight="?android:attr/listPreferredItemPaddingRight"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"/>
+            android:lines="1"
+            android:ellipsize="end"/>
 
 </LinearLayout>

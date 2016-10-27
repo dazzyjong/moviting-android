@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class ChoosePrefGenderActivity extends ChoosePrefActivity {
     private static final String TAG = "PrefGender";
     private String choosedGender;
-    private ArrayList<String> options = new ArrayList<>(Arrays.asList("male", "female", "both"));
+    private ArrayList<String> options = new ArrayList<>(Arrays.asList("male", "female"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class ChoosePrefGenderActivity extends ChoosePrefActivity {
     }
 
     public void getUserPrefGender() {
-        String[] list = new String[]{"남성", "여성", "남성 및 여성"};
+        String[] list = new String[]{"남성", "여성"};
         boolean[] select = {false, false, false};
 
         if(choosedGender.length() != 0) {

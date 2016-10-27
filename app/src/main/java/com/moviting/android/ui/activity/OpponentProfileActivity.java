@@ -291,7 +291,6 @@ public class OpponentProfileActivity extends BaseActivity {
         // AlertDialog 셋팅
         alertDialogBuilder
                 .setAdapter(adapter, null)
-                .setCancelable(false)
                 .setPositiveButton("확인",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {

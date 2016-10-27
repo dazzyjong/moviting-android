@@ -19,14 +19,14 @@
     <string name="title_activity_first_setting">@string/app_name</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_school">(졸업/재학)학교</string>
-    <string name="prompt_work">직업(학생)</string>
+    <string name="prompt_school">대학</string>
+    <string name="prompt_work">직업</string>
     <string name="prompt_height">신장</string>
-    <string name="prompt_fav_movie">인생영화 한편을 꼽자면?</string>
-    <string name="action_account_profile_submit">Submit</string>
+    <string name="prompt_fav_movie">인생영화</string>
+    <string name="action_account_profile_submit">"제  출"</string>
     <string name="action_submit_short">Submit</string>
     <string name="prompt_name">이름</string>
-    <string name="birthday_text">생일</string>
+    <string name="birthday_text">생년월일</string>
     <string name="gender_text">성별</string>
     <string name="prompt_introduce">자기소개</string>
     <string name="photo_required">얼굴이 나온 사진을 올려 주세요</string>
@@ -95,7 +95,7 @@
     </string-array>
 
     <string-array name="opponent_profile_list">
-        <item>영화 정보</item>
+        <item>매칭 영화 정보</item>
         <item>영화</item>
         <item>일자</item>
         <item>상대방 정보</item>

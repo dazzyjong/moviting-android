@@ -9,19 +9,20 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#f0f0f0"
     tools:context="com.moviting.android.ui.activity.FirstSettingActivity">
 
     <RelativeLayout
         android:id="@+id/image_layout"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true">
         <de.hdodenhof.circleimageview.CircleImageView
             android:scaleType="centerCrop"
             android:id="@+id/profile_image"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:src="@drawable/profile_placeholder"
             app:civ_border_width="2dp"
             app:civ_border_color="#FFFFFFFF"/>
@@ -33,7 +34,7 @@
             android:scaleType="centerCrop"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:background="@android:color/transparent"
+            android:background="?android:attr/selectableItemBackground"
             android:clickable="true"/>
     </RelativeLayout>
 
@@ -57,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_name"
+                    android:textSize="14sp"
                     android:inputType="text"
                     android:maxLines="1"/>
 
@@ -66,21 +68,21 @@
                 android:text="@string/gender_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
                 android:paddingBottom="6dp"
+                android:layout_marginLeft="4dp"
                 android:paddingTop="6dp" />
 
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/gender_spinner"
-                android:layout_weight="1" />
+                style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
 
             <TextView
                 android:text="@string/birthday_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="4dp"
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp" />
 
@@ -101,6 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_fav_movie"
+                    android:textSize="14sp"
                     android:inputType="text"
                     android:maxLines="1"/>
 
@@ -115,6 +118,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_school"
+                    android:textSize="14sp"
                     android:inputType="text"
                     android:maxLines="1"/>
 
@@ -128,6 +132,7 @@
                     android:id="@+id/work"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="14sp"
                     android:hint="@string/prompt_work"
                     android:inputType="text"
                     android:maxLines="1"/>
@@ -142,6 +147,7 @@
                     android:id="@+id/height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="14sp"
                     android:hint="@string/prompt_height"
                     android:inputType="numberDecimal"
                     android:maxLines="1"/>

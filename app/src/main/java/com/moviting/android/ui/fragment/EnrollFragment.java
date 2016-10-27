@@ -210,14 +210,14 @@ public class EnrollFragment extends BaseFragment {
     private void getUserPrefDate() {
         getBaseActivity().getFirebaseDatabaseReference()
                 .child("users").child(getBaseActivity().getUid())
-                .child("preferredDate").addListenerForSingleValueEvent(new ValueEventListener() {
+                .child("preferredDate").orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     int i = 0;
-                    for( String select : ((ArrayList<String>)dataSnapshot.getValue())) {
-                        selectedDates.add(select);
-                        select = readableDate(select);
+                    for(DataSnapshot dateSnapshot : dataSnapshot.getChildren() ) {
+                        selectedDates.add((String)dateSnapshot.getValue());
+                        String select = readableDate((String)dateSnapshot.getValue());
                         if(i == 0) {
                             dateText.setText(select);
                         } else {

@@ -1,0 +1,296 @@
+package com.moviting.android.ui.activity;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.moviting.android.R;
+import com.moviting.android.model.User;
+import com.moviting.android.model.UserPreference;
+import com.moviting.android.util.ArraySetOperator;
+import com.moviting.android.util.MyHashMap;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+public class OpponentProfileActivity extends BaseActivity {
+
+    private static final int REQUEST_EDIT = 1;
+    private static final String TAG = "OppoProfileActivity";
+
+    private RecyclerView rvProfileMenu;
+    private ImageView imageView;
+    private User user;
+    private String opponentUid;
+    private ArrayList<UserPreference> couplePreference;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_opponent_profile);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        opponentUid = getIntent().getStringExtra("opponentUid");
+
+        couplePreference = new ArrayList<>();
+
+        rvProfileMenu = (RecyclerView) findViewById(R.id.opponent_profile_property_list);
+        rvProfileMenu.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        rvProfileMenu.setLayoutManager(mLayoutManager);
+
+        getFirebaseDatabaseReference().child("users").child(opponentUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                UserPreference userPreference = dataSnapshot.getValue(UserPreference.class);
+                setIntersection(userPreference);
+                Map map = user.toMap();
+
+                imageView = (ImageView) findViewById(R.id.imageView);
+                Glide.with(getBaseContext()).load(user.photoUrl).into(imageView);
+                getSupportActionBar().setTitle(user.name);
+                rvProfileMenu.setAdapter(new ProfileAdapter(map));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+            }
+        });
+
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserPreference userPreference = dataSnapshot.getValue(UserPreference.class);
+                setIntersection(userPreference);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                Log.w(TAG, databaseError.getDetails());
+            }
+        });
+    }
+
+    private void setIntersection(UserPreference userPreference) {
+        couplePreference.add(userPreference);
+
+        if(couplePreference.size() == 2 ) {
+            ((ProfileAdapter) rvProfileMenu.getAdapter()).addIntersectionArray(
+                    ArraySetOperator.intersection(couplePreference.get(0).preferredMovie, couplePreference.get(1).preferredMovie),
+                    ArraySetOperator.intersection(couplePreference.get(0).preferredDate, couplePreference.get(1).preferredDate));
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                OpponentProfileActivity.this.onBackPressed();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public static Intent createIntent(Context context, String opponentUid) {
+        Intent in = new Intent();
+        in.putExtra("opponentUid", opponentUid);
+        in.setClass(context, OpponentProfileActivity.class);
+        return in;
+    }
+
+    public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_ITEM = 0;
+        private static final int TYPE_SEPARATOR = 1;
+        String[] profileList;
+        private MyHashMap<String, Object> userProfile;
+        private UserPreference intersection;
+
+        ProfileAdapter(Map map) {
+            userProfile = new MyHashMap<>(map);
+            profileList = getResources().getStringArray(R.array.profile_list);
+            intersection = new UserPreference();
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if(viewType == TYPE_ITEM) {
+                ProfileAdapter.ProfileViewHolder profileViewHolder;
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.opponent_profile_item, parent, false);
+
+                profileViewHolder = new ProfileAdapter.ProfileViewHolder(view);
+                view.setTag(profileViewHolder);
+
+                return profileViewHolder;
+            } else {
+                ProfileAdapter.SeparatorViewHolder separatorViewHolder;
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.separator_item, parent, false);
+
+                separatorViewHolder = new SeparatorViewHolder(view);
+
+                return separatorViewHolder;
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if(position == 0 || position == 3 || position == 10) {
+                SeparatorViewHolder separatorViewHolder = (SeparatorViewHolder)holder;
+                separatorViewHolder.separatorText.setText(profileList[position]);
+            } else {
+                ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
+                profileViewHolder.key.setText(profileList[position]);
+                profileViewHolder.value.setText(getValue(profileList[position]));
+            }
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public int getItemCount() {
+            return profileList.length;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(position == 0 || position == 3 || position == 10) {
+                return TYPE_SEPARATOR;
+            }
+
+            return TYPE_ITEM;
+        }
+
+        class ProfileViewHolder extends RecyclerView.ViewHolder {
+            TextView key;
+            TextView value;
+
+            public ProfileViewHolder(View itemView) {
+                super(itemView);
+
+                key = (TextView) itemView.findViewById(R.id.tag);
+                value = (TextView) itemView.findViewById(R.id.value);
+            }
+        }
+
+        class SeparatorViewHolder extends RecyclerView.ViewHolder {
+            TextView separatorText;
+            public SeparatorViewHolder(View itemView) {
+                super(itemView);
+                separatorText = (TextView) itemView.findViewById(R.id.textSeparator);
+            }
+        }
+
+        private void updateItem(String key, String value){
+            userProfile.put(key, value);
+            notifyDataSetChanged();
+        }
+
+        private void addIntersectionArray(ArrayList<String> movie, ArrayList<String> date) {
+            intersection.preferredDate = date;
+            intersection.preferredMovie = movie;
+            notifyDataSetChanged();
+        }
+
+        private String getValue(String key) {
+            if(key.equals("이름")) {
+                return userProfile.get("name").toString();
+            }
+            if(key.equals("나이")) {
+                return userProfile.get("myAge").toString();
+            }
+            if(key.equals("키")) {
+                return userProfile.get("height").toString();
+            }
+            if(key.equals("학교")) {
+                return userProfile.get("school").toString();
+            }
+            if(key.equals("직업")) {
+                return userProfile.get("work").toString();
+            }
+            if(key.equals("인생 영화")) {
+                return userProfile.get("favoriteMovie").toString();
+            }
+            if(key.equals("영화")) {
+                return intersection.preferredMovie.toString();
+            }
+            if(key.equals("일자")) {
+                return intersection.preferredDate.toString();
+            }
+            return "";
+        }
+    }
+
+    private String getPropertyName(String key) {
+        if(key.equals("이름")) {
+            return "name";
+        }
+        if(key.equals("나이")) {
+            return "myAge";
+        }
+        if(key.equals("키")) {
+            return "height";
+        }
+        if(key.equals("학교")) {
+            return "school";
+        }
+        if(key.equals("직업")) {
+            return "work";
+        }
+        if(key.equals("인생 영화")) {
+            return "favoriteMovie";
+        }
+        return "";
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_EDIT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String key = data.getStringExtra("key");
+                String value = data.getStringExtra("value");
+                ((ProfileAdapter) rvProfileMenu.getAdapter()).updateItem(getPropertyName(key), value);
+            }
+        }
+    }
+}

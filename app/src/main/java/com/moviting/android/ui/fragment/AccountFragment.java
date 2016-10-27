@@ -62,7 +62,7 @@ public class AccountFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        startActivity(ProfileActivity.createIntent(getActivity(), null));
+                        startActivity(ProfileActivity.createIntent(getActivity()));
                         break;
                     case 1:
                         startActivity(TicketBoxActivity1.createIntent(getActivity()));

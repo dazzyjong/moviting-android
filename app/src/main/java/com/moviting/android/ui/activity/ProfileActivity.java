@@ -35,7 +35,6 @@ public class ProfileActivity extends BaseActivity {
     private MyHashMap<String, Object> userProfile;
     private ImageView imageView;
     private User user;
-    private String opponentUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,64 +45,37 @@ public class ProfileActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        opponentUid = getIntent().getStringExtra("opponentUid");
+        getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                Map map = user.toMap();
+                userProfile = new MyHashMap<>(map);
 
-        if(opponentUid == null) {
-            getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    user = dataSnapshot.getValue(User.class);
-                    Map map = user.toMap();
-                    userProfile = new MyHashMap<>(map);
+                profileList = (ListView) findViewById(R.id.profile_property_list);
+                profileList.setAdapter(new ProfileAdapter());
 
-                    profileList = (ListView) findViewById(R.id.profile_property_list);
-                    profileList.setAdapter(new ProfileAdapter());
-
-                    profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String selected = getResources().getStringArray(R.array.profile_list)[i];
-                            startActivityForResult(
-                                    ProfilePropEditActivity.createIntent(getBaseContext(), selected, getValue(selected)),
-                                    REQUEST_EDIT);
-                        }
-                    });
-                    imageView = (ImageView) findViewById(R.id.imageView);
-                    Glide.with(getBaseContext()).load(userProfile.get("photoUrl")).into(imageView);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    if(getBaseContext() != null) {
-                        Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String selected = getResources().getStringArray(R.array.profile_list)[i];
+                        startActivityForResult(
+                                ProfilePropEditActivity.createIntent(getBaseContext(), selected, getValue(selected)),
+                                REQUEST_EDIT);
                     }
-                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                }
-            });
-        } else {
-            getFirebaseDatabaseReference().child("users").child(opponentUid).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    user = dataSnapshot.getValue(User.class);
-                    Map map = user.toMap();
-                    userProfile = new MyHashMap<>(map);
+                });
+                imageView = (ImageView) findViewById(R.id.imageView);
+                Glide.with(getBaseContext()).load(userProfile.get("photoUrl")).into(imageView);
+            }
 
-                    profileList = (ListView) findViewById(R.id.profile_property_list);
-                    profileList.setAdapter(new ProfileAdapter());
-
-                    imageView = (ImageView) findViewById(R.id.imageView);
-                    Glide.with(getBaseContext()).load(userProfile.get("photoUrl")).into(imageView);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    if(getBaseContext() != null) {
-                        Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                }
-            });
-        }
+                Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+            }
+        });
     }
 
     @Override
@@ -122,9 +94,8 @@ public class ProfileActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    public static Intent createIntent(Context context, String opponentUid) {
+    public static Intent createIntent(Context context) {
         Intent in = new Intent();
-        in.putExtra("opponentUid", opponentUid);
         in.setClass(context, ProfileActivity.class);
         return in;
     }
@@ -170,9 +141,6 @@ public class ProfileActivity extends BaseActivity {
 
             profileViewHolder.key.setText(profileList[i]);
             profileViewHolder.value.setText(getValue(profileList[i]));
-            if(opponentUid != null){
-                profileViewHolder.arrow.setVisibility(View.GONE);
-            }
 
             return view;
 

@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.Propose;
 import com.moviting.android.model.User;
+import com.moviting.android.ui.activity.OpponentProfileActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
 
 public class ProposePageFragment extends BaseFragment {
@@ -78,7 +79,7 @@ public class ProposePageFragment extends BaseFragment {
         mName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(ProfileActivity.createIntent(getActivity(), mProposeUid));
+                startActivity(OpponentProfileActivity.createIntent(getActivity(), mProposeUid));
             }
         });
         mAgeAndWork = (TextView) view.findViewById(R.id.age_and_work);
@@ -91,7 +92,7 @@ public class ProposePageFragment extends BaseFragment {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(ProfileActivity.createIntent(getActivity(), mProposeUid));
+                startActivity(OpponentProfileActivity.createIntent(getActivity(), mProposeUid));
             }
         });
 

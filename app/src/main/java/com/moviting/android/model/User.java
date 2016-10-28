@@ -147,28 +147,28 @@ public class User implements Parcelable {
     @Exclude
     public boolean isUserFormFilled() {
 
-        if(name.equals("")) {
+        if(name == null || name.equals("")) {
             return false;
         }
-        if(photoUrl.equals("")) {
+        if(photoUrl == null || photoUrl.equals("")) {
             return false;
         }
-        if(gender.equals("")) {
+        if(gender == null || gender.equals("")) {
             return false;
         }
-        if(birthday.equals("")) {
+        if(birthday == null || birthday.equals("")) {
             return false;
         }
-        if(favoriteMovie.equals("")) {
+        if(favoriteMovie == null || favoriteMovie.equals("")) {
             return false;
         }
-        if(school.equals("")) {
+        if(school == null || school.equals("")) {
             return false;
         }
-        if(work.equals("")) {
+        if(work == null || work.equals("")) {
             return false;
         }
-        if(height.equals("")) {
+        if(height == null || height.equals("")) {
             return false;
         }
 

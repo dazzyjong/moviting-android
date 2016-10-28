@@ -145,21 +145,6 @@ public class MainActivity extends BaseActivity {
             // Show 3 total pages.
             return 4;
         }
-
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return "SECTION 1";
-//                case 1:
-//                    return "SECTION 2";
-//                case 2:
-//                    return "SECTION 3";
-//                case 3:
-//                    return "SECTION 4";
-//            }
-//            return null;
-//        }
     }
 
     public static Intent createIntent(Context context) {

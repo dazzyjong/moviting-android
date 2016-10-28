@@ -1,19 +1,27 @@
 package com.moviting.android.ui.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import android.database.Cursor;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -27,16 +35,22 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.moviting.android.R;
 import com.moviting.android.model.User;
+import com.moviting.android.util.PhotoFileUtility;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,6 +59,7 @@ import java.util.Map;
 
 public class FirstSettingActivity extends BaseActivity {
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private ImageView profileImage;
     private EditText nameText;
     private Spinner genderSpinner;
@@ -63,14 +78,19 @@ public class FirstSettingActivity extends BaseActivity {
 
     private static final String TAG = "FirstSettingActivity";
     public static int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_setting);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mAuth = FirebaseAuth.getInstance();
         user = getIntent().getExtras().getParcelable("user");
-
         profileImage = (ImageView) findViewById(R.id.profile_image);
 
         if (user.photoUrl != null && !user.photoUrl.equals("")) {
@@ -163,8 +183,24 @@ public class FirstSettingActivity extends BaseActivity {
         photoButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertDialog = createInflaterDialog();
-                alertDialog.show();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(FirstSettingActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(FirstSettingActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                    } else{
+                        alertDialog = createInflaterDialog();
+                        alertDialog.show();
+                    }
+                } else {
+                    alertDialog = createInflaterDialog();
+                    alertDialog.show();
+                }
             }
         });
 
@@ -289,13 +325,10 @@ public class FirstSettingActivity extends BaseActivity {
                         setDismiss(alertDialog);
                         break;
                     case 1:
-                        Intent libraryIntent = new Intent(
-                                Intent.ACTION_PICK,
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        libraryIntent.setType("image/*");
-                        startActivityForResult(
-                                Intent.createChooser(libraryIntent, getString(R.string.select_file)),
-                                SELECT_FILE);
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
                         setDismiss(alertDialog);
                         break;
                     default:
@@ -342,22 +375,87 @@ public class FirstSettingActivity extends BaseActivity {
 
     private void onSelectFromGalleryResult(Intent data) {
         Uri selectedImageUri = data.getData();
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor cursor = getContentResolver().query(selectedImageUri, projection, null, null, null);
+        try {
+            Bitmap src = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
 
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
+            src = getResizedBitmap(src, 780);
 
-        String selectedImagePath = cursor.getString(column_index);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 4;
-        Bitmap src = BitmapFactory.decodeFile(selectedImagePath, options);
-        profileImage.setImageBitmap(src);
+            if (ContextCompat.checkSelfPermission(FirstSettingActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                int orientation = getRotation(selectedImageUri);
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        src = rotateBitmap(src, 90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        src = rotateBitmap(src, 180);
+                        break;
 
-        StorageReference profileImageReference = getFirebaseStorage().getReferenceFromUrl("gs://moviting.appspot.com/profile_image/");
-        uploadImageToStorage(src, profileImageReference.child(getUid() + ".jpg"));
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        src = rotateBitmap(src, 270);
+                        break;
+                }
+            }
+            profileImage.setImageBitmap(src);
+            StorageReference profileImageReference = getFirebaseStorage().getReferenceFromUrl("gs://moviting.appspot.com/profile_image/");
+            uploadImageToStorage(src, profileImageReference.child(getUid() + ".jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+
+                alertDialog = createInflaterDialog();
+                alertDialog.show();
+                return;
+            }
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+
+    private int getRotation(Uri bitmapUri) {
+        int result = 0;
+
+        String path = PhotoFileUtility.getRealPathFromURI(this, bitmapUri);
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(exif != null) {
+            result = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        }
+
+        return result;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
 
     private void uploadImageToStorage(Bitmap bitmap, StorageReference reference) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -381,6 +479,46 @@ public class FirstSettingActivity extends BaseActivity {
             }
         });
 
+    }
+
+    private void signOut() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null) {
+            for (UserInfo profile : user.getProviderData()) {
+                // Id of the provider (ex: google.com)
+                String providerId = profile.getProviderId();
+                if (providerId.equals("facebook.com")) {
+                    LoginManager.getInstance().logOut();
+                }
+            }
+
+            mAuth.signOut();
+        }
+
+        startActivity(LoginActivity.createIntent(this));
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                signOut();
+                break;
+            case R.id.action_complete:
+
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_user_pref, menu);
+        return true;
     }
 
     public static Intent createIntent(Context context, User user) {

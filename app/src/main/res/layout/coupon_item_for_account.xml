@@ -16,11 +16,16 @@
         android:layout_weight="1"
         android:gravity="center" />
 
+    <LinearLayout
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#757575"/>
+
     <Button
         android:id="@+id/detail"
         android:text="상세설명"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@drawable/ripple_button_not_enrolled"/>
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
 
 </LinearLayout>

@@ -40,6 +40,9 @@ public class TicketBoxActivity2 extends BaseActivity {
     private TextView ticket1;
     private TextView ticket2;
 
+    private TextView ticket1ExpirationDate;
+    private TextView ticket2ExpirationDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +81,11 @@ public class TicketBoxActivity2 extends BaseActivity {
             }
         });
 
-        ticket1 = (TextView) findViewById(R.id.ticket1);
-        ticket2 = (TextView) findViewById(R.id.ticket2);
+        ticket1ExpirationDate = (TextView) findViewById(R.id.expiration_date1);
+        ticket2ExpirationDate = (TextView) findViewById(R.id.expiration_date2);
+
+        ticket1 = (TextView) findViewById(R.id.ticket_id1);
+        ticket2 = (TextView) findViewById(R.id.ticket_id2);
         getMyTicket();
     }
 
@@ -98,10 +104,10 @@ public class TicketBoxActivity2 extends BaseActivity {
                                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                         if(index == 0) {
                                             ticket1Button.setVisibility(View.GONE);
-                                            ticket1.setText("쿠폰번호: " + movieTicket.ticketId);
+                                            ticket1.setText(movieTicket.ticketId);
                                         } else if(index == 1){
                                             ticket2Button.setVisibility(View.GONE);
-                                            ticket2.setText("쿠폰번호: " + movieTicket.ticketId);
+                                            ticket2.setText(movieTicket.ticketId);
                                         }
                                     }
                                 });
@@ -127,22 +133,28 @@ public class TicketBoxActivity2 extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot child: dataSnapshot.getChildren()) {
                     HashMap object = (HashMap)child.getValue();
-                    movieTicketList.add(new MovieTicket(child.getKey(), (Boolean)object.get("screening")));
+                    movieTicketList.add(new MovieTicket(child.getKey(), (String)object.get("expiration_date"), (Boolean)object.get("screening")));
                 }
 
                 for(int i = 0; i < movieTicketList.size(); i++) {
                     if(i == 0) {
                         ticket1Layout.setVisibility(View.VISIBLE);
+                        ticket1ExpirationDate.setText(movieTicketList.get(i).expirationDate);
                         if(!movieTicketList.get(i).screen) {
                             ticket1Button.setVisibility(View.GONE);
-                            ticket1.setText("쿠폰번호: " + movieTicketList.get(i).ticketId);
+                            ticket1.setText(movieTicketList.get(i).ticketId);
+                        } else {
+                            ticket1.setText("**********");
                         }
                     }
                     if(i == 1) {
                         ticket2Layout.setVisibility(View.VISIBLE);
+                        ticket2ExpirationDate.setText(movieTicketList.get(i).expirationDate);
                         if(!movieTicketList.get(i).screen) {
                             ticket2Button.setVisibility(View.GONE);
-                            ticket2.setText("쿠폰번호: " + movieTicketList.get(i).ticketId);
+                            ticket2.setText(movieTicketList.get(i).ticketId);
+                        } else {
+                            ticket2.setText("**********");
                         }
                     }
                 }

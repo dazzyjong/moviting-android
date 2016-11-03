@@ -8,10 +8,12 @@ import java.io.Serializable;
 
 public class MovieTicket implements Serializable {
     public String ticketId;
+    public String expirationDate;
     public boolean screen;
 
-    public MovieTicket(String ticketId, boolean screen) {
+    public MovieTicket(String ticketId, String expirationDate, boolean screen) {
         this.ticketId = ticketId;
+        this.expirationDate = expirationDate;
         this.screen = screen;
     }
 }

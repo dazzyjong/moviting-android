@@ -109,7 +109,7 @@ public class MovieTicketActivity extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot child: dataSnapshot.getChildren()) {
                     HashMap object = (HashMap)child.getValue();
-                    movieTicketList.add(new MovieTicket(child.getKey(), (Boolean)object.get("screening")));
+                    movieTicketList.add(new MovieTicket(child.getKey(), null, (Boolean)object.get("screening")));
                 }
 
                 for(int i = 0; i < movieTicketList.size(); i++) {

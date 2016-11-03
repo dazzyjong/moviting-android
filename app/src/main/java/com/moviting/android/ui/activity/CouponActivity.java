@@ -1,8 +1,10 @@
 package com.moviting.android.ui.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -196,11 +198,11 @@ public class CouponActivity extends BaseActivity {
 
                     paymentModeHolder.checkedTextView = (CheckedTextView) view.findViewById(R.id.coupon_item);
                     paymentModeHolder.button = (Button) view.findViewById(R.id.detail);
-
+                    paymentModeHolder.button.setTag(i);
                     paymentModeHolder.button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getBaseContext(), "detail", Toast.LENGTH_SHORT).show();
+                            showDialog(couponArray.get((Integer)view.getTag()).kind);
                         }
                     });
                     view.setTag(paymentModeHolder);
@@ -217,10 +219,11 @@ public class CouponActivity extends BaseActivity {
 
                     accountModeHolder.textView = (TextView) view.findViewById(R.id.coupon_label);
                     accountModeHolder.button = (Button) view.findViewById(R.id.detail);
+                    accountModeHolder.button.setTag(i);
                     accountModeHolder.button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getBaseContext(), "detail", Toast.LENGTH_SHORT).show();
+                            showDialog(couponArray.get((Integer)view.getTag()).kind);
                         }
                     });
                     view.setTag(accountModeHolder);
@@ -245,5 +248,25 @@ public class CouponActivity extends BaseActivity {
             CheckedTextView checkedTextView;
             Button button;
         }
+    }
+
+    private void showDialog(String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CouponActivity.this);
+        View layout = getLayoutInflater().inflate(R.layout.custom_dialog, null);
+        builder.setTitle(title);
+        builder.setView(layout);
+
+        String positiveText = getString(android.R.string.ok);
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        // display dialog
+        dialog.show();
     }
 }

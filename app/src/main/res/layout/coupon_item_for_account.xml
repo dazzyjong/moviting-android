@@ -2,27 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@drawable/item_border">
 
     <TextView
+        android:text="1회 영화관람 이용권"
+        android:textSize="16dp"
         android:id="@+id/coupon_label"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:background="@drawable/button_not_enrolled"/>
-
-    <LinearLayout
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@android:color/black" />
+        android:gravity="center" />
 
     <Button
         android:id="@+id/detail"
         android:text="상세설명"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="25dp"
+        android:layout_height="match_parent"
         android:background="@drawable/ripple_button_not_enrolled"/>
 
 </LinearLayout>

@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -14,11 +16,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
-import com.moviting.android.model.User;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PaymentActivity extends BaseActivity {
 
@@ -27,6 +33,7 @@ public class PaymentActivity extends BaseActivity {
     private static final int PAYMENT_SUCCESS = 101;
     private static final int PRICE = 20000;
     private static final int PAYMENT_MODE = 1;
+    private static final String TAG = "PaymentActivity";
     private String couponUid = "";
     private MatchInfo matchInfo;
 
@@ -38,6 +45,7 @@ public class PaymentActivity extends BaseActivity {
     private TextView discountOfCoupon;
 
     private Button payButton;
+    private Button requestPaymentButton;
     private RelativeLayout creditButton;
     private RelativeLayout couponButton;
 
@@ -55,11 +63,20 @@ public class PaymentActivity extends BaseActivity {
         totalAmount = (TextView)  findViewById(R.id.total_amount);
         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
 
-        Button requestPaymentButton = (Button) findViewById(R.id.request_check_payment);
+        requestPaymentButton = (Button) findViewById(R.id.request_check_payment);
         requestPaymentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                showProgressDialog();
+                requestPaymentButton.setEnabled(false);
+                getFirebaseDatabaseReference().child("payment_confirm").child(getUid())
+                        .child(new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS").format(new Date())).setValue(true, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        showDialog();
+                        hideProgressDialog();
+                    }
+                });
             }
         });
 
@@ -96,6 +113,32 @@ public class PaymentActivity extends BaseActivity {
         discountOfCredit = (TextView) findViewById(R.id.discount_of_credit);
         discountOfCoupon = (TextView) findViewById(R.id.discount_of_coupon);
         matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
+        checkPaymentAndSetButton();
+    }
+
+    private void checkPaymentAndSetButton() {
+        getFirebaseDatabaseReference().child("payment_confirm").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null && dataSnapshot.getChildrenCount() != 0) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        if((Boolean) child.getValue()) {
+                            requestPaymentButton.setEnabled(false);
+                        } else {
+                            requestPaymentButton.setEnabled(true);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(getBaseContext() != null) {
+                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                Log.w(TAG, databaseError.getDetails());
+            }
+        });
     }
 
     public static Intent createIntent(Context context, MatchInfo matchInfo) {
@@ -168,6 +211,7 @@ public class PaymentActivity extends BaseActivity {
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(true);
+                        payButton.setTextColor(Color.WHITE);
                         couponButton.setEnabled(false);
                     } else {
                         discountOfCredit.setVisibility(View.GONE);
@@ -176,6 +220,7 @@ public class PaymentActivity extends BaseActivity {
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(false);
+                        payButton.setTextColor(Color.LTGRAY);
                         couponButton.setEnabled(true);
                     }
                     break;
@@ -191,6 +236,7 @@ public class PaymentActivity extends BaseActivity {
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(true);
+                        payButton.setTextColor(Color.WHITE);
                         creditButton.setEnabled(false);
                     } else {
                         discountOfCoupon.setVisibility(View.GONE);
@@ -199,6 +245,7 @@ public class PaymentActivity extends BaseActivity {
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(false);
+                        payButton.setTextColor(Color.LTGRAY);
                         creditButton.setEnabled(true);
                     }
                     break;
@@ -210,14 +257,13 @@ public class PaymentActivity extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(PaymentActivity.this);
         builder.setTitle(R.string.request_check_payment);
         builder.setMessage(R.string.request_check_payment_description);
-        builder.setCancelable(false);
 
         String positiveText = getString(android.R.string.ok);
         builder.setPositiveButton(positiveText,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // positive button logic
+
                     }
                 });
 

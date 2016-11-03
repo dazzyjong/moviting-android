@@ -55,14 +55,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/coupon_list"
-                android:divider="#000000"
-                android:dividerHeight="0.9dp"
-                android:footerDividersEnabled="false"
-                android:headerDividersEnabled="false"/>
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="10dp"/>
 
         </LinearLayout>
         <Button
             android:text="사용하기"
+            android:textColor="#ffffff"
             android:textSize="30dp"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"

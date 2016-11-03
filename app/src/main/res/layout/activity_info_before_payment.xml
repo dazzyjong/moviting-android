@@ -62,6 +62,7 @@
             android:id="@+id/payment_button"
             android:text="비용 결제하기"
             android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
             android:textSize="25sp"
             android:background="@drawable/ripple_button_not_enrolled"/>
     </LinearLayout>

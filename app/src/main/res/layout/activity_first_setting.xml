@@ -170,18 +170,10 @@
                         android:textSize="14sp"
                         android:hint="@string/prompt_height"
                         android:inputType="numberDecimal"
-                        android:maxLines="1"/>
+                        android:maxLines="1"
+                        android:imeOptions="actionSend"/>
 
                 </android.support.design.widget.TextInputLayout>
-
-                <Button
-                    android:id="@+id/account_setting_submit"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/action_account_profile_submit"
-                    android:textStyle="bold" />
 
             </LinearLayout>
         </ScrollView>

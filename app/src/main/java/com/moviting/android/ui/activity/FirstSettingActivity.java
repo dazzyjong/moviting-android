@@ -20,18 +20,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -69,7 +71,7 @@ public class FirstSettingActivity extends BaseActivity {
     private EditText workText;
     private EditText heightText;
 
-    private AlertDialog alertDialog;
+    private AlertDialog alertDialogForPhoto;
 
     private String formattedBirthday;
     private String photoUrl;
@@ -178,7 +180,24 @@ public class FirstSettingActivity extends BaseActivity {
             workText.setText(user.work);
         }
         heightText = (EditText) findViewById(R.id.height);
+        heightText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
 
+                    showProgressDialog();
+                    if (validateForm()) {
+                        createDialogForConfirm();
+                    } else {
+                        hideProgressDialog();
+                    }
+
+                    handled = true;
+                }
+                return handled;
+            }
+        });
         ImageButton photoButton = (ImageButton) findViewById(R.id.photo_button);
         photoButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -194,84 +213,77 @@ public class FirstSettingActivity extends BaseActivity {
                                 MY_PERMISSIONS_REQUEST_READ_CONTACTS);
 
                     } else{
-                        alertDialog = createInflaterDialog();
-                        alertDialog.show();
+                        alertDialogForPhoto = createInflaterDialog();
+                        alertDialogForPhoto.show();
                     }
                 } else {
-                    alertDialog = createInflaterDialog();
-                    alertDialog.show();
-                }
-            }
-        });
-
-        Button submitButton = (Button) findViewById(R.id.account_setting_submit);
-        submitButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showProgressDialog();
-                if (validateForm()) {
-                    updateUser();
-                } else {
-                    hideProgressDialog();
+                    alertDialogForPhoto = createInflaterDialog();
+                    alertDialogForPhoto.show();
                 }
             }
         });
     }
 
     public boolean validateForm() {
-        boolean valid = true;
 
         if (photoUrl != null && photoUrl.equals("")) {
             Toast.makeText(this, R.string.photo_required, Toast.LENGTH_LONG).show();
-            valid = false;
+            profileImage.requestFocus();
+            return false;
         }
 
         if (nameText.getText().toString().trim().equals("")) {
             nameText.setError(getString(R.string.name_required));
-            valid = false;
+            nameText.requestFocus();
+            return false;
         } else {
             nameText.setError(null);
         }
 
         if (genderSpinner.getSelectedItemPosition() == 0) {
             Toast.makeText(this, R.string.gender_required, Toast.LENGTH_LONG).show();
-            valid = false;
+            genderSpinner.requestFocus();
+            return false;
         }
 
         if (birthdayPicker.getDayOfMonth() == 1 && birthdayPicker.getMonth() == 1 && birthdayPicker.getYear() == 1970) {
             Toast.makeText(this, R.string.gender_required, Toast.LENGTH_LONG).show();
-            valid = false;
+            birthdayPicker.requestFocus();
+            return false;
         }
 
         if (favoriteMovieText.getText().toString().trim().equals("")) {
             favoriteMovieText.setError(getString(R.string.movie_required));
-            valid = false;
+            favoriteMovieText.requestFocus();
+            return false;
         } else {
             favoriteMovieText.setError(null);
         }
 
         if (schoolText.getText().toString().trim().equals("")) {
             schoolText.setError(getString(R.string.school_required));
-            valid = false;
+            schoolText.requestFocus();
+            return false;
         } else {
             schoolText.setError(null);
         }
 
         if (workText.getText().toString().trim().equals("")) {
             workText.setError(getString(R.string.work_required));
-            valid = false;
+            workText.requestFocus();
+            return false;
         } else {
             workText.setError(null);
         }
 
         if (heightText.getText().toString().trim().equals("")) {
             heightText.setError(getString(R.string.height_required));
-            valid = false;
+            heightText.requestFocus();
+            return false;
         } else {
             heightText.setError(null);
         }
-
-        return valid;
+        return true;
     }
 
     public void updateUser() {
@@ -322,14 +334,14 @@ public class FirstSettingActivity extends BaseActivity {
                     case 0:
                         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         startActivityForResult(cameraIntent, REQUEST_CAMERA);
-                        setDismiss(alertDialog);
+                        setDismiss(alertDialogForPhoto);
                         break;
                     case 1:
                         Intent intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
-                        setDismiss(alertDialog);
+                        setDismiss(alertDialogForPhoto);
                         break;
                     default:
                         break;
@@ -338,14 +350,55 @@ public class FirstSettingActivity extends BaseActivity {
             }
         });
 
-        ab.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        ab.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
-                setDismiss(alertDialog);
+                setDismiss(alertDialogForPhoto);
             }
         });
 
         return ab.create();
+    }
+
+    private void createDialogForConfirm() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(this);
+        ab.setMessage("입력하신 정보가 확실한가요?");
+
+        ab.setPositiveButton("네", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                updateUser();
+            }
+        });
+        ab.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                hideProgressDialog();
+            }
+        });
+
+        AlertDialog alertDialog = ab.create();
+
+        alertDialog.show();
+    }
+
+    private void createDialogForCancel() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(this);
+        ab.setMessage("정보를 입력하지 않은 경우 이용할수 없습니다.");
+
+        ab.setPositiveButton("로그인 화면으로", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                signOut();
+            }
+        });
+        ab.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = ab.create();
+
+        alertDialog.show();
     }
 
     private void setDismiss(Dialog dialog) {
@@ -406,14 +459,12 @@ public class FirstSettingActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
 
-                alertDialog = createInflaterDialog();
-                alertDialog.show();
-                return;
+                alertDialogForPhoto = createInflaterDialog();
+                alertDialogForPhoto.show();
             }
         }
     }
@@ -505,10 +556,15 @@ public class FirstSettingActivity extends BaseActivity {
         super.onOptionsItemSelected(item);
         switch(item.getItemId()) {
             case android.R.id.home:
-                signOut();
+                createDialogForCancel();
                 break;
             case R.id.action_complete:
-
+                showProgressDialog();
+                if (validateForm()) {
+                    createDialogForConfirm();
+                } else {
+                    hideProgressDialog();
+                }
                 break;
         }
         return true;

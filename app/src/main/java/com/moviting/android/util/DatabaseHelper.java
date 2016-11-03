@@ -12,7 +12,7 @@ public class DatabaseHelper {
     public static FirebaseDatabase getInstance() {
         if (mDatabase == null) {
             mDatabase = FirebaseDatabase.getInstance();
-            mDatabase.setPersistenceEnabled(true);
+            //mDatabase.setPersistenceEnabled(true);
         }
 
         return mDatabase;

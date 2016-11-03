@@ -29,7 +29,10 @@ import com.moviting.android.util.ArraySetOperator;
 import com.moviting.android.util.MyHashMap;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import me.gujun.android.taggroup.TagGroup;
 
 public class OpponentProfileActivity extends BaseActivity {
 
@@ -137,6 +140,7 @@ public class OpponentProfileActivity extends BaseActivity {
     public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private static final int TYPE_ITEM = 0;
         private static final int TYPE_SEPARATOR = 1;
+        private static final int TYPE_INTERSECTION = 2;
 
         String[] profileList;
         private MyHashMap<String, Object> userProfile;
@@ -160,7 +164,17 @@ public class OpponentProfileActivity extends BaseActivity {
                 view.setTag(profileViewHolder);
 
                 return profileViewHolder;
-            } else {
+            } else if(viewType ==TYPE_INTERSECTION){
+                IntersectionViewHolder intersectionViewHolder;
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.intersection_profile_item, parent, false);
+
+                intersectionViewHolder = new IntersectionViewHolder(view);
+                view.setTag(intersectionViewHolder);
+
+                return intersectionViewHolder;
+            }else {
                 ProfileAdapter.SeparatorViewHolder separatorViewHolder;
 
                 View view = LayoutInflater.from(parent.getContext())
@@ -177,6 +191,16 @@ public class OpponentProfileActivity extends BaseActivity {
             if(position == 0 || position == 3 || position == 10) {
                 SeparatorViewHolder separatorViewHolder = (SeparatorViewHolder)holder;
                 separatorViewHolder.separatorText.setText(profileList[position]);
+            } else if (position == 1 || position == 2) {
+                IntersectionViewHolder intersectionViewHolder = (IntersectionViewHolder) holder;
+                intersectionViewHolder.key.setText(profileList[position]);
+                ArrayList<String> item = getIntersectionValue(profileList[position]);
+                if(item.size() > 3) {
+                    List<String> input = item.subList(0,4);
+                    intersectionViewHolder.mTagGroup.setTags(input);
+                } else if(item.size() > 0 ) {
+                    intersectionViewHolder.mTagGroup.setTags(item);
+                }
             } else {
                 ProfileViewHolder profileViewHolder = (ProfileViewHolder)holder;
                 profileViewHolder.key.setText(profileList[position]);
@@ -210,6 +234,8 @@ public class OpponentProfileActivity extends BaseActivity {
         public int getItemViewType(int position) {
             if(position == 0 || position == 3 || position == 10) {
                 return TYPE_SEPARATOR;
+            } else if(position == 1 || position == 2) {
+                return TYPE_INTERSECTION;
             }
 
             return TYPE_ITEM;
@@ -232,6 +258,16 @@ public class OpponentProfileActivity extends BaseActivity {
             public SeparatorViewHolder(View itemView) {
                 super(itemView);
                 separatorText = (TextView) itemView.findViewById(R.id.textSeparator);
+            }
+        }
+
+        class IntersectionViewHolder extends RecyclerView.ViewHolder {
+            TextView key;
+            TagGroup mTagGroup;
+            public IntersectionViewHolder(View itemView) {
+                super(itemView);
+                key = (TextView) itemView.findViewById(R.id.tag);
+                mTagGroup = (TagGroup) itemView.findViewById(R.id.tag_group);
             }
         }
 
@@ -260,13 +296,17 @@ public class OpponentProfileActivity extends BaseActivity {
             if(key.equals("인생 영화")) {
                 return userProfile.get("favoriteMovie").toString();
             }
+            return null;
+        }
+
+        public ArrayList<String> getIntersectionValue(String key) {
             if(key.equals("영화")) {
-                return intersection.preferredMovie.toString();
+                return intersection.preferredMovie;
             }
             if(key.equals("일자")) {
-                return intersection.preferredDate.toString();
+                return intersection.preferredDate;
             }
-            return "";
+            return null;
         }
 
         public UserPreference getIntersection() {

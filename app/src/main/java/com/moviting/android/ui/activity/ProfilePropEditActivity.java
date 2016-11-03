@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -70,6 +71,8 @@ public class ProfilePropEditActivity extends BaseActivity {
                                 }
                             });
                         }
+                    } else {
+                        Toast.makeText(ProfilePropEditActivity.this, getPropertyName(key) + "을(를) 입력해 주세요", Toast.LENGTH_SHORT).show();
                     }
                 break;
         }
@@ -113,7 +116,7 @@ public class ProfilePropEditActivity extends BaseActivity {
         if(key.equals("인생 영화")) {
             return "favoriteMovie";
         }
-        return "";
+        return null;
     }
 
     @Override

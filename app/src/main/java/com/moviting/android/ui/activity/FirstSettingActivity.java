@@ -222,6 +222,21 @@ public class FirstSettingActivity extends BaseActivity {
                 }
             }
         });
+
+        TextView terms = (TextView) findViewById(R.id.terms);
+        terms.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(WebViewActivity.createIntent(FirstSettingActivity.this, "http://theysy.com/e.html"));
+            }
+        });
+        TextView privacy = (TextView) findViewById(R.id.privacy);
+        privacy.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(WebViewActivity.createIntent(FirstSettingActivity.this, "http://theysy.com/person.html"));
+            }
+        });
     }
 
     public boolean validateForm() {

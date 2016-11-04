@@ -117,5 +117,7 @@
     <string name="title_activity_ticket_box1">영화티켓함</string>
     <string name="movie_ticket_peel">- 꼭 서로간 매칭완료 후 영화 예매시 사용해야해요 \n - 확인한다면 재매칭 및 환불은 불가합니다</string>
     <string name="title_activity_profile_prop_edit">ProfilePropEditActivity</string>
+    <string name="terms"><u>약관</u></string>
+    <string name="privacy"><u>개인정보보호</u></string>
 
 </resources>

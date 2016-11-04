@@ -77,7 +77,7 @@ public class TicketBoxActivity2 extends BaseActivity {
         howToUse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(WebViewActivity.createIntent(TicketBoxActivity2.this, "http://theysy.com/flow_cgv.html"));
             }
         });
 

@@ -175,6 +175,34 @@
 
                 </android.support.design.widget.TextInputLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/terms"
+                        android:id="@+id/terms"
+                        android:autoLink="web"
+                        android:textColor="#0645AD"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="/" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/privacy"
+                        android:id="@+id/privacy"
+                        android:autoLink="web"
+                        android:textColor="#0645AD" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

@@ -17,6 +17,7 @@ import com.moviting.android.ui.activity.CouponActivity;
 import com.moviting.android.ui.activity.LoginActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
 import com.moviting.android.ui.activity.TicketBoxActivity1;
+import com.moviting.android.ui.activity.WebViewActivity;
 
 public class AccountFragment extends BaseFragment {
 
@@ -71,7 +72,7 @@ public class AccountFragment extends BaseFragment {
                         startActivity(CouponActivity.createIntent(getActivity(), ACCOUNT_MODE));
                         break;
                     case 3:
-
+                        startActivity(WebViewActivity.createIntent(getActivity(), "http://theysy.com/qna.html"));
                         break;
                     case 4:
                         signOut();

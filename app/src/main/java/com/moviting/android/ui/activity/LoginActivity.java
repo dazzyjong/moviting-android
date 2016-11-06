@@ -84,7 +84,6 @@ public class LoginActivity extends BaseActivity {
             showProgressDialog();
         }
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
         mEmail = (EditText)findViewById(R.id.email);

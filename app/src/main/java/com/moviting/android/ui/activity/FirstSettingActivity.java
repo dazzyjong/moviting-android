@@ -330,7 +330,7 @@ public class FirstSettingActivity extends BaseActivity {
                 if (!task.isSuccessful()) {
                     Toast.makeText(FirstSettingActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 } else {
-                    startActivity(MainActivity.createIntent(FirstSettingActivity.this));
+                    startActivity(LandingActivity.createIntent(FirstSettingActivity.this));
                     finish();
                 }
                 hideProgressDialog();

@@ -50,9 +50,9 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:layout_marginBottom="30dp"
-            app:fillColor="#FFFFFFFF"
+            app:fillColor="#bbFFFFFF"
             app:pageColor="#00000000"
-            app:radius="6dp"
+            app:radius="4dp"
             app:autoPlay="false"
             app:strokeColor="#FF777777"
             app:strokeWidth="1dp"/>

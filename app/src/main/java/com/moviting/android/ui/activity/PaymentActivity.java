@@ -128,6 +128,8 @@ public class PaymentActivity extends BaseActivity {
                             requestPaymentButton.setEnabled(true);
                         }
                     }
+                } else {
+                    requestPaymentButton.setEnabled(true);
                 }
             }
 

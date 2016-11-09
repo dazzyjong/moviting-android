@@ -103,18 +103,18 @@ public class ProposePageFragment extends BaseFragment {
         mDislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ProposeFragment)getParentFragment()).getBaseActivity().showProgressDialog();
-                getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
+                ((ProposeFragment)getParentFragment()).showProgressDialog();
+                getFirebaseDatabaseReference().child("propose").child(getUid())
                         .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Dislike.name())
-                        .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
+                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (!task.isSuccessful()) {
-                                    Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                 } else {
                                     ((ProposeFragment) getParentFragment()).deleteProposeFromList(page);
                                 }
-                                ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
+                                ((ProposeFragment)getParentFragment()).hideProgressDialog();
                             }
                 });
             }
@@ -123,38 +123,38 @@ public class ProposePageFragment extends BaseFragment {
         mLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ProposeFragment)getParentFragment()).getBaseActivity().showProgressDialog();
+                ((ProposeFragment)getParentFragment()).showProgressDialog();
 
                 if(mProposeStatus.equals(Propose.ProposeStatus.Like.name())) {
-                    getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
+                    getFirebaseDatabaseReference().child("propose").child(getUid())
                             .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Proposed.name())
-                            .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
+                            .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (!task.isSuccessful()) {
-                                        Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                     } else {
                                         mProposeStatus = Propose.ProposeStatus.Proposed.name();
                                         ((ProposeFragment) getParentFragment()).updateProposeStatus(Propose.ProposeStatus.Proposed.name(), page);
                                         mDislikeButton.setVisibility(View.VISIBLE);
                                     }
-                                    ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
+                                    ((ProposeFragment)getParentFragment()).hideProgressDialog();
                                 }
                             });
                 } else {
-                    getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid())
+                    getFirebaseDatabaseReference().child("propose").child(getUid())
                             .child(mProposeUid).child("status").setValue(Propose.ProposeStatus.Like.name())
-                            .addOnCompleteListener(getBaseActivity(), new OnCompleteListener<Void>() {
+                            .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (!task.isSuccessful()) {
-                                        Toast.makeText(getBaseActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                     } else {
                                         mProposeStatus = Propose.ProposeStatus.Like.name();
                                         ((ProposeFragment) getParentFragment()).updateProposeStatus(Propose.ProposeStatus.Like.name(), page);
                                         mDislikeButton.setVisibility(View.GONE);
                                     }
-                                    ((ProposeFragment)getParentFragment()).getBaseActivity().hideProgressDialog();
+                                    ((ProposeFragment)getParentFragment()).hideProgressDialog();
                                 }
                             });
                 }
@@ -166,14 +166,16 @@ public class ProposePageFragment extends BaseFragment {
     }
 
     public void getOppositeUserInfo() {
-        getBaseActivity().getFirebaseDatabaseReference().child("users").child(mProposeUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        getFirebaseDatabaseReference().child("users").child(mProposeUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                mName.setText(Html.fromHtml("<u>" + user.name + "</u>"));
-                mAgeAndWork.setText(user.myAge + " / " + user.work);
-                mFavoriteMovie.setText(user.favoriteMovie);
-                Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);
+                if(user != null) {
+                    mName.setText(Html.fromHtml("<u>" + user.name + "</u>"));
+                    mAgeAndWork.setText(user.myAge + " / " + user.work);
+                    mFavoriteMovie.setText(user.favoriteMovie);
+                    Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);
+                }
             }
 
             @Override

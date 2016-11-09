@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class EnrollFragment extends BaseFragment {
 
@@ -49,8 +50,7 @@ public class EnrollFragment extends BaseFragment {
     }
 
     public static EnrollFragment newInstance() {
-        EnrollFragment fragment = new EnrollFragment();
-        return fragment;
+        return new EnrollFragment();
     }
 
     @Override
@@ -76,29 +76,29 @@ public class EnrollFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if(isAllFilledUp()) {
-                    getBaseActivity().showProgressDialog();
+                    showProgressDialog();
                     if(isEnrolled) {
-                        getBaseActivity().getFirebaseDatabaseReference()
-                                .child("users").child(getBaseActivity().getUid())
+                        getFirebaseDatabaseReference()
+                                .child("users").child(getUid())
                                 .child("userStatus").setValue("Disenrolled", new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 Toast.makeText(getActivity(), R.string.release_success_text, Toast.LENGTH_SHORT).show();
                                 isEnrolled = false;
                                 updateApplicationButton();
-                                getBaseActivity().hideProgressDialog();
+                                hideProgressDialog();
                             }
                         });
                     } else {
-                        getBaseActivity().getFirebaseDatabaseReference()
-                                .child("users").child(getBaseActivity().getUid())
+                        getFirebaseDatabaseReference()
+                                .child("users").child(getUid())
                                 .child("userStatus").setValue("Enrolled", new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 Toast.makeText(getActivity(), R.string.apply_success_text, Toast.LENGTH_SHORT).show();
                                 isEnrolled = true;
                                 updateApplicationButton();
-                                getBaseActivity().hideProgressDialog();
+                                hideProgressDialog();
                             }
                         });
                     }
@@ -128,8 +128,8 @@ public class EnrollFragment extends BaseFragment {
         selectedMovies = new ArrayList<>();
         choosedGender = "";
         isEnrolled = false;
-        minPrefAge = Long.valueOf(0);
-        maxPrefAge = Long.valueOf(0);
+        minPrefAge = 0L;
+        maxPrefAge = 0L;
 
         getUserEnrollStatus();
         getUserPrefDate();
@@ -140,16 +140,12 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private boolean isAllFilledUp() {
-        if(selectedDates.size() != 0 && selectedMovies.size() != 0 && !choosedGender.equals("") && minPrefAge != 0 && maxPrefAge != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return selectedDates.size() != 0 && selectedMovies.size() != 0 && !choosedGender.equals("") && minPrefAge != 0 && maxPrefAge != 0;
     }
 
     private void getUserEnrollStatus() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("userStatus").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -188,7 +184,7 @@ public class EnrollFragment extends BaseFragment {
 
     private String readableDate(String date) {
 
-        DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         Calendar cal = Calendar.getInstance();
         String result = null;
         try {
@@ -208,8 +204,8 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private void getUserPrefDate() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("preferredDate").orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -242,8 +238,8 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private void getUserPrefGender() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("preferredGender").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -266,8 +262,8 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private void getUserPrefMovie() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("preferredMovie").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -299,8 +295,8 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private void getUserMinPrefAge() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("minPrefAge").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -323,8 +319,8 @@ public class EnrollFragment extends BaseFragment {
     }
 
     private void getUserMaxPrefAge() {
-        getBaseActivity().getFirebaseDatabaseReference()
-                .child("users").child(getBaseActivity().getUid())
+        getFirebaseDatabaseReference()
+                .child("users").child(getUid())
                 .child("maxPrefAge").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

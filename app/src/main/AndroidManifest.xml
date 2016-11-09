@@ -112,6 +112,9 @@
         </activity>
         <activity android:name=".ui.activity.WebViewActivity" />
         <activity android:name=".ui.activity.LandingActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="88216d45390a30c9258d671b6ef7e54cbd753e02" />
     </application>
 
 </manifest>

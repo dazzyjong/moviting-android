@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
@@ -33,19 +34,21 @@ public class MatchFragment extends BaseFragment {
     private static final int MATCH_PROGRESS = 1;
     private static final int MATCH_COMPLETE = 2;
 
-    private static final int REQUEST_PAYMENT = 100;
-
+    private OpponentImageAdapter mLikeEachOtherAdapter;
     private LinearLayoutManager mLikeEachOtherLM;
     private RecyclerView rvLikeEachOther;
 
+    private OpponentImageAdapter mMatchProgressAdapter;
     private LinearLayoutManager mMatchProgressLM;
     private RecyclerView rvMatchProgress;
 
+    private OpponentImageAdapter mMatchCompleteAdapter;
     private LinearLayoutManager mMatchCompleteLM;
     private RecyclerView rvMatchComplete;
 
     private MyHashMap<String, MatchInfo> matchUids;
     private String gender;
+    private DatabaseReference userRef;
 
     private ChildEventListener listEventListener = new ChildEventListener() {
 
@@ -90,12 +93,13 @@ public class MatchFragment extends BaseFragment {
     private ChildEventListener mListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            if( !hasMatchUid(dataSnapshot.getRef().getParent().getKey())) {
+
+            if (!hasMatchUid(dataSnapshot.getRef().getParent().getKey())) {
 
                 Log.d(TAG, "match_user_payment added: " + dataSnapshot.getRef().getParent().getKey() + " " + dataSnapshot.getKey());
                 MatchInfo matchInfo = matchUids.get(dataSnapshot.getRef().getParent().getKey());
 
-                if (dataSnapshot.getKey().equals(getBaseActivity().getUid())) {
+                if (dataSnapshot.getKey().equals(getUid())) {
                     HashMap object = (HashMap) dataSnapshot.getValue();
                     matchInfo.myGender = gender;
                     matchInfo.myPayment = (Boolean) object.get("payment");
@@ -117,7 +121,7 @@ public class MatchFragment extends BaseFragment {
             MatchInfo info = popMatchUid(matchuid);
 
             if(info != null) {
-                if (dataSnapshot.getKey().equals(getBaseActivity().getUid())) {
+                if (dataSnapshot.getKey().equals(getUid())) {
                     HashMap object = (HashMap)dataSnapshot.getValue();
                     info.myPayment = (Boolean) object.get("payment");
                     info.myType = (String) object.get("type");
@@ -133,7 +137,7 @@ public class MatchFragment extends BaseFragment {
                 } else if (info.myPayment) {
                     ((OpponentImageAdapter) rvMatchProgress.getAdapter()).addItem(info);
                     rvMatchProgress.getAdapter().notifyDataSetChanged();
-                } else if (!info.myPayment) {
+                } else {
                     ((OpponentImageAdapter) rvLikeEachOther.getAdapter()).addItem(info);
                     rvLikeEachOther.getAdapter().notifyDataSetChanged();
                 }
@@ -164,14 +168,33 @@ public class MatchFragment extends BaseFragment {
     }
 
     public static MatchFragment newInstance() {
-        MatchFragment fragment = new MatchFragment();
-        return fragment;
+        return new MatchFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         matchUids = new MyHashMap<>();
+
+        mLikeEachOtherAdapter = new OpponentImageAdapter(LIKE_EACH_OTHER);
+        mMatchProgressAdapter = new OpponentImageAdapter(MATCH_PROGRESS);
+        mMatchCompleteAdapter = new OpponentImageAdapter(MATCH_COMPLETE);
+
+        getFirebaseDatabaseReference().child("users").child(getUid()).child("gender").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                gender = ((String)dataSnapshot.getValue());
+                addMatchListListener();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if(getActivity() != null && isAdded()) {
+                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                Log.w(TAG, databaseError.getDetails());
+            }
+        });
     }
 
     @Override
@@ -200,41 +223,22 @@ public class MatchFragment extends BaseFragment {
         rvMatchProgress.setLayoutManager(mMatchProgressLM);
         rvMatchComplete.setLayoutManager(mMatchCompleteLM);
 
-        rvLikeEachOther.setAdapter(new OpponentImageAdapter(LIKE_EACH_OTHER));
-        rvMatchProgress.setAdapter(new OpponentImageAdapter(MATCH_PROGRESS));
-        rvMatchComplete.setAdapter(new OpponentImageAdapter(MATCH_COMPLETE));
-
-        getBaseActivity().getFirebaseDatabaseReference().child("users").child(getBaseActivity().getUid()).child("gender").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                gender = ((String)dataSnapshot.getValue());
-                addMatchListListener();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if(getActivity() != null && isAdded()) {
-                    Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                Log.w(TAG, databaseError.getDetails());
-            }
-        });
+        rvLikeEachOther.setAdapter(mLikeEachOtherAdapter);
+        rvMatchProgress.setAdapter(mMatchProgressAdapter);
+        rvMatchComplete.setAdapter(mMatchCompleteAdapter);
 
         return view;
     }
 
     private boolean hasMatchUid(String uid) {
-        if ( ((OpponentImageAdapter)rvMatchComplete.getAdapter()).findItem(uid) != -1
-                || ((OpponentImageAdapter)rvMatchProgress.getAdapter()).findItem(uid) != -1
-                || ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).findItem(uid) != -1) {
-            return true;
-        }
+        return ((OpponentImageAdapter) rvMatchComplete.getAdapter()).findItem(uid) != -1
+                || ((OpponentImageAdapter) rvMatchProgress.getAdapter()).findItem(uid) != -1
+                || ((OpponentImageAdapter) rvLikeEachOther.getAdapter()).findItem(uid) != -1;
 
-        return false;
     }
 
     private MatchInfo popMatchUid(String uid) {
-        MatchInfo info = null;
+        MatchInfo info;
         int index = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).findItem(uid);
         if(index != -1) {
             info = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).getItem(index);
@@ -260,21 +264,23 @@ public class MatchFragment extends BaseFragment {
             return info;
         }
 
-        return info;
+        return null;
     }
 
     private void addListenerMatchList(String matchUid) {
-        getBaseActivity().getFirebaseDatabaseReference()
+
+        getFirebaseDatabaseReference()
                 .child("match_member_payment").child(matchUid).addChildEventListener(mListener);
     }
 
     private void addMatchListListener() {
-            getBaseActivity().getFirebaseDatabaseReference()
-                    .child("user_match").child(getBaseActivity().getUid()).addChildEventListener(listEventListener);
+        userRef = getFirebaseDatabaseReference()
+                .child("user_match").child(getUid());
+        userRef.addChildEventListener(listEventListener);
     }
 
     private void getOpponentInfo(final MatchInfo matchInfo) {
-        getBaseActivity().getFirebaseDatabaseReference()
+        getFirebaseDatabaseReference()
                 .child("users").child(matchInfo.opponentUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -289,7 +295,7 @@ public class MatchFragment extends BaseFragment {
                 } else if(matchInfo.myPayment) {
                     ((OpponentImageAdapter)rvMatchProgress.getAdapter()).addItem(matchInfo);
                     rvMatchProgress.getAdapter().notifyDataSetChanged();
-                } else if(!matchInfo.myPayment) {
+                } else {
                     ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).addItem(matchInfo);
                     rvLikeEachOther.getAdapter().notifyDataSetChanged();
                 }
@@ -306,25 +312,25 @@ public class MatchFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode ==  REQUEST_PAYMENT) {
-
+    public void onDestroy(){
+        super.onDestroy();
+        for(String matchUid:matchUids.keySet()) {
+            getFirebaseDatabaseReference()
+                    .child("match_member_payment").child(matchUid).removeEventListener(mListener);
+        }
+        if(userRef != null) {
+            userRef.removeEventListener(listEventListener);
         }
     }
 
     @Override
-    public void onDestroy() {
-        try {
-            super.onDestroy();
-            for(String matchUid:matchUids.keySet()) {
-                getBaseActivity().getFirebaseDatabaseReference()
-                        .child("match_member_payment").child(matchUid).removeEventListener(mListener);
-            }
-            getBaseActivity().getFirebaseDatabaseReference()
-                    .child("user_match").child(getBaseActivity().getUid()).removeEventListener(listEventListener);
-        } catch (NullPointerException npe) {
-            Log.e(TAG, "NPE: Bug workaround");
-        }
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     private class OpponentImageAdapter extends RecyclerView.Adapter<OpponentImageAdapter.ViewHolder> {
@@ -339,8 +345,7 @@ public class MatchFragment extends BaseFragment {
         @Override
         public OpponentImageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.match_opponent_item, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
         @Override
@@ -378,7 +383,7 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivityForResult(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition())), REQUEST_PAYMENT);
+                            startActivity(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition())));
                         }
                     });
                 }

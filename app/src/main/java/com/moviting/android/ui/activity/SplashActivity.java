@@ -2,6 +2,7 @@ package com.moviting.android.ui.activity;
 
 import android.os.Bundle;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -14,6 +15,7 @@ import com.moviting.android.model.User;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import io.fabric.sdk.android.Fabric;
 
 public class SplashActivity extends BaseActivity {
 
@@ -23,6 +25,10 @@ public class SplashActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+        // TODO: Move this to where you establish a user session
+        logUser();
+
         setContentView(R.layout.activity_splash);
         FacebookSdk.sdkInitialize(getApplicationContext());
         if (getFirebaseAuth().getCurrentUser() == null) {
@@ -50,6 +56,9 @@ public class SplashActivity extends BaseActivity {
                             } else if(!user.isUserFormFilled()) {
                                 startActivity(FirstSettingActivity.createIntent(SplashActivity.this, user));
                             } else {
+                                if (!user.token.equals(getToken())) {
+                                    getFirebaseDatabaseReference().child("users").child(getUid()).child("token").setValue(getToken());
+                                }
                                 startActivity(MainActivity.createIntent(SplashActivity.this));
                             }
                             SplashActivity.this.finish();
@@ -93,4 +102,13 @@ public class SplashActivity extends BaseActivity {
             getFirebaseAuth().removeAuthStateListener(mAuthListener);
         }
     }
+
+    private void logUser() {
+        // TODO: Use the current user's information
+        // You can call any combination of these three methods
+        Crashlytics.setUserIdentifier("12345");
+        Crashlytics.setUserEmail("dazzyjong@gmail.com");
+        Crashlytics.setUserName("Test User");
+    }
+
 }

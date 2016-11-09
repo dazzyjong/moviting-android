@@ -90,8 +90,7 @@ public class ProposeFragment extends BaseFragment {
     }
 
     public static ProposeFragment newInstance() {
-        ProposeFragment fragment = new ProposeFragment();
-        return fragment;
+        return new ProposeFragment();
     }
 
     @Override
@@ -146,7 +145,7 @@ public class ProposeFragment extends BaseFragment {
     }
 
     private void addProposeListner() {
-        ref = getBaseActivity().getFirebaseDatabaseReference().child("propose").child(getBaseActivity().getUid());
+        ref = getFirebaseDatabaseReference().child("propose").child(getUid());
         ref.addChildEventListener(childEventListener);
     }
 
@@ -164,7 +163,7 @@ public class ProposeFragment extends BaseFragment {
         }
     }
 
-    public void deleteProposeFromList(String uid){
+    public synchronized void deleteProposeFromList(String uid){
         for(Propose item :mProposeList ){
             if(item.getUid().equals(uid)) {
                 int index = mProposeList.indexOf(item);
@@ -179,15 +178,13 @@ public class ProposeFragment extends BaseFragment {
     }
 
     private class ProposePageAdapter extends FragmentStatePagerAdapter {
-        public ProposePageAdapter(FragmentManager fm) {
+        ProposePageAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            ProposePageFragment proposePageFragment = ProposePageFragment.newInstance(mProposeList.get(position).getUid(), mProposeList.get(position).getStatus(), position);
-
-            return proposePageFragment;
+            return ProposePageFragment.newInstance(mProposeList.get(position).getUid(), mProposeList.get(position).getStatus(), position);
         }
 
         @Override
@@ -200,11 +197,11 @@ public class ProposeFragment extends BaseFragment {
             return PagerAdapter.POSITION_NONE;
         }
 
-        public void addItem(Propose propose) {
+        void addItem(Propose propose) {
             mProposeList.add(propose);
         }
 
-        public void removeItem(int index) {
+        void removeItem(int index) {
             if(mProposeList.size() != 0) {
                 mProposeList.remove(index);
             }

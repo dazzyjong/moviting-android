@@ -132,14 +132,14 @@ public class MatchFragment extends BaseFragment {
                 }
 
                 if (info.opponentPayment && info.myPayment) {
-                    ((OpponentImageAdapter) rvMatchComplete.getAdapter()).addItem(info);
-                    rvMatchComplete.getAdapter().notifyDataSetChanged();
+                    mMatchCompleteAdapter.addItem(info);
+                    mMatchCompleteAdapter.notifyDataSetChanged();
                 } else if (info.myPayment) {
-                    ((OpponentImageAdapter) rvMatchProgress.getAdapter()).addItem(info);
-                    rvMatchProgress.getAdapter().notifyDataSetChanged();
+                    mMatchProgressAdapter.addItem(info);
+                    mMatchProgressAdapter.notifyDataSetChanged();
                 } else {
-                    ((OpponentImageAdapter) rvLikeEachOther.getAdapter()).addItem(info);
-                    rvLikeEachOther.getAdapter().notifyDataSetChanged();
+                    mLikeEachOtherAdapter.addItem(info);
+                    mLikeEachOtherAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -231,36 +231,36 @@ public class MatchFragment extends BaseFragment {
     }
 
     private boolean hasMatchUid(String uid) {
-        return ((OpponentImageAdapter) rvMatchComplete.getAdapter()).findItem(uid) != -1
-                || ((OpponentImageAdapter) rvMatchProgress.getAdapter()).findItem(uid) != -1
-                || ((OpponentImageAdapter) rvLikeEachOther.getAdapter()).findItem(uid) != -1;
+        return mMatchCompleteAdapter.findItem(uid) != -1
+                || mMatchProgressAdapter.findItem(uid) != -1
+                || mLikeEachOtherAdapter.findItem(uid) != -1;
 
     }
 
     private MatchInfo popMatchUid(String uid) {
         MatchInfo info;
-        int index = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).findItem(uid);
+        int index = mMatchCompleteAdapter.findItem(uid);
         if(index != -1) {
-            info = ((OpponentImageAdapter)rvMatchComplete.getAdapter()).getItem(index);
-            ((OpponentImageAdapter)rvMatchComplete.getAdapter()).removeItem(index);
-            rvMatchComplete.getAdapter().notifyDataSetChanged();
+            info = mMatchCompleteAdapter.getItem(index);
+            mMatchCompleteAdapter.removeItem(index);
+            mMatchCompleteAdapter.notifyDataSetChanged();
 
             return info;
         }
 
-        index = ((OpponentImageAdapter)rvMatchProgress.getAdapter()).findItem(uid);
+        index = mMatchProgressAdapter.findItem(uid);
         if(index != -1) {
-            info = ((OpponentImageAdapter)rvMatchProgress.getAdapter()).getItem(index);
-            ((OpponentImageAdapter)rvMatchProgress.getAdapter()).removeItem(index);
-            rvMatchProgress.getAdapter().notifyDataSetChanged();
+            info = mMatchProgressAdapter.getItem(index);
+            mMatchProgressAdapter.removeItem(index);
+            mMatchProgressAdapter.notifyDataSetChanged();
             return info;
         }
 
-        index = ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).findItem(uid);
+        index = mLikeEachOtherAdapter.findItem(uid);
         if(index != -1) {
-            info = ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).getItem(index);
-            ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).removeItem(index);
-            rvLikeEachOther.getAdapter().notifyDataSetChanged();
+            info = mLikeEachOtherAdapter.getItem(index);
+            mLikeEachOtherAdapter.removeItem(index);
+            mLikeEachOtherAdapter.notifyDataSetChanged();
             return info;
         }
 
@@ -290,14 +290,14 @@ public class MatchFragment extends BaseFragment {
                 matchInfo.opponentGender = (String)object.get("gender");
 
                 if(matchInfo.opponentPayment && matchInfo.myPayment) {
-                    ((OpponentImageAdapter)rvMatchComplete.getAdapter()).addItem(matchInfo);
-                    rvMatchComplete.getAdapter().notifyDataSetChanged();
+                    mMatchCompleteAdapter.addItem(matchInfo);
+                    mMatchCompleteAdapter.notifyDataSetChanged();
                 } else if(matchInfo.myPayment) {
-                    ((OpponentImageAdapter)rvMatchProgress.getAdapter()).addItem(matchInfo);
-                    rvMatchProgress.getAdapter().notifyDataSetChanged();
+                    mMatchProgressAdapter.addItem(matchInfo);
+                    mMatchProgressAdapter.notifyDataSetChanged();
                 } else {
-                    ((OpponentImageAdapter)rvLikeEachOther.getAdapter()).addItem(matchInfo);
-                    rvLikeEachOther.getAdapter().notifyDataSetChanged();
+                    mLikeEachOtherAdapter.addItem(matchInfo);
+                    mLikeEachOtherAdapter.notifyDataSetChanged();
                 }
             }
 

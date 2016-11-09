@@ -26,7 +26,6 @@ public class SplashActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
-        // TODO: Move this to where you establish a user session
         logUser();
 
         setContentView(R.layout.activity_splash);
@@ -104,7 +103,6 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void logUser() {
-        // TODO: Use the current user's information
         // You can call any combination of these three methods
         Crashlytics.setUserIdentifier("12345");
         Crashlytics.setUserEmail("dazzyjong@gmail.com");

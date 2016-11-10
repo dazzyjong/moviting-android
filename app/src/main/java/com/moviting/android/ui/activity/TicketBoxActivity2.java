@@ -61,7 +61,11 @@ public class TicketBoxActivity2 extends BaseActivity {
         ticket1Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createDialog(movieTicketList.get(0), 0);
+                if(matchInfo.myType.equals("coupon")){
+                    createWarningDialog();
+                } else {
+                    createDialog(movieTicketList.get(0), 0);
+                }
             }
         });
 
@@ -69,7 +73,11 @@ public class TicketBoxActivity2 extends BaseActivity {
         ticket2Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createDialog(movieTicketList.get(1), 1);
+                if(matchInfo.myType.equals("coupon")){
+                    createWarningDialog();
+                } else {
+                    createDialog(movieTicketList.get(1), 1);
+                }
             }
         });
 
@@ -87,6 +95,25 @@ public class TicketBoxActivity2 extends BaseActivity {
         ticket1 = (TextView) findViewById(R.id.ticket_id1);
         ticket2 = (TextView) findViewById(R.id.ticket_id2);
         getMyTicket();
+    }
+
+    private void createWarningDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TicketBoxActivity2.this);
+
+        // AlertDialog 셋팅
+        alertDialogBuilder
+                .setMessage("쿠폰 결제시 영화표를 열 수 없습니다. 상대에게 영화표를 전달해서 예매를 위임해주세요.")
+                .setCancelable(true)
+                .setPositiveButton("확인",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {}
+                        });
+
+        // 다이얼로그 생성
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // 다이얼로그 보여주기
+        alertDialog.show();
     }
 
     private void createDialog(final MovieTicket movieTicket, final int index) {

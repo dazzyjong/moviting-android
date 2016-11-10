@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class ChatActivity extends BaseActivity {
     private static final int SEND_SUCCESS = 100;
     private static final int MY_MESSAGE = 1;
     private static final int OPPONENT_MESSAGE = 2;
+    private static final int ADMIN_MESSAGE = 3;
     private RequestManager mGlideRequestManager;
 
     public static class MyMessageViewHolder extends RecyclerView.ViewHolder {
@@ -72,8 +74,14 @@ public class ChatActivity extends BaseActivity {
             TextView opponentNameText = (TextView) mView.findViewById(R.id.opponent_name_text);
             opponentNameText.setText(name);
 
+            ImageView adminImg = (ImageView) mView.findViewById(R.id.admin_img);
             CircleImageView opponentImage = (CircleImageView) mView.findViewById(R.id.opponent_img);
-            requestManager.load(photoUrl).into(opponentImage);
+            if(photoUrl != null) {
+                requestManager.load(photoUrl).into(opponentImage);
+            } else {
+                opponentImage.setVisibility(View.GONE);
+                adminImg.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -83,9 +91,7 @@ public class ChatActivity extends BaseActivity {
     private FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder> mFirebaseAdapter;
     private EditText mMessageEditText;
 
-    private String myName = null;
     private String opponentName = null;
-    private String myImageUrl = null;
     private String opponentImageUrl = null;
 
     private MatchInfo matchInfo;
@@ -132,37 +138,7 @@ public class ChatActivity extends BaseActivity {
             }
         });
 
-        getUserNameAndPhoto();
-    }
-
-    private void getUserNameAndPhoto() {
-        getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Object> object = (HashMap)dataSnapshot.getValue();
-                if(object.containsKey("name")) {
-                    myName = (String)object.get("name");
-                } else {
-                    myName = "";
-                }
-
-                if(object.containsKey("photoUrl")) {
-                    myImageUrl = (String)object.get("photoUrl");
-                } else {
-                    myImageUrl = "";
-                }
-
-                getOpponentNameAndPhoto();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if(getBaseContext() != null) {
-                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                Log.w(TAG, databaseError.getDetails());
-            }
-        });
+        getOpponentNameAndPhoto();
     }
 
     private void getOpponentNameAndPhoto() {
@@ -210,7 +186,9 @@ public class ChatActivity extends BaseActivity {
             protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Message message, int position) {
                 if(message.getUid().equals(getUid())){
                     ((MyMessageViewHolder)viewHolder).setMyView(message.getMessage());
-                } else {
+                } else if(message.getUid().equals("admin")) {
+                    ((OpponentMessageViewHolder)viewHolder).setOpponentView("관리자", message.getMessage(), null, mGlideRequestManager);
+                } else if(!message.getUid().equals(getUid())){
                     ((OpponentMessageViewHolder)viewHolder).setOpponentView(opponentName, message.getMessage(), opponentImageUrl, mGlideRequestManager);
                 }
             }
@@ -221,6 +199,8 @@ public class ChatActivity extends BaseActivity {
                 if(message.getUid().equals(getUid())){
                     // Layout for an item with an image
                     return MY_MESSAGE;
+                } else if(message.getUid().equals("admin")) {
+                    return ADMIN_MESSAGE;
                 } else if(!message.getUid().equals(getUid())){
                     // Layout for an item without an image
                     return OPPONENT_MESSAGE;
@@ -239,6 +219,10 @@ public class ChatActivity extends BaseActivity {
                         View userType2 = LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.opponent_message_item, parent, false);
                         return new OpponentMessageViewHolder(userType2);
+                    case ADMIN_MESSAGE:
+                        View userTypeAdmin = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.opponent_message_item, parent, false);
+                        return new OpponentMessageViewHolder(userTypeAdmin);
                 }
                 return super.onCreateViewHolder(parent, viewType);
             }

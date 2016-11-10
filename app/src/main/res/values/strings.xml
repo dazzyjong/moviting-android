@@ -11,7 +11,7 @@
 
     <!-- Account fragment list -->
     <string name="my_profile">프로필</string>
-    <string name="movie_ticket_box">영화티켓</string>
+    <string name="movie_ticket_box">영화티켓함</string>
     <string name="coupon_box">쿠폰함</string>
     <string name="FAQ">자주묻는질문</string>
     <string name="logout">로그아웃</string>
@@ -61,8 +61,8 @@
 
     <string name="pref_date">일자</string>
     <string name="pref_movie">영화</string>
-    <string name="like_each_other">서로간 좋아요</string>
-    <string name="match_progress">매칭 진행</string>
+    <string name="like_each_other">서로간 좋아요 (6시간 후 사라짐)</string>
+    <string name="match_progress">매칭 진행 (6시간 후 사라짐)</string>
     <string name="match_complete">매칭 완료</string>
 
     <string-array name="day_of_week">

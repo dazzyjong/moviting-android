@@ -56,7 +56,7 @@ public class MatchFragment extends BaseFragment {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Log.d(TAG, "user_match added: " + dataSnapshot.getKey());
             Boolean b = (Boolean)dataSnapshot.getValue();
-            if(b) {
+            if(b  && !matchUids.containsKey(dataSnapshot.getKey())) {
                 matchUids.put(dataSnapshot.getKey(), new MatchInfo(dataSnapshot.getKey()));
                 addListenerMatchList(dataSnapshot.getKey());
             }
@@ -350,9 +350,10 @@ public class MatchFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Glide.with(getActivity()).load(mList.get(position).opponentPhotoPath).into(holder.mImageView);
-            holder.mTextView.setText(mList.get(position).opponentName);
-
+            if(getActivity() != null && isAdded()) {
+                Glide.with(getActivity()).load(mList.get(position).opponentPhotoPath).into(holder.mImageView);
+                holder.mTextView.setText(mList.get(position).opponentName);
+            }
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -376,7 +377,7 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다. (6시간 동안 미결제시 사라짐)", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else if(kind == LIKE_EACH_OTHER) {

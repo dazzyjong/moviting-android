@@ -18,6 +18,14 @@
             android:id="@+id/opponent_img"
             android:src="@drawable/profile_placeholder"/>
 
+        <ImageView
+            android:scaleType="centerInside"
+            android:layout_width="70dp"
+            android:layout_height="36dp"
+            android:id="@+id/admin_img"
+            android:src="@mipmap/ic_launcher"
+            android:visibility="gone"/>
+
         <TextView
             android:layout_width="70dp"
             android:layout_height="wrap_content"

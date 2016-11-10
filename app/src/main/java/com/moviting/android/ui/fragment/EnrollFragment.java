@@ -174,11 +174,15 @@ public class EnrollFragment extends BaseFragment {
 
     private void updateApplicationButton() {
         if(isEnrolled) {
-            enrollButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ripple_button_enrolled));
-            enrollButton.setText(R.string.enrolled_button_text);
+            if(getActivity() != null && isAdded()) {
+                enrollButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ripple_button_enrolled));
+                enrollButton.setText(R.string.enrolled_button_text);
+            }
         } else {
-            enrollButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ripple_button_not_enrolled));
-            enrollButton.setText(R.string.enroll_button_text);
+            if(getActivity() != null && isAdded()) {
+                enrollButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ripple_button_not_enrolled));
+                enrollButton.setText(R.string.enroll_button_text);
+            }
         }
     }
 

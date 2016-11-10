@@ -150,9 +150,11 @@ public class ProposeFragment extends BaseFragment {
     }
 
     public void updateProposeStatus(String proposeStatus, int index) {
-        Propose propose = mProposeList.get(index);
-        propose.setStatus(proposeStatus);
-        mPagerAdapter.notifyDataSetChanged();
+        if(mProposeList.size() > 0) {
+            Propose propose = mProposeList.get(index);
+            propose.setStatus(proposeStatus);
+            mPagerAdapter.notifyDataSetChanged();
+        }
     }
 
     public void deleteProposeFromList(int index){

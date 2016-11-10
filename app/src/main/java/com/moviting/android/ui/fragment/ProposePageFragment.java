@@ -170,7 +170,7 @@ public class ProposePageFragment extends BaseFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                if(user != null) {
+                if(user != null && getActivity() != null && isAdded()) {
                     mName.setText(Html.fromHtml("<u>" + user.name + "</u>"));
                     mAgeAndWork.setText(user.myAge + " / " + user.work);
                     mFavoriteMovie.setText(user.favoriteMovie);

@@ -48,6 +48,6 @@
         android:id="@+id/opponent_message"
         android:layout_weight="0"
         android:background="@drawable/bubble_b"
-        android:textSize="10sp"/>
+        android:textSize="12sp"/>
 
 </LinearLayout>

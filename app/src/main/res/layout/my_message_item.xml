@@ -13,6 +13,6 @@
         android:id="@+id/my_message"
         android:layout_weight="0"
         android:background="@drawable/bubble_a"
-        android:textSize="10sp"/>
+        android:textSize="12sp"/>
 
 </LinearLayout>

@@ -56,7 +56,7 @@
     <string name="enroll_button_text">참가하기</string>
     <string name="enrolled_button_text">참가 진행 중</string>
     <string name="preference_age_range_text">선호 연령대</string>
-    <string name="apply_success_text">신청 되었습니다. 하루에 최대 세분의 이성을 소개시켜 드립니다.</string>
+    <string name="apply_success_text">신청되었습니다. 하루 3명의 특별한 인연을 오전 12:00에 보내드립니다</string>
     <string name="release_success_text">신청 해제 되었습니다.</string>
     <string name="search_mate_condition">인연 찾기 설정</string>
 
@@ -78,12 +78,9 @@
     </string-array>
 
     <string-array name="info_contents">
-        <item>서로 결제 시
-            대화방 및 영화티켓이 자동 생성되요!</item>
-        <item>6시간 이내 결제를 해야 매칭이 되요!
-            초과시 서로간 좋아요는 사라지게 되요</item>
-        <item>나만 결제 후 이성은 결제하지 않을 시
-            6시간 후 결제 금액은 포인트로 환불됩니다</item>
+        <item>서로 12시간 이내 결제시 대화방 및 영화티켓이 자동 생성됩니다.</item>
+        <item>12시간 이내 결제하지 않을 경우 서로간 좋아요 목록은 사라지게 됩니다.</item>
+        <item>결제 후 이성은 결제하지 않을 시 6시간 후 결제금액은 크레딧으로 자동 환불됩니다.</item>
     </string-array>
 
     <string-array name="my_profile_list">

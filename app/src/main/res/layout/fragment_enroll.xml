@@ -117,6 +117,7 @@
         <Button
             android:text=""
             android:textColor="#FFFFFF"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:clickable="true"

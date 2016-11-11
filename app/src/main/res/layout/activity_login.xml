@@ -79,7 +79,7 @@
                 <Button
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="계정생성"
+                    android:text="가입하기"
                     android:id="@+id/create_accout"
                     android:textColor="#ffffff"
                     android:typeface="normal"
@@ -131,7 +131,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="페이스북으로 로그인"
+                android:text="페이스북으로 로그인하기"
                 android:id="@+id/signin_facebook"
                 android:background="@drawable/facebook_button"
                 android:textColor="#ffffff"

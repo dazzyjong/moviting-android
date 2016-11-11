@@ -187,7 +187,7 @@ public class ChatActivity extends BaseActivity {
                 if(message.getUid().equals(getUid())){
                     ((MyMessageViewHolder)viewHolder).setMyView(message.getMessage());
                 } else if(message.getUid().equals("admin")) {
-                    ((OpponentMessageViewHolder)viewHolder).setOpponentView("관리자", message.getMessage(), null, mGlideRequestManager);
+                    ((OpponentMessageViewHolder)viewHolder).setOpponentView("연시영", message.getMessage(), null, mGlideRequestManager);
                 } else if(!message.getUid().equals(getUid())){
                     ((OpponentMessageViewHolder)viewHolder).setOpponentView(opponentName, message.getMessage(), opponentImageUrl, mGlideRequestManager);
                 }
@@ -262,11 +262,7 @@ public class ChatActivity extends BaseActivity {
                 break;
 
             case R.id.send_movie_ticket:
-                if(!matchInfo.opponentType.equals("coupon")) {
                     startActivityForResult(MovieTicketActivity.createIntent(getBaseContext(), matchInfo), REQUEST_SEND_TICKET);
-                } else {
-                    Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
                 break;
         }
         return true;

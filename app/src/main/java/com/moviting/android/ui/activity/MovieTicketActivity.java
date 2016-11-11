@@ -54,12 +54,19 @@ public class MovieTicketActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 if(ticket1.isChecked()) {
-                    moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicketList.get(0).ticketId,
-                            getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
-
+                    if(matchInfo.opponentType.equals("coupon")) {
+                        Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicketList.get(0).ticketId,
+                                getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
+                    }
                 } else if(ticket2.isChecked()) {
-                    moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicketList.get(1).ticketId,
-                            getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
+                    if(matchInfo.opponentType.equals("coupon")) {
+                        Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicketList.get(1).ticketId,
+                                getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
+                    }
                 } else {
                     Toast.makeText(getBaseContext(), "티켓을 하나 이상 선택해 주세요.", Toast.LENGTH_SHORT).show();
                 }

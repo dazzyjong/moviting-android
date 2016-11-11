@@ -182,6 +182,11 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="10dp">
+
+                    <CheckBox
+                        android:id="@+id/terms_and_privacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -193,7 +198,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="/" />
+                        android:text=" 및 " />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -202,6 +207,11 @@
                         android:id="@+id/privacy"
                         android:autoLink="web"
                         android:textColor="#0645AD" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="에 동의합니다." />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

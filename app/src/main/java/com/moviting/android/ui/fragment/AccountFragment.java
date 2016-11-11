@@ -53,6 +53,7 @@ public class AccountFragment extends BaseFragment {
                 getResources().getString(R.string.movie_ticket_box),
                 getResources().getString(R.string.coupon_box),
                 getResources().getString(R.string.FAQ),
+                getResources().getString(R.string.Ask),
                 getResources().getString(R.string.logout)
         };
 
@@ -75,6 +76,9 @@ public class AccountFragment extends BaseFragment {
                         startActivity(WebViewActivity.createIntent(getActivity(), "http://theysy.com/qna.html"));
                         break;
                     case 4:
+                        startActivity(WebViewActivity.createIntent(getActivity(), "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
+                        break;
+                    case 5:
                         signOut();
                         break;
                     default:

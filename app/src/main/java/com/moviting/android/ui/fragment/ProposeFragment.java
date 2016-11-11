@@ -23,13 +23,14 @@ import com.moviting.android.model.Propose;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProposeFragment extends BaseFragment {
 
     private static final String TAG = "ProposeFragment";
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
-    private ArrayList<Propose> mProposeList;
+    private CopyOnWriteArrayList<Propose> mProposeList;
     private TextView tvBlankPage;
     private HashMap<String, String> prevSnapshot;
     private DatabaseReference ref;
@@ -97,7 +98,7 @@ public class ProposeFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        mProposeList = new ArrayList<>();
+        mProposeList = new CopyOnWriteArrayList<>();
         prevSnapshot = new HashMap<>();
         mPagerAdapter = new ProposePageAdapter(getChildFragmentManager());
         addProposeListner();
@@ -165,7 +166,7 @@ public class ProposeFragment extends BaseFragment {
         }
     }
 
-    public synchronized void deleteProposeFromList(String uid){
+    public void deleteProposeFromList(String uid){
         for(Propose item :mProposeList ){
             if(item.getUid().equals(uid)) {
                 int index = mProposeList.indexOf(item);

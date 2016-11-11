@@ -137,6 +137,7 @@
         <Button
             android:text="사용하기"
             android:textSize="30dp"
+            android:textColor="#ffffff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

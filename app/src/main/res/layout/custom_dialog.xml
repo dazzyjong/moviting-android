@@ -13,7 +13,7 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:text="- 연애의시작은영화처럼에서만 사용가능합니다\n- 이성과의 영화관람시에만 사용가능합니다\n- 현금 교환 불가합니다"
+        android:text="- 연애의시작은영화처럼에서만 사용가능합니다\n- 이성과의 영화관람시에만 사용가능합니다\n- 현금 교환 불가합니다\n- 이성에게 티켓 건네주기 기능 및 티켓 열기가 불가능합니다"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"/>

@@ -28,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -70,6 +71,7 @@ public class FirstSettingActivity extends BaseActivity {
     private EditText schoolText;
     private EditText workText;
     private EditText heightText;
+    private CheckBox checkBox;
 
     private AlertDialog alertDialogForPhoto;
 
@@ -237,6 +239,8 @@ public class FirstSettingActivity extends BaseActivity {
                 startActivity(WebViewActivity.createIntent(FirstSettingActivity.this, "http://theysy.com/person.html"));
             }
         });
+
+        checkBox = (CheckBox) findViewById(R.id.terms_and_privacy);
     }
 
     public boolean validateForm() {
@@ -297,6 +301,12 @@ public class FirstSettingActivity extends BaseActivity {
             return false;
         } else {
             heightText.setError(null);
+        }
+
+        if(!checkBox.isChecked()) {
+            checkBox.requestFocus();
+            Toast.makeText(FirstSettingActivity.this, R.string.terms_privacy_agree_request, Toast.LENGTH_SHORT).show();
+            return false;
         }
         return true;
     }

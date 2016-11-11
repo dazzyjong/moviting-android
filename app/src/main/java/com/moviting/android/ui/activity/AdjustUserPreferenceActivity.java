@@ -112,7 +112,7 @@ public class AdjustUserPreferenceActivity extends BaseActivity {
                         startActivityForResult(ChoosePrefDateActivity.createIntent(getBaseContext(), preferredDate), SET_PREF_DATE_VALUE);
                         break;
                     case 3:
-                        Toast.makeText(getBaseContext(), "현재 서울 지역만 서비스 중입니다", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), R.string.enroll_location_warning_message, Toast.LENGTH_SHORT).show();
                         break;
                     case 4:
                         startActivityForResult(ChoosePrefMovieActivity.createIntent(getBaseContext(), preferredMovie), SET_PREF_MOVIE_VALUE);

@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textAlignment="center"
-            android:text="소개가 아직 없습니다. \n계속 소개가 없는 경우 검색조건을 수정해주세요."/>
+            android:text="새 인연이 나타나지 않았어요.\n계속 인연이 없을 경우 인연 찾기 설정을 수정해주세요"/>
     </RelativeLayout>
 
 </FrameLayout>

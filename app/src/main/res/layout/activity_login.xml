@@ -66,12 +66,12 @@
                 <Button
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Login"
+                    android:text="로그인"
                     android:id="@+id/signin_password"
                     android:textColor="#ffffff"
                     android:typeface="normal"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/password_button"
+                    android:background="@drawable/ripple_button_not_enrolled"
                     android:textStyle="bold"
                     android:layout_marginRight="8dp"
                     android:layout_width="wrap_content" />
@@ -79,12 +79,12 @@
                 <Button
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Create"
+                    android:text="계정생성"
                     android:id="@+id/create_accout"
                     android:textColor="#ffffff"
                     android:typeface="normal"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/password_button"
+                    android:background="@drawable/ripple_button_not_enrolled"
                     android:textStyle="bold"
                     android:layout_marginLeft="8dp"
                     android:layout_width="wrap_content" />
@@ -131,7 +131,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Login with Facebook"
+                android:text="페이스북으로 로그인"
                 android:id="@+id/signin_facebook"
                 android:background="@drawable/facebook_button"
                 android:textColor="#ffffff"

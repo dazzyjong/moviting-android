@@ -60,7 +60,9 @@
                 android:textSize="15sp"
                 android:enabled="false"
                 android:id="@+id/sendButton"
-                android:layout_gravity="bottom"/>
+                android:layout_gravity="bottom"
+                android:background="@color/colorPrimaryDark"
+                style="@style/Widget.AppCompat.Button.Colored"/>
 
         </LinearLayout>
 

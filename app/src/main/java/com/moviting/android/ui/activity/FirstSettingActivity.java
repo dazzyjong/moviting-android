@@ -2,7 +2,6 @@ package com.moviting.android.ui.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -73,15 +72,13 @@ public class FirstSettingActivity extends BaseActivity {
     private EditText heightText;
     private CheckBox checkBox;
 
-    private AlertDialog alertDialogForPhoto;
-
     private String formattedBirthday;
     private String photoUrl;
 
     private User user;
 
     private static final String TAG = "FirstSettingActivity";
-    public static int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    public static int SELECT_FILE = 1;
     private FirebaseAuth mAuth;
 
     @Override
@@ -96,6 +93,27 @@ public class FirstSettingActivity extends BaseActivity {
         mAuth = FirebaseAuth.getInstance();
         user = getIntent().getExtras().getParcelable("user");
         profileImage = (ImageView) findViewById(R.id.profile_image);
+        profileImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(FirstSettingActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(FirstSettingActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                    } else{
+                        requestPhotoGallery();
+                    }
+                } else {
+                    requestPhotoGallery();
+                }
+            }
+        });
 
         if (user.photoUrl != null && !user.photoUrl.equals("")) {
             Glide.with(this).load(user.photoUrl).into(profileImage);
@@ -198,30 +216,6 @@ public class FirstSettingActivity extends BaseActivity {
                     handled = true;
                 }
                 return handled;
-            }
-        });
-        ImageButton photoButton = (ImageButton) findViewById(R.id.photo_button);
-        photoButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(FirstSettingActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(FirstSettingActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-                    } else{
-                        alertDialogForPhoto = createInflaterDialog();
-                        alertDialogForPhoto.show();
-                    }
-                } else {
-                    alertDialogForPhoto = createInflaterDialog();
-                    alertDialogForPhoto.show();
-                }
             }
         });
 
@@ -340,7 +334,7 @@ public class FirstSettingActivity extends BaseActivity {
                 if (!task.isSuccessful()) {
                     Toast.makeText(FirstSettingActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 } else {
-                    startActivity(LandingActivity.createIntent(FirstSettingActivity.this));
+                    startActivity(MainActivity.createIntent(FirstSettingActivity.this));
                     finish();
                 }
                 hideProgressDialog();
@@ -349,40 +343,11 @@ public class FirstSettingActivity extends BaseActivity {
     }
 
 
-    private AlertDialog createInflaterDialog() {
-        AlertDialog.Builder ab = new AlertDialog.Builder(this);
-        ab.setTitle(R.string.profile_photo);
-        ab.setItems(R.array.choose_photo_resource, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(cameraIntent, REQUEST_CAMERA);
-                        setDismiss(alertDialogForPhoto);
-                        break;
-                    case 1:
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
-                        setDismiss(alertDialogForPhoto);
-                        break;
-                    default:
-                        break;
-
-                }
-            }
-        });
-
-        ab.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                setDismiss(alertDialogForPhoto);
-            }
-        });
-
-        return ab.create();
+    private void requestPhotoGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
     }
 
     private void createDialogForConfirm() {
@@ -426,29 +391,15 @@ public class FirstSettingActivity extends BaseActivity {
         alertDialog.show();
     }
 
-    private void setDismiss(Dialog dialog) {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_FILE)
+            if (requestCode == SELECT_FILE) {
                 onSelectFromGalleryResult(data);
-            else if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data);
+            }
         }
-    }
-
-    private void onCaptureImageResult(Intent data) {
-        Bitmap takenPicture = (Bitmap) data.getExtras().get("data");
-        profileImage.setImageBitmap(takenPicture);
-
-        StorageReference profileImageReference = getFirebaseStorage().getReferenceFromUrl("gs://moviting.appspot.com/profile_image/");
-        uploadImageToStorage(takenPicture, profileImageReference.child(getUid() + ".jpg"));
     }
 
     private void onSelectFromGalleryResult(Intent data) {
@@ -487,9 +438,7 @@ public class FirstSettingActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-
-                alertDialogForPhoto = createInflaterDialog();
-                alertDialogForPhoto.show();
+                requestPhotoGallery();
             }
         }
     }

@@ -2,10 +2,7 @@ package com.moviting.android.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -53,13 +50,12 @@ public class ProfileActivity extends BaseActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final int REQUEST_EDIT = 2;
-    public static int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    public static int SELECT_FILE = 1;
     private static final String TAG = "ProfileActivity";
     private ListView profileList;
     private MyHashMap<String, Object> userProfile;
     private ImageView imageView;
     private User user;
-    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +65,28 @@ public class ProfileActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(ProfileActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(ProfileActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                    } else{
+                        requestPhotoGallery();
+                    }
+                } else {
+                    requestPhotoGallery();
+                }
+            }
+        });
 
         getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -89,7 +107,7 @@ public class ProfileActivity extends BaseActivity {
                                 REQUEST_EDIT);
                     }
                 });
-                imageView = (ImageView) findViewById(R.id.imageView);
+
                 Glide.with(getBaseContext()).load(userProfile.get("photoUrl")).into(imageView);
             }
 
@@ -101,73 +119,14 @@ public class ProfileActivity extends BaseActivity {
                 Log.w(TAG, "getUser:onCancelled", databaseError.toException());
             }
         });
-
-        ImageButton imageButton = (ImageButton)findViewById(R.id.photo_button);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(ProfileActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(ProfileActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-                    } else{
-                        alertDialog = createInflaterDialog();
-                        alertDialog.show();
-                    }
-                } else {
-                    alertDialog = createInflaterDialog();
-                    alertDialog.show();
-                }
-            }
-        });
     }
 
-    private AlertDialog createInflaterDialog() {
-        AlertDialog.Builder ab = new AlertDialog.Builder(this);
-        ab.setTitle(R.string.profile_photo);
-        ab.setItems(R.array.choose_photo_resource, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(cameraIntent, REQUEST_CAMERA);
-                        setDismiss(alertDialog);
-                        break;
-                    case 1:
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
-                        setDismiss(alertDialog);
-                        break;
-                    default:
-                        break;
-
-                }
-            }
-        });
-
-        ab.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                setDismiss(alertDialog);
-            }
-        });
-
-        return ab.create();
+    private void requestPhotoGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_file)), SELECT_FILE);
     }
-
-    private void setDismiss(Dialog dialog) {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -293,7 +252,6 @@ public class ProfileActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_EDIT) {
-
                 String key = data.getStringExtra("key");
                 String value = data.getStringExtra("value");
                 userProfile.put(getPropertyName(key), (Object) value);
@@ -302,18 +260,8 @@ public class ProfileActivity extends BaseActivity {
 
             if (requestCode == SELECT_FILE) {
                 onSelectFromGalleryResult(data);
-            } else if (requestCode == REQUEST_CAMERA) {
-                onCaptureImageResult(data);
             }
         }
-    }
-
-    private void onCaptureImageResult(Intent data) {
-        Bitmap takenPicture = (Bitmap) data.getExtras().get("data");
-        imageView.setImageBitmap(takenPicture);
-
-        StorageReference profileImageReference = getFirebaseStorage().getReferenceFromUrl("gs://moviting.appspot.com/profile_image/");
-        uploadImageToStorage(takenPicture, profileImageReference.child(getUid() + ".jpg"));
     }
 
     private void onSelectFromGalleryResult(Intent data) {
@@ -353,8 +301,7 @@ public class ProfileActivity extends BaseActivity {
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                alertDialog = createInflaterDialog();
-                alertDialog.show();
+                requestPhotoGallery();
             }
         }
     }

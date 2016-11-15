@@ -122,7 +122,6 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_centerVertical="true"
-                        android:layout_toEndOf="@+id/discount_of_credit"
                         android:layout_marginStart="8dp" />
                 </RelativeLayout>
 
@@ -172,7 +171,6 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_centerVertical="true"
-                        android:layout_toEndOf="@+id/discount_of_coupon"
                         android:layout_marginStart="8dp" />
                 </RelativeLayout>
 

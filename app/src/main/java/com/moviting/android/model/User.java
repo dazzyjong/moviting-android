@@ -33,10 +33,9 @@ public class User implements Parcelable {
     public User(){
     }
 
-    public User(String name, String email, String photoUrl) {
+    public User(String name, String email) {
         this.name = name;
         this.email = email;
-        this.photoUrl = photoUrl;
         this.userStatus = "Joined";
     }
 

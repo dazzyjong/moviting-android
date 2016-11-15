@@ -19,7 +19,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
@@ -346,6 +345,9 @@ public class LoginActivity extends BaseActivity {
                     // There is user, this is revisit
                     // 1. read user info from database
                     Log.d(TAG, "onDataChange success");
+                    if (user.token == null || !user.token.equals(getToken())) {
+                        getFirebaseDatabaseReference().child("users").child(getUid()).child("token").setValue(getToken());
+                    }
                     startActivityUnderCondition(false, user);
                 }
 
@@ -438,7 +440,6 @@ public class LoginActivity extends BaseActivity {
     public User createUserFromFirebaseUser(FirebaseUser fbUser) {
         String name = "";
         String email = "";
-        String photoUrl = "";
 
         if(fbUser.getDisplayName() != null) {
             name = fbUser.getDisplayName();
@@ -446,11 +447,8 @@ public class LoginActivity extends BaseActivity {
         if(fbUser.getEmail() != null) {
             email = fbUser.getEmail();
         }
-        if(fbUser.getPhotoUrl() != null) {
-            photoUrl = fbUser.getPhotoUrl().toString();
-        }
 
-        return new User(name, email, photoUrl);
+        return new User(name, email);
     }
 
     public static Intent createIntent(Context context) {

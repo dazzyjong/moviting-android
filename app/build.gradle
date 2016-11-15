@@ -65,6 +65,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

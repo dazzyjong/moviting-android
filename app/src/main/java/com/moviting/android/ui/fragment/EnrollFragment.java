@@ -2,6 +2,7 @@ package com.moviting.android.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,8 +31,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class EnrollFragment extends BaseFragment {
 
+    private SharedPreferences prefs = null;
     private static final String TAG = "EnrollFragment";
     private static final int REFRESH_CODE = 1;
 
@@ -111,7 +117,29 @@ public class EnrollFragment extends BaseFragment {
         dateText = (TextView) view.findViewById(R.id.date);
         movieText = (TextView) view.findViewById(R.id.movies);
         initUserDataAndUI();
+
+        if(getActivity() != null && isAdded()) {
+            prefs = getActivity().getSharedPreferences("com.moviting.android", MODE_PRIVATE);
+            boolean isFirstRun = prefs.getBoolean("first_enroll", true);
+            if(isFirstRun) {
+                new ShowcaseView.Builder(getActivity())
+                        .setTarget(new ViewTarget((view.findViewById(R.id.adjust_user_preference))))
+                        .setContentTitle("인연 찾기 설정")
+                        .setStyle(R.style.CustomShowcaseTheme3)
+                        .setContentText("조건을 설정하여 특별한 인연을 만나보세요")
+                        .hideOnTouchOutside()
+                        .build();
+            }
+        }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.getBoolean("first_enroll", true)) {
+            prefs.edit().putBoolean("first_enroll", false).apply();
+        }
     }
 
     @Override
@@ -213,7 +241,7 @@ public class EnrollFragment extends BaseFragment {
                 .child("preferredDate").orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if(dataSnapshot.exists() && getActivity() != null && isAdded()){
                     int i = 0;
                     for(DataSnapshot dateSnapshot : dataSnapshot.getChildren() ) {
                         selectedDates.add((String)dateSnapshot.getValue());

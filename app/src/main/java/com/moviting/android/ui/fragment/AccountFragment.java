@@ -101,7 +101,7 @@ public class AccountFragment extends BaseFragment {
                     LoginManager.getInstance().logOut();
                 }
             }
-
+            getFirebaseDatabaseReference().child("users").child(getUid()).child("token").removeValue();
             mAuth.signOut();
         }
 

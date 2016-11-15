@@ -2,6 +2,7 @@ package com.moviting.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,19 +18,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
 import com.moviting.android.model.Message;
+import com.moviting.android.util.ToolbarActionItemTarget;
 
 import java.util.HashMap;
 
@@ -44,6 +46,7 @@ public class ChatActivity extends BaseActivity {
     private static final int OPPONENT_MESSAGE = 2;
     private static final int ADMIN_MESSAGE = 3;
     private RequestManager mGlideRequestManager;
+    private SharedPreferences prefs = null;
 
     public static class MyMessageViewHolder extends RecyclerView.ViewHolder {
         View mView;
@@ -61,21 +64,31 @@ public class ChatActivity extends BaseActivity {
 
     public static class OpponentMessageViewHolder extends RecyclerView.ViewHolder {
         View mView;
+        CircleImageView opponentImage;
+        TextView opponentMessage;
+        TextView opponentNameText;
+        ImageView adminImg;
 
-        public OpponentMessageViewHolder(View v) {
+        OpponentMessageViewHolder(View v, final MatchInfo matchInfo, final Context context) {
             super(v);
             mView = v;
+            opponentMessage = (TextView) mView.findViewById(R.id.opponent_message);
+            opponentNameText = (TextView) mView.findViewById(R.id.opponent_name_text);
+            adminImg = (ImageView) mView.findViewById(R.id.admin_img);
+            opponentImage = (CircleImageView) mView.findViewById(R.id.opponent_img);
+            opponentImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    context.startActivity(OpponentProfileActivity.createIntent(context, matchInfo.opponentUid));
+                }
+            });
+            Log.d(TAG, "OpponentMessageViewHolder " + opponentImage.toString() + " / " + opponentImage.hasOnClickListeners());
         }
 
         void setOpponentView(String name, String message, String photoUrl, RequestManager requestManager) {
-            TextView opponentMessage = (TextView) mView.findViewById(R.id.opponent_message);
             opponentMessage.setText(message);
-
-            TextView opponentNameText = (TextView) mView.findViewById(R.id.opponent_name_text);
             opponentNameText.setText(name);
 
-            ImageView adminImg = (ImageView) mView.findViewById(R.id.admin_img);
-            CircleImageView opponentImage = (CircleImageView) mView.findViewById(R.id.opponent_img);
             if(photoUrl != null) {
                 requestManager.load(photoUrl).into(opponentImage);
             } else {
@@ -139,6 +152,27 @@ public class ChatActivity extends BaseActivity {
         });
 
         getOpponentNameAndPhoto();
+
+        prefs = getSharedPreferences("com.moviting.android", MODE_PRIVATE);
+        boolean isFirstRun = prefs.getBoolean("first_chat", true);
+        if(isFirstRun) {
+            new ShowcaseView.Builder(this)
+                    .setTarget(new ToolbarActionItemTarget((Toolbar) findViewById(R.id.toolbar), R.id.send_movie_ticket))
+                    .setContentTitle("티켓 건네주기")
+                    .setStyle(R.style.CustomShowcaseTheme3)
+                    .setContentText("함께할 좌석을 예매하기 위해 티켓을 건네주세요")
+                    .hideOnTouchOutside()
+                    .build();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (prefs.getBoolean("first_chat", true)) {
+            prefs.edit().putBoolean("first_chat", false).apply();
+        }
     }
 
     private void getOpponentNameAndPhoto() {
@@ -210,6 +244,7 @@ public class ChatActivity extends BaseActivity {
 
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                Log.d(TAG, "onCreateViewHolder " + viewType );
                 switch (viewType) {
                     case MY_MESSAGE:
                         View userType1 = LayoutInflater.from(parent.getContext())
@@ -218,11 +253,11 @@ public class ChatActivity extends BaseActivity {
                     case OPPONENT_MESSAGE:
                         View userType2 = LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.opponent_message_item, parent, false);
-                        return new OpponentMessageViewHolder(userType2);
+                        return new OpponentMessageViewHolder(userType2, matchInfo, ChatActivity.this);
                     case ADMIN_MESSAGE:
                         View userTypeAdmin = LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.opponent_message_item, parent, false);
-                        return new OpponentMessageViewHolder(userTypeAdmin);
+                        return new OpponentMessageViewHolder(userTypeAdmin, matchInfo, ChatActivity.this);
                 }
                 return super.onCreateViewHolder(parent, viewType);
             }

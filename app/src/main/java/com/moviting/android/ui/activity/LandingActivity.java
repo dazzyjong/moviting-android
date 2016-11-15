@@ -24,7 +24,7 @@ public class LandingActivity extends AppCompatActivity {
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(MainActivity.createIntent(LandingActivity.this));
+                startActivity(LoginActivity.createIntent(LandingActivity.this));
                 finish();
             }
         });

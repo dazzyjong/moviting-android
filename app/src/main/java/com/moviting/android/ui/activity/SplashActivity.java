@@ -1,5 +1,6 @@
 package com.moviting.android.ui.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.crashlytics.android.Crashlytics;
@@ -22,6 +23,9 @@ public class SplashActivity extends BaseActivity {
     private static final String TAG = "SplashActivity";
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean mIsAuthed;
+    private SharedPreferences prefs = null;
+    private boolean isFirstRun = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +33,11 @@ public class SplashActivity extends BaseActivity {
         logUser();
 
         setContentView(R.layout.activity_splash);
+
+        prefs = getSharedPreferences("com.moviting.android", MODE_PRIVATE);
+
+        isFirstRun = prefs.getBoolean("firstrun", true);
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         if (getFirebaseAuth().getCurrentUser() == null) {
             Handler hd = new Handler();
@@ -55,7 +64,7 @@ public class SplashActivity extends BaseActivity {
                             } else if(!user.isUserFormFilled()) {
                                 startActivity(FirstSettingActivity.createIntent(SplashActivity.this, user));
                             } else {
-                                if (!user.token.equals(getToken())) {
+                                if (user.token == null || !user.token.equals(getToken())) {
                                     getFirebaseDatabaseReference().child("users").child(getUid()).child("token").setValue(getToken());
                                 }
                                 startActivity(MainActivity.createIntent(SplashActivity.this));
@@ -83,10 +92,26 @@ public class SplashActivity extends BaseActivity {
 
     private class splashhandler implements Runnable{
         public void run() {
-            startActivity(LoginActivity.createIntent(SplashActivity.this));
+            if(isFirstRun) {
+                startActivity(LandingActivity.createIntent(SplashActivity.this));
+            } else {
+                startActivity(LoginActivity.createIntent(SplashActivity.this));
+            }
             SplashActivity.this.finish();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (prefs.getBoolean("firstrun", true)) {
+            // Do first run stuff here then set 'firstrun' as false
+            // using the following line to edit/commit prefs
+            prefs.edit().putBoolean("firstrun", false).apply();
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();

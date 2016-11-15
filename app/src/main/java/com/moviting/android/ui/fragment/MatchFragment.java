@@ -1,6 +1,5 @@
 package com.moviting.android.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -353,18 +352,26 @@ public class MatchFragment extends BaseFragment {
             if(getActivity() != null && isAdded()) {
                 Glide.with(getActivity()).load(mList.get(position).opponentPhotoPath).into(holder.mImageView);
                 holder.mTextView.setText(mList.get(position).opponentName);
+
+                if(mList.get(position).opponentPayment && kind == LIKE_EACH_OTHER) {
+                    holder.opponentPaid.setVisibility(View.VISIBLE);
+                } else {
+                    holder.opponentPaid.setVisibility(View.GONE);
+                }
             }
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
             ImageView mImageView;
             TextView  mTextView;
+            ImageView opponentPaid;
 
             ViewHolder(View itemView) {
                 super(itemView);
 
                 mImageView = (ImageView) itemView.findViewById(R.id.my_img);
                 mTextView = (TextView) itemView.findViewById(R.id.opponent_name);
+                opponentPaid = (ImageView) itemView.findViewById(R.id.like_noti);
 
                 if(kind == MATCH_COMPLETE) {
                     mImageView.setOnClickListener(new View.OnClickListener() {
@@ -377,7 +384,7 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다. (6시간 동안 미결제시 사라짐)", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다. (12시간 동안 미결제시 사라짐)", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else if(kind == LIKE_EACH_OTHER) {

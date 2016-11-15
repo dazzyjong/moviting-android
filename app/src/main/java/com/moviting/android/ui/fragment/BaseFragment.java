@@ -46,15 +46,7 @@ public class BaseFragment extends Fragment {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-    public FirebaseAuth getFirebaseAuth() {
-        return FirebaseAuth.getInstance();
-    }
-
     public DatabaseReference getFirebaseDatabaseReference() {
         return DatabaseHelper.getInstance().getReference();
-    }
-
-    public FirebaseStorage getFirebaseStorage() {
-        return FirebaseStorage.getInstance();
     }
 }

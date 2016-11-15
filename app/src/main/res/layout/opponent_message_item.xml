@@ -4,6 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
     android:gravity="left">
 
     <LinearLayout
@@ -16,7 +17,9 @@
             android:layout_width="70dp"
             android:layout_height="36dp"
             android:id="@+id/opponent_img"
-            android:src="@drawable/profile_placeholder"/>
+            android:src="@drawable/profile_placeholder"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"/>
 
         <ImageView
             android:scaleType="centerInside"

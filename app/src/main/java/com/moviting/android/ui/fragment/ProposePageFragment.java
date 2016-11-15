@@ -171,7 +171,7 @@ public class ProposePageFragment extends BaseFragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if(user != null && getActivity() != null && isAdded()) {
-                    mName.setText(Html.fromHtml("<u>" + user.name + "</u>"));
+                    mName.setText(user.name);
                     mAgeAndWork.setText(user.myAge + " / " + user.work);
                     mFavoriteMovie.setText(user.favoriteMovie);
                     Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);

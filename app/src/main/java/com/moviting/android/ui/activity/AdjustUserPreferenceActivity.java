@@ -314,6 +314,14 @@ public class AdjustUserPreferenceActivity extends BaseActivity {
                     Log.d(TAG, "onRangeChangeListener: " + leftPinValue + " / " + rightPinValue);
                     minAge = Integer.valueOf(leftPinValue);
                     maxAge = Integer.valueOf(rightPinValue);
+                    if (minAge < 20) {
+                        rangeBar.setRangePinsByValue(20, maxAge);
+                        minAge = 20;
+                    }
+                    if (maxAge > 50) {
+                        rangeBar.setRangePinsByValue(minAge, 50);
+                        maxAge = 50;
+                    }
                 }
             });
 

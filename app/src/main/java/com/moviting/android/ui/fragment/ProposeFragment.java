@@ -1,5 +1,6 @@
 package com.moviting.android.ui.fragment;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -212,6 +213,11 @@ public class ProposeFragment extends BaseFragment {
             if(mProposeList.size() == 0) {
                 tvBlankPage.setVisibility(View.VISIBLE);
             }
+        }
+
+        @Override
+        public Parcelable saveState() {
+            return null;
         }
     }
 }

@@ -4,7 +4,6 @@
     tools:context="com.moviting.android.ui.activity.MainActivity">
     <item
         android:id="@+id/action_complete"
-        android:icon="@drawable/ic_done_black_24dp"
         app:showAsAction="always"
-        android:title="complete" />
+        android:title="확인" />
 </menu>

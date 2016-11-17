@@ -49,7 +49,7 @@
 
 
             <CheckBox
-                android:text="1. 연시영 1회 영화티켓"
+                android:text="@string/ticket_check_label_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/checkBox1"
@@ -57,7 +57,7 @@
                 android:visibility="gone"/>
 
             <CheckBox
-                android:text="2. 연시영 1회 영화티켓"
+                android:text="@string/ticket_check_label_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/checkBox2"
@@ -74,7 +74,7 @@
             android:layout_marginBottom="71dp">
 
             <TextView
-                android:text="이성에게 티켓정보를 건내주시겠나요?"
+                android:text="@string/ask_ticket_send"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -15,9 +15,12 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:textColorPrimary">#ffffff</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+
+    </style>
 
     <style name="TextAppearance.ShowcaseView.Title.Light">
         <item name="android:shadowRadius">0</item>

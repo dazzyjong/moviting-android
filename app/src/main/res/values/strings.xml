@@ -1,12 +1,7 @@
 <resources>
     <string name="app_name">연애의 시작은 영화처럼</string>
     <string name="action_settings">설정</string>
-    <string name="section_format">Hello World from section: %1$d</string>
 
-    <string name="unknown_response">Unexpected onActivityResult response code</string>
-    <string name="sign_out_failed">Sign out failed</string>
-    <string name="sign_in_failed">Sign in failed</string>
-    <string name="create_account_failed">Create Account failed</string>
     <string name="loading">Loading…</string>
 
     <!-- Account fragment list -->
@@ -55,7 +50,7 @@
     <string name="enroll_button_text">참가하기</string>
     <string name="enrolled_button_text">참가 진행 중</string>
     <string name="preference_age_range_text">선호 연령대</string>
-    <string name="apply_success_text">신청되었습니다. 하루 3명의 특별한 인연을 매일 정오에 보내드립니다</string>
+    <string name="apply_success_text">신청되었습니다. 새 인연을 매일 정오에 최대 3명 또는 당신에게 호감을 나타낼 때 보내드립니다.</string>
     <string name="release_success_text">신청 해제 되었습니다.</string>
     <string name="search_mate_condition">인연 찾기 설정</string>
 
@@ -79,7 +74,7 @@
     <string-array name="info_contents">
         <item>서로 12시간 이내 결제시 대화방 및 영화티켓이 자동 생성됩니다.</item>
         <item>12시간 이내 결제하지 않을 경우 서로간 좋아요 목록은 사라지게 됩니다.</item>
-        <item>결제 후 이성은 결제하지 않을 시 6시간 후 결제금액은 크레딧으로 자동 환불됩니다.</item>
+        <item>결제 후 이성이 결제하지 않을 시 12시간 후 결제금액은 크레딧으로 자동 환불됩니다.</item>
     </string-array>
 
     <string-array name="my_profile_list">
@@ -118,5 +113,10 @@
     <string name="privacy"><u>개인정보보호</u></string>
     <string name="enroll_location_warning_message">현재 서울 지역에서만 서비스 중이며, 정확한 상영관 및 시간은 매칭 후 이성과 상의하세요</string>
     <string name="terms_privacy_agree_request">이용약관 및 개인정보보호에 동의해주세요.</string>
+    <string name="ask_ticket_send">이성에게 영화티켓을 건네주시겠나요?</string>
+    <string name="ticket_check_label_1">1. 연시영 1회 영화티켓</string>
+    <string name="ticket_check_label_2">2. 연시영 1회 영화티켓</string>
+    <string name="request_finding_opponent_setting">연인 찾기 조건을 설정해 주세요</string>
+    <string name="propose_information">새 인연을 매일 정오에 최대 3명 또는\n당신에게 호감을 나타낼 때 보내드립니다.\n새 인연이 계속 나타나지 않을 시\n인연 찾기 설정을 수정해주세요</string>
 
 </resources>

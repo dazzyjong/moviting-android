@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -101,6 +100,9 @@ public class ProfileActivity extends BaseActivity {
                 profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        if(i == 0 || i == 1) {
+                            return;
+                        }
                         String selected = getResources().getStringArray(R.array.my_profile_list)[i];
                         startActivityForResult(
                                 ProfilePropEditActivity.createIntent(getBaseContext(), selected, getValue(selected)),
@@ -192,8 +194,13 @@ public class ProfileActivity extends BaseActivity {
             profileViewHolder.key.setText(profileList[i]);
             profileViewHolder.value.setText(getValue(profileList[i]));
 
-            return view;
+            if(i == 0 || i == 1) {
+                profileViewHolder.arrow.setVisibility(View.INVISIBLE);
+                view.setEnabled(false);
+                view.setOnClickListener(null);
+            }
 
+            return view;
         }
 
         class ProfileViewHolder {
@@ -254,7 +261,7 @@ public class ProfileActivity extends BaseActivity {
             if (requestCode == REQUEST_EDIT) {
                 String key = data.getStringExtra("key");
                 String value = data.getStringExtra("value");
-                userProfile.put(getPropertyName(key), (Object) value);
+                userProfile.put(getPropertyName(key), value);
                 ((ProfileAdapter) profileList.getAdapter()).notifyDataSetChanged();
             }
 

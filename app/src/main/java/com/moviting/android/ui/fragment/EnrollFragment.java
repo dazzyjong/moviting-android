@@ -109,7 +109,7 @@ public class EnrollFragment extends BaseFragment {
                         });
                     }
                 } else {
-                    Toast.makeText(getActivity(), "연인 찾기 조건을 설정해 주세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.request_finding_opponent_setting, Toast.LENGTH_SHORT).show();
                 }
             }
         });

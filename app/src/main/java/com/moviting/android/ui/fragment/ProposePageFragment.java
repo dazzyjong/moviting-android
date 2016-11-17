@@ -22,7 +22,6 @@ import com.moviting.android.R;
 import com.moviting.android.model.Propose;
 import com.moviting.android.model.User;
 import com.moviting.android.ui.activity.OpponentProfileActivity;
-import com.moviting.android.ui.activity.ProfileActivity;
 
 public class ProposePageFragment extends BaseFragment {
 
@@ -174,7 +173,7 @@ public class ProposePageFragment extends BaseFragment {
                     mName.setText(user.name);
                     mAgeAndWork.setText(user.myAge + " / " + user.work);
                     mFavoriteMovie.setText(user.favoriteMovie);
-                    Glide.with(getParentFragment().getActivity()).load(user.photoUrl).into(profileImage);
+                    Glide.with(getParentFragment().getActivity()).load(user.photoUrl).centerCrop().into(profileImage);
                 }
             }
 

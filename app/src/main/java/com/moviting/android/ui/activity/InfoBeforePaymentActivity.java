@@ -69,7 +69,7 @@ public class InfoBeforePaymentActivity extends BaseActivity {
         getFirebaseDatabaseReference().child("users").child(matchInfo.opponentUid).child("photoUrl").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Glide.with(getBaseContext()).load((String)dataSnapshot.getValue()).into(opponentImage);
+                Glide.with(getBaseContext()).load((String)dataSnapshot.getValue()).centerCrop().into(opponentImage);
             }
 
             @Override

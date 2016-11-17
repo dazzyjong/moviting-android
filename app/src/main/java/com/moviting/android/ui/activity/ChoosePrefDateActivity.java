@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -46,6 +47,7 @@ public class ChoosePrefDateActivity extends BaseActivity {
 
         calendarView = (MaterialCalendarView) findViewById(R.id.calendarView);
         calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_MULTIPLE);
+        calendarView.state().edit().setMinimumDate(getTomorrow()).commit();
 
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -62,6 +64,13 @@ public class ChoosePrefDateActivity extends BaseActivity {
             }
         });
         getUserPrefDate();
+    }
+
+    private Calendar getTomorrow() {
+        Calendar cal = Calendar.getInstance();
+        int date = cal.get(Calendar.DATE) + 1;
+        cal.set(Calendar.DATE, date);
+        return cal;
     }
 
     public void getUserPrefDate() {

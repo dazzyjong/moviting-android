@@ -285,6 +285,7 @@ public class TicketDetailActivity extends BaseActivity {
                         {
                             fromPath.child(ticketId).removeValue();
                             getFirebaseDatabaseReference().child("match_chat").child(matchInfo.matchUid).push().setValue(new Message(getUid(), "영화표를 전달했습니다. 영화티켓함을 확인해주세요."));
+                            finish();
                         }
                     }
                 });

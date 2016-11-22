@@ -1,6 +1,5 @@
 package com.moviting.android.ui.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +34,8 @@ public class TicketBoxActivity extends BaseActivity {
 
     private Button ticket1Button;
     private Button ticket2Button;
+
+    private TextView noTicket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class TicketBoxActivity extends BaseActivity {
             }
         });
 
+        noTicket = (TextView) findViewById(R.id.no_ticket);
+
         getMyTicket();
     }
 
@@ -75,6 +79,12 @@ public class TicketBoxActivity extends BaseActivity {
                 for(DataSnapshot child: dataSnapshot.getChildren()) {
                     HashMap object = (HashMap)child.getValue();
                     movieTicketList.add(new MovieTicket(child.getKey(), (String)object.get("expiration_date"), (Boolean)object.get("screening")));
+                }
+
+                if(movieTicketList.size() == 0) {
+                    noTicket.setVisibility(View.VISIBLE);
+                    ticket1Layout.setVisibility(View.GONE);
+                    ticket2Layout.setVisibility(View.GONE);
                 }
 
                 for(int i = 0; i < movieTicketList.size(); i++) {

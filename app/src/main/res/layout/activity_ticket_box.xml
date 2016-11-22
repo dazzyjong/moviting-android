@@ -122,6 +122,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
-
+        <TextView
+            android:id="@+id/no_ticket"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="현재 보유중인 티켓이 없습니다."
+            android:gravity="center"
+            android:visibility="gone"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

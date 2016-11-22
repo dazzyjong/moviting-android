@@ -40,8 +40,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatActivity extends BaseActivity {
 
     private static final String TAG = "ChatActivity";
-    private static final int REQUEST_SEND_TICKET = 1;
-    private static final int SEND_SUCCESS = 100;
     private static final int MY_MESSAGE = 1;
     private static final int OPPONENT_MESSAGE = 2;
     private static final int ADMIN_MESSAGE = 3;
@@ -297,7 +295,7 @@ public class ChatActivity extends BaseActivity {
                 break;
 
             case R.id.send_movie_ticket:
-                    startActivityForResult(MovieTicketActivity.createIntent(getBaseContext(), matchInfo), REQUEST_SEND_TICKET);
+                startActivity(TicketBoxActivity.createIntent(getBaseContext(), matchInfo));
                 break;
         }
         return true;
@@ -307,14 +305,5 @@ public class ChatActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_SEND_TICKET) {
-            if (resultCode == SEND_SUCCESS) {
-                getFirebaseDatabaseReference().child("match_chat").child(matchInfo.matchUid).push().setValue(new Message(getUid(), "영화표를 전달했습니다. 영화티켓함을 확인해주세요."));
-            }
-        }
     }
 }

@@ -88,15 +88,7 @@
             android:label="@string/title_activity_chat"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.activity.MovieTicketActivity"
-            android:label="@string/title_activity_chat"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.activity.TicketBoxActivity1"
-            android:label="@string/title_activity_ticket_box1"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.activity.TicketBoxActivity2"
+            android:name=".ui.activity.TicketBoxActivity"
             android:label="@string/title_activity_ticket_box1"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -106,14 +98,21 @@
         <activity android:name=".ui.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.WebViewActivity" />
-        <activity android:name=".ui.activity.LandingActivity"></activity>
+        <activity android:name=".ui.activity.LandingActivity" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="88216d45390a30c9258d671b6ef7e54cbd753e02" />
+
+        <activity
+            android:name=".ui.activity.TicketDetailActivity"
+            android:label="@string/title_activity_ticket_box1"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

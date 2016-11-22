@@ -64,7 +64,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="45dp"
             android:id="@+id/use_button"
             android:background="@drawable/ripple_button_not_enrolled"
             android:layout_alignParentBottom="true"/>

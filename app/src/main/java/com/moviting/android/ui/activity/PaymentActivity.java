@@ -2,13 +2,11 @@ package com.moviting.android.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -16,15 +14,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.moviting.android.R;
 import com.moviting.android.model.MatchInfo;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PaymentActivity extends BaseActivity {
 
@@ -41,13 +34,11 @@ public class PaymentActivity extends BaseActivity {
     private int credit_or_coupon_amount = 0;
     private TextView totalAmount;
 
-    private TextView discountOfCredit;
-    private TextView discountOfCoupon;
-
     private Button payButton;
     private Button requestPaymentButton;
     private RelativeLayout creditButton;
     private RelativeLayout couponButton;
+    private ColorStateList oldColors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +49,8 @@ public class PaymentActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         creditOrCouponAmount = (TextView) findViewById(R.id.credit_or_coupon_amount);
-        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount) + getString(R.string.won));
+        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount));
+        oldColors = creditOrCouponAmount.getTextColors();
 
         totalAmount = (TextView)  findViewById(R.id.total_amount);
         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
@@ -67,16 +59,7 @@ public class PaymentActivity extends BaseActivity {
         requestPaymentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showProgressDialog();
-                requestPaymentButton.setEnabled(false);
-                getFirebaseDatabaseReference().child("payment_confirm").child(getUid())
-                        .child(new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS").format(new Date())).setValue(true, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        showDialog();
-                        hideProgressDialog();
-                    }
-                });
+                startActivity(WebViewActivity.createIntent(PaymentActivity.this, "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
             }
         });
 
@@ -110,37 +93,7 @@ public class PaymentActivity extends BaseActivity {
             }
         });
 
-        discountOfCredit = (TextView) findViewById(R.id.discount_of_credit);
-        discountOfCoupon = (TextView) findViewById(R.id.discount_of_coupon);
         matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
-        checkPaymentAndSetButton();
-    }
-
-    private void checkPaymentAndSetButton() {
-        getFirebaseDatabaseReference().child("payment_confirm").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null && dataSnapshot.getChildrenCount() != 0) {
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        if((Boolean) child.getValue()) {
-                            requestPaymentButton.setEnabled(false);
-                        } else {
-                            requestPaymentButton.setEnabled(true);
-                        }
-                    }
-                } else {
-                    requestPaymentButton.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if(getBaseContext() != null) {
-                    Toast.makeText(getBaseContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                Log.w(TAG, databaseError.getDetails());
-            }
-        });
     }
 
     public static Intent createIntent(Context context, MatchInfo matchInfo) {
@@ -205,20 +158,18 @@ public class PaymentActivity extends BaseActivity {
                 case REQUEST_CREDIT:
                     String usedCredit = data.getStringExtra("usedCredit");
                     if(!usedCredit.equals("0")) {
-                        discountOfCredit.setText("- " + usedCredit);
-                        discountOfCredit.setVisibility(View.VISIBLE);
-
                         credit_or_coupon_amount = Integer.valueOf(usedCredit);
-                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount) + getString(R.string.won));
+                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount));
+                        creditOrCouponAmount.setTextColor(Color.RED);
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(true);
                         payButton.setTextColor(Color.WHITE);
                         couponButton.setEnabled(false);
                     } else {
-                        discountOfCredit.setVisibility(View.GONE);
                         credit_or_coupon_amount = 0;
-                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount) + getString(R.string.won));
+                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount));
+                        creditOrCouponAmount.setTextColor(oldColors);
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(false);
@@ -230,20 +181,18 @@ public class PaymentActivity extends BaseActivity {
                     String usedCoupon = data.getStringExtra("usedCoupon");
                     couponUid = data.getStringExtra("couponUid");
                     if(!usedCoupon.equals("0")) {
-                        discountOfCoupon.setText("- " + usedCoupon);
-                        discountOfCoupon.setVisibility(View.VISIBLE);
-
                         credit_or_coupon_amount = Integer.valueOf(usedCoupon);
-                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount) + getString(R.string.won));
+                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount));
+                        creditOrCouponAmount.setTextColor(Color.RED);
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(true);
                         payButton.setTextColor(Color.WHITE);
                         creditButton.setEnabled(false);
                     } else {
-                        discountOfCoupon.setVisibility(View.GONE);
                         credit_or_coupon_amount = 0;
-                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount) + getString(R.string.won));
+                        creditOrCouponAmount.setText(String.format("%,d", credit_or_coupon_amount));
+                        creditOrCouponAmount.setTextColor(oldColors);
 
                         totalAmount.setText(String.format("%,d", PRICE - credit_or_coupon_amount) + getString(R.string.won));
                         payButton.setEnabled(false);
@@ -253,24 +202,5 @@ public class PaymentActivity extends BaseActivity {
                     break;
             }
         }
-    }
-
-    private void showDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(PaymentActivity.this);
-        builder.setTitle(R.string.request_check_payment);
-        builder.setMessage(R.string.request_check_payment_description);
-
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        // display dialog
-        dialog.show();
     }
 }

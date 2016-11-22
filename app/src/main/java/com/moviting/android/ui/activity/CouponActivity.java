@@ -62,7 +62,6 @@ public class CouponActivity extends BaseActivity {
 
         getCoupon();
 
-
         if(mode == PAYMENT_MODE) {
             couponList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -197,6 +196,7 @@ public class CouponActivity extends BaseActivity {
                     view = inflater.inflate(R.layout.coupon_item, null);
 
                     paymentModeHolder.checkedTextView = (CheckedTextView) view.findViewById(R.id.coupon_item);
+                    paymentModeHolder.textView = (TextView) view.findViewById(R.id.coupon_name);
                     paymentModeHolder.button = (Button) view.findViewById(R.id.detail);
                     paymentModeHolder.button.setTag(i);
                     paymentModeHolder.button.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +209,7 @@ public class CouponActivity extends BaseActivity {
                 } else {
                     paymentModeHolder = (PaymentModeHolder)view.getTag();
                 }
-                paymentModeHolder.checkedTextView.setText(couponArray.get(i).kind);
+                paymentModeHolder.textView.setText(couponArray.get(i).kind);
                 paymentModeHolder.checkedTextView.setChecked(couponArray.get(i).checked);
             } else {
                 AccountModeHolder accountModeHolder;
@@ -246,6 +246,7 @@ public class CouponActivity extends BaseActivity {
 
         class PaymentModeHolder {
             CheckedTextView checkedTextView;
+            TextView textView;
             Button button;
         }
     }

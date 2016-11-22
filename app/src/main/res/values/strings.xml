@@ -86,6 +86,15 @@
         <item>인생 영화</item>
     </string-array>
 
+    <string-array name="movie_info_list">
+        <item>티켓번호</item>
+        <item>사용기한</item>
+        <item>사용극장</item>
+        <item>주의사항</item>
+        <item>사용방법</item>
+        <item>건네주기</item>
+    </string-array>
+
     <string-array name="opponent_profile_list">
         <item>매칭 영화 정보</item>
         <item>영화</item>

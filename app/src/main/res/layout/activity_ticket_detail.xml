@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.moviting.android.ui.activity.TicketBoxActivity1">
+    tools:context="com.moviting.android.ui.activity.TicketDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,21 +21,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <ListView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginBottom="?attr/actionBarSize"
-        android:padding="16dp">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_movie_share"
-            android:scrollbars="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-    </LinearLayout>
+        android:id="@+id/content_ticket_detail"
+        android:divider="#000000"
+        android:dividerHeight="0.67dp"
+        android:layout_below="@+id/image_layout">
+    </ListView>
 
 </android.support.design.widget.CoordinatorLayout>

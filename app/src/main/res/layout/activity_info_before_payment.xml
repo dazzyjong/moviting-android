@@ -41,6 +41,7 @@
             android:id="@+id/imageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:layout_marginTop="29dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/profile_placeholder"
             android:scaleType="centerCrop"/>
@@ -50,15 +51,15 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:layout_marginBottom="30dp"
-            app:fillColor="#bbFFFFFF"
+            app:fillColor="#bbE94B6C"
             app:pageColor="#00000000"
             app:radius="4dp"
-            app:autoPlay="false"
-            app:strokeColor="#FF777777"
+            app:autoPlay="true"
+            app:strokeColor="@color/colorPrimaryDark"
             app:strokeWidth="1dp"/>
         <Button
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="45dp"
             android:id="@+id/payment_button"
             android:text="비용 결제하기"
             android:textStyle="bold"

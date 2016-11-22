@@ -53,7 +53,10 @@ public class ChoosePrefMovieActivity extends ChoosePrefActivity {
         getFirebaseDatabaseReference().child("movie").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                options = (ArrayList<String>)dataSnapshot.getValue();
+                for(DataSnapshot child : dataSnapshot.getChildren() ) {
+                    options.add(child.getKey());
+                }
+
                 getUserPrefMovie();
             }
 

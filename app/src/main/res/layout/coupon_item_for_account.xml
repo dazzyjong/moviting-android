@@ -6,13 +6,20 @@
     android:descendantFocusability="blocksDescendants"
     android:background="@drawable/item_border">
 
+    <ImageView
+        android:layout_gravity="center"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/ic_gift_coupon_icon_10"/>
     <TextView
-        android:text="1회 영화관람 이용권"
-        android:textSize="16dp"
         android:id="@+id/coupon_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:layout_weight="1"
         android:gravity="center" />
 
@@ -24,6 +31,7 @@
     <Button
         android:id="@+id/detail"
         android:text="상세설명"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"/>

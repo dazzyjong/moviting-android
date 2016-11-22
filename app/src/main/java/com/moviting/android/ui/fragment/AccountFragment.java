@@ -16,7 +16,6 @@ import com.moviting.android.R;
 import com.moviting.android.ui.activity.CouponActivity;
 import com.moviting.android.ui.activity.LoginActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
-import com.moviting.android.ui.activity.TicketBoxActivity1;
 import com.moviting.android.ui.activity.WebViewActivity;
 
 public class AccountFragment extends BaseFragment {
@@ -50,7 +49,6 @@ public class AccountFragment extends BaseFragment {
         accountTabList = (ListView) view.findViewById(R.id.account_tab_list);
         String[] values = new String[] {
                 getResources().getString(R.string.my_profile),
-                getResources().getString(R.string.movie_ticket_box),
                 getResources().getString(R.string.coupon_box),
                 getResources().getString(R.string.FAQ),
                 getResources().getString(R.string.Ask),
@@ -67,18 +65,15 @@ public class AccountFragment extends BaseFragment {
                         startActivity(ProfileActivity.createIntent(getActivity()));
                         break;
                     case 1:
-                        startActivity(TicketBoxActivity1.createIntent(getActivity()));
-                        break;
-                    case 2:
                         startActivity(CouponActivity.createIntent(getActivity(), ACCOUNT_MODE));
                         break;
-                    case 3:
+                    case 2:
                         startActivity(WebViewActivity.createIntent(getActivity(), "http://theysy.com/qna.html"));
                         break;
-                    case 4:
+                    case 3:
                         startActivity(WebViewActivity.createIntent(getActivity(), "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
                         break;
-                    case 5:
+                    case 4:
                         signOut();
                         break;
                     default:

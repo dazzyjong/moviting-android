@@ -143,11 +143,7 @@ public class TicketDetailActivity extends BaseActivity {
                     movieTicketInfoViewHolder.button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(matchInfo.opponentType.equals("coupon")) {
-                                Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            } else {
                                 createHandOverDialog();
-                            }
                         }
                     });
                     break;
@@ -220,8 +216,12 @@ public class TicketDetailActivity extends BaseActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicket.ticketId,
-                                        getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
+                                if(matchInfo.opponentType.equals("coupon")) {
+                                    Toast.makeText(getBaseContext(), "쿠폰 사용자에겐 영화표를 전달할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    moveTicket(getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(getUid()), movieTicket.ticketId,
+                                            getFirebaseDatabaseReference().child("match_ticket").child(matchInfo.matchUid).child(matchInfo.opponentUid));
+                                }
                             }
                         });
 

@@ -52,6 +52,10 @@ public class PhotoFileUtility {
     public static String getPathForV19AndUp(Context context, Uri contentUri) {
         String wholeID = DocumentsContract.getDocumentId(contentUri);
 
+        if (!wholeID.contains("image:")) {
+            return null;
+        }
+
         // Split at colon, use second item in the array
         String id = wholeID.split(":")[1];
         String[] column = { MediaStore.Images.Media.DATA };

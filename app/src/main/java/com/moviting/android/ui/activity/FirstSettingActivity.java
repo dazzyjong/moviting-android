@@ -454,6 +454,11 @@ public class FirstSettingActivity extends BaseActivity {
         int result = 0;
 
         String path = PhotoFileUtility.getRealPathFromURI(this, bitmapUri);
+
+        if(path == null) {
+            return 0;
+        }
+
         ExifInterface exif = null;
         try {
             exif = new ExifInterface(path);

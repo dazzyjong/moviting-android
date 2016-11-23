@@ -36,6 +36,7 @@ public class SplashActivity extends BaseActivity {
     private boolean mIsAuthed;
     private SharedPreferences prefs = null;
     private boolean isFirstRun = false;
+    private AlertDialog alertDialog = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -152,7 +153,7 @@ public class SplashActivity extends BaseActivity {
                         });
 
         // 다이얼로그 생성
-        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog = alertDialogBuilder.create();
 
         // 다이얼로그 보여주기
         alertDialog.show();
@@ -191,6 +192,9 @@ public class SplashActivity extends BaseActivity {
         super.onStop();
         if (mAuthListener != null) {
             getFirebaseAuth().removeAuthStateListener(mAuthListener);
+        }
+        if(alertDialog != null) {
+            alertDialog.dismiss();
         }
     }
 

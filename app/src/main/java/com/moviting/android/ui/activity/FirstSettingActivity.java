@@ -239,7 +239,7 @@ public class FirstSettingActivity extends BaseActivity {
 
     public boolean validateForm() {
 
-        if (photoUrl != null && photoUrl.equals("")) {
+        if (photoUrl == null || photoUrl.equals("")) {
             Toast.makeText(this, R.string.photo_required, Toast.LENGTH_LONG).show();
             profileImage.requestFocus();
             return false;

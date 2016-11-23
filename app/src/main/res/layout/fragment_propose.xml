@@ -17,7 +17,8 @@
             android:layout_centerInParent="true"
             android:textAlignment="center"
             android:lineSpacingExtra="15dp"
-            android:text="@string/propose_information"/>
+            android:text="@string/propose_information"
+            android:paddingBottom="?attr/actionBarSize"/>
     </RelativeLayout>
 
 </FrameLayout>

@@ -127,5 +127,6 @@
     <string name="ticket_check_label_2">2. 연시영 1회 영화티켓</string>
     <string name="request_finding_opponent_setting">연인 찾기 조건을 설정해 주세요</string>
     <string name="propose_information">새 인연을 매일 정오에 최대 3명 또는\n당신에게 호감을 나타낼 때 보내드립니다.\n새 인연이 계속 나타나지 않을 시\n인연 찾기 설정을 수정해주세요</string>
+    <string name="title_activity_photo_editor">사진편집</string>
 
 </resources>

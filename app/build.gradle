@@ -66,6 +66,7 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+    compile 'com.naver.android.helloyako:imagecropview:1.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

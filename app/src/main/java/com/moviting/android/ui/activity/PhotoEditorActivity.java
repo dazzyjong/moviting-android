@@ -1,12 +1,17 @@
 package com.moviting.android.ui.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,6 +28,7 @@ import java.io.IOException;
 public class PhotoEditorActivity extends BaseActivity {
 
     private static final String TAG = "PhotoEditorActivity";
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private ImageCropView imageCropView;
     private Button cropButton;
     private Button leftButton;
@@ -39,7 +45,17 @@ public class PhotoEditorActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         imageCropView = (ImageCropView) findViewById(R.id.imageCropView);
-        setImageCropViewFromGalleryResult(getIntent());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(PhotoEditorActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(PhotoEditorActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            } else {
+                setImageCropViewFromGalleryResult(getIntent());
+            }
+        } else {
+            setImageCropViewFromGalleryResult(getIntent());
+        }
+
         imageCropView.setAspectRatio(4, 3);
 
         cropButton = (Button) findViewById(R.id.cropButton);
@@ -103,12 +119,27 @@ public class PhotoEditorActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                setImageCropViewFromGalleryResult(getIntent());
+            }
+        }
+    }
+
     private void setImageCropViewFromGalleryResult(Intent data) {
         Uri selectedImageUri = data.getData();
         try {
-            src = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-            src = getResizedBitmap(src, 780);
-            imageCropView.setImageBitmap(src);
+            if (ContextCompat.checkSelfPermission(PhotoEditorActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+                src = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                src = getResizedBitmap(src, 780);
+                imageCropView.setImageBitmap(src);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

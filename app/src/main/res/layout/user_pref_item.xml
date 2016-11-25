@@ -47,7 +47,7 @@
         android:id="@+id/rangebar"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        custom:tickStart="20"
+        custom:tickStart="19"
         custom:tickInterval="1"
         custom:tickEnd="50"
         custom:pinMaxFont="10sp"

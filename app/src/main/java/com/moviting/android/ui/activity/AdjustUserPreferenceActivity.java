@@ -42,7 +42,7 @@ public class AdjustUserPreferenceActivity extends BaseActivity {
     private static final int SET_PREF_MOVIE_VALUE = 4;
     private static final int SET_PREF_AGE_VALUE = 2;
 
-    private long minAge = 20;
+    private long minAge = 19;
     private long maxAge = 50;
 
     private long prevMinAge;
@@ -68,7 +68,7 @@ public class AdjustUserPreferenceActivity extends BaseActivity {
         preferredGender = getIntent().getStringExtra("preferredGender");
         preferredDate = getIntent().getStringArrayListExtra("preferredDate");
         preferredMovie = getIntent().getStringArrayListExtra("preferredMovie");
-        minAge = getIntent().getLongExtra("minPrefAge", 20);
+        minAge = getIntent().getLongExtra("minPrefAge", 19);
         maxAge = getIntent().getLongExtra("maxPrefAge", 50);
         if(!getIntent().hasExtra("minPrefAge")) {
             updateSetting(true, minAge);
@@ -314,9 +314,9 @@ public class AdjustUserPreferenceActivity extends BaseActivity {
                     Log.d(TAG, "onRangeChangeListener: " + leftPinValue + " / " + rightPinValue);
                     minAge = Integer.valueOf(leftPinValue);
                     maxAge = Integer.valueOf(rightPinValue);
-                    if (minAge < 20) {
-                        rangeBar.setRangePinsByValue(20, maxAge);
-                        minAge = 20;
+                    if (minAge < 19) {
+                        rangeBar.setRangePinsByValue(19, maxAge);
+                        minAge = 19;
                     }
                     if (maxAge > 50) {
                         rangeBar.setRangePinsByValue(minAge, 50);

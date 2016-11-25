@@ -1,5 +1,7 @@
 package com.moviting.android.ui.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ public class AccountFragment extends BaseFragment {
 
     private ListView accountTabList;
     private FirebaseAuth mAuth;
+    private AlertDialog alertDialog;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -74,7 +77,7 @@ public class AccountFragment extends BaseFragment {
                         startActivity(WebViewActivity.createIntent(getActivity(), "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
                         break;
                     case 4:
-                        signOut();
+                        createWarningDialog();
                         break;
                     default:
                         break;
@@ -83,6 +86,33 @@ public class AccountFragment extends BaseFragment {
         });
 
         return view;
+    }
+
+    private void createWarningDialog() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+        // AlertDialog 셋팅
+        alertDialogBuilder
+                .setTitle("로그아웃")
+                .setMessage("로그아웃 하시겠습니까?")
+                .setCancelable(true)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        signOut();
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+        // 다이얼로그 생성
+        alertDialog = alertDialogBuilder.create();
+
+        // 다이얼로그 보여주기
+        alertDialog.show();
     }
 
     public void signOut() {

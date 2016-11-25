@@ -22,7 +22,7 @@ android {
         applicationId "com.moviting.android"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 5
+        versionCode 6
         versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

@@ -28,8 +28,13 @@ public class InfoBeforePaymentActivity extends BaseActivity {
     private static final int REQUEST_PAYMENT = 100;
     private static final int PAYMENT_SUCCESS = 101;
 
+    private static final int LIKE_EACH_OTHER = 0;
+    private static final int MATCH_PROGRESS = 1;
+
     ImageView opponentImage;
     public static final String TAG = "InfoBeforePayment";
+
+    private int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +46,21 @@ public class InfoBeforePaymentActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final MatchInfo matchInfo = (MatchInfo)getIntent().getSerializableExtra("matchInfo");
+        mode = getIntent().getIntExtra("mode", LIKE_EACH_OTHER);
 
         Button paymentButton = (Button) findViewById(R.id.payment_button);
-        paymentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(PaymentActivity.createIntent(getBaseContext(), matchInfo), REQUEST_PAYMENT);
-            }
-        });
+        if(mode == LIKE_EACH_OTHER) {
+            paymentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivityForResult(PaymentActivity.createIntent(getBaseContext(), matchInfo), REQUEST_PAYMENT);
+                }
+            });
+        } else if(mode == MATCH_PROGRESS){
+            paymentButton.setEnabled(false);
+            paymentButton.setText("상대의 결제를 기다리고 있습니다...");
+            paymentButton.setTextSize(18);
+        }
 
         CarouselView carouselView = (CarouselView) findViewById(R.id.carouselView);
         carouselView.setPageCount(NUMBER_OF_PAGES);
@@ -66,6 +78,12 @@ public class InfoBeforePaymentActivity extends BaseActivity {
         });
 
         opponentImage = (ImageView) findViewById(R.id.imageView);
+        opponentImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(OpponentProfileActivity.createIntent(InfoBeforePaymentActivity.this, matchInfo.opponentUid));
+            }
+        });
         getFirebaseDatabaseReference().child("users").child(matchInfo.opponentUid).child("photoUrl").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -83,9 +101,10 @@ public class InfoBeforePaymentActivity extends BaseActivity {
 
     }
 
-    public static Intent createIntent(Context context, MatchInfo matchInfo) {
+    public static Intent createIntent(Context context, MatchInfo matchInfo, int mode) {
         Intent in = new Intent();
         in.setClass(context, InfoBeforePaymentActivity.class);
+        in.putExtra("mode", mode);
         in.putExtra("matchInfo", matchInfo);
         return in;
     }

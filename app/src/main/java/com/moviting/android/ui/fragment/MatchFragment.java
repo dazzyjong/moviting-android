@@ -384,14 +384,14 @@ public class MatchFragment extends BaseFragment {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(getActivity(), "상대의 결제를 기다리고 있습니다.", Toast.LENGTH_SHORT).show();
+                            startActivity(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition()), MATCH_PROGRESS));
                         }
                     });
                 } else if(kind == LIKE_EACH_OTHER) {
                     mImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivity(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition())));
+                            startActivity(InfoBeforePaymentActivity.createIntent(getActivity(), mList.get(getAdapterPosition()), LIKE_EACH_OTHER));
                         }
                     });
                 }

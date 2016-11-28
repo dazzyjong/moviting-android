@@ -54,8 +54,8 @@
     <string name="release_success_text">신청 해제 되었습니다.</string>
     <string name="search_mate_condition">인연 찾기 설정</string>
 
-    <string name="pref_date">일자</string>
-    <string name="pref_movie">영화</string>
+    <string name="pref_date">일자(중복가능)</string>
+    <string name="pref_movie">영화(중복가능)</string>
     <string name="like_each_other">서로간 좋아요 (12시간 후 사라짐)</string>
     <string name="match_progress">매칭 진행 (12시간 후 사라짐)</string>
     <string name="match_complete">매칭 완료</string>

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class ProfileActivity extends BaseActivity {
     private ListView profileList;
     private MyHashMap<String, Object> userProfile;
     private ImageView imageView;
+    private ImageButton photoButton;
     private User user;
 
     @Override
@@ -65,6 +67,14 @@ public class ProfileActivity extends BaseActivity {
             }
         });
 
+        photoButton = (ImageButton) findViewById(R.id.photo_button);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestPhotoGallery();
+            }
+        });
+
         getFirebaseDatabaseReference().child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -78,7 +88,7 @@ public class ProfileActivity extends BaseActivity {
                 profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        if(i == 0 || i == 1) {
+                        if(i == 1) {
                             return;
                         }
                         String selected = getResources().getStringArray(R.array.my_profile_list)[i];
@@ -172,7 +182,7 @@ public class ProfileActivity extends BaseActivity {
             profileViewHolder.key.setText(profileList[i]);
             profileViewHolder.value.setText(getValue(profileList[i]));
 
-            if(i == 0 || i == 1) {
+            if( i == 1) {
                 profileViewHolder.arrow.setVisibility(View.INVISIBLE);
                 view.setEnabled(false);
                 view.setOnClickListener(null);

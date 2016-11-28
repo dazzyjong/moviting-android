@@ -1,6 +1,8 @@
 package com.moviting.android.ui.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +47,7 @@ public class EnrollFragment extends BaseFragment {
     private Button enrollButton;
     private TextView dateText;
     private TextView movieText;
+    private ImageView poster;
 
     private ArrayList<String> selectedDates;
     private ArrayList<String> selectedMovies;
@@ -84,17 +89,7 @@ public class EnrollFragment extends BaseFragment {
                 if(isAllFilledUp()) {
                     showProgressDialog();
                     if(isEnrolled) {
-                        getFirebaseDatabaseReference()
-                                .child("users").child(getUid())
-                                .child("userStatus").setValue("Disenrolled", new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                Toast.makeText(getActivity(), R.string.release_success_text, Toast.LENGTH_SHORT).show();
-                                isEnrolled = false;
-                                updateApplicationButton();
-                                hideProgressDialog();
-                            }
-                        });
+                        createDialogForConfirm();
                     } else {
                         getFirebaseDatabaseReference()
                                 .child("users").child(getUid())
@@ -131,7 +126,42 @@ public class EnrollFragment extends BaseFragment {
                         .build();
             }
         }
+
+        poster = (ImageView) view.findViewById(R.id.poster);
+        Glide.with(getActivity()).load("https://upload.wikimedia.org/wikipedia/ko/a/a6/%EC%8B%A0%EB%B9%84%ED%95%9C_%EB%8F%99%EB%AC%BC%EC%82%AC%EC%A0%84.jpg").into(poster);
+
         return view;
+    }
+
+    private void createDialogForConfirm() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
+        ab.setMessage("불참시 더 이상 소개가 되지 않습니다.");
+
+        ab.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                getFirebaseDatabaseReference()
+                        .child("users").child(getUid())
+                        .child("userStatus").setValue("Disenrolled", new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        Toast.makeText(getActivity(), R.string.release_success_text, Toast.LENGTH_SHORT).show();
+                        isEnrolled = false;
+                        updateApplicationButton();
+                        hideProgressDialog();
+                    }
+                });
+            }
+        });
+        ab.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                hideProgressDialog();
+            }
+        });
+
+        AlertDialog alertDialog = ab.create();
+
+        alertDialog.show();
     }
 
     @Override

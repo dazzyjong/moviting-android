@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ import java.util.Map;
 
 public class FirstSettingActivity extends BaseActivity {
 
+    private ImageButton photoButton;
     private ImageView profileImage;
     private EditText nameText;
     private Spinner genderSpinner;
@@ -87,6 +89,14 @@ public class FirstSettingActivity extends BaseActivity {
         profileImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                requestPhotoGallery();
+            }
+        });
+
+        photoButton = (ImageButton) findViewById(R.id.photo_button);
+        photoButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 requestPhotoGallery();
             }
         });

@@ -7,9 +7,7 @@ import android.support.v4.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.storage.FirebaseStorage;
 import com.moviting.android.R;
-import com.moviting.android.ui.activity.BaseActivity;
 import com.moviting.android.util.DatabaseHelper;
 
 public class BaseFragment extends Fragment {

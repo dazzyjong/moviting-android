@@ -111,6 +111,10 @@
         <activity
             android:name=".ui.activity.PhotoEditorActivity"
             android:label="@string/title_activity_photo_editor"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.activity.NoticeActivity"
+            android:label="@string/title_activity_notice"
             android:theme="@style/AppTheme"></activity>
     </application>
 

@@ -17,6 +17,7 @@ import com.google.firebase.auth.UserInfo;
 import com.moviting.android.R;
 import com.moviting.android.ui.activity.CouponActivity;
 import com.moviting.android.ui.activity.LoginActivity;
+import com.moviting.android.ui.activity.NoticeActivity;
 import com.moviting.android.ui.activity.ProfileActivity;
 import com.moviting.android.ui.activity.WebViewActivity;
 
@@ -53,6 +54,7 @@ public class AccountFragment extends BaseFragment {
         String[] values = new String[] {
                 getResources().getString(R.string.my_profile),
                 getResources().getString(R.string.coupon_box),
+                getResources().getString(R.string.notice),
                 getResources().getString(R.string.FAQ),
                 getResources().getString(R.string.Ask),
                 getResources().getString(R.string.logout)
@@ -71,12 +73,15 @@ public class AccountFragment extends BaseFragment {
                         startActivity(CouponActivity.createIntent(getActivity(), ACCOUNT_MODE));
                         break;
                     case 2:
-                        startActivity(WebViewActivity.createIntent(getActivity(), "http://theysy.com/qna.html"));
+                        startActivity(NoticeActivity.createIntent(getActivity()));
                         break;
                     case 3:
-                        startActivity(WebViewActivity.createIntent(getActivity(), "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
+                        startActivity(WebViewActivity.createIntent(getActivity(), "http://theysy.com/qna.html"));
                         break;
                     case 4:
+                        startActivity(WebViewActivity.createIntent(getActivity(), "http://plus.kakao.com/home/@%EC%97%B0%EC%8B%9C%EC%98%81"));
+                        break;
+                    case 5:
                         createWarningDialog();
                         break;
                     default:
